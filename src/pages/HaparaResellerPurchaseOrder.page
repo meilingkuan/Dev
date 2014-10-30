@@ -1,0 +1,296 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerRegistrationController" action="{!checkId}"  docType="html-5.0"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content"> 	
+		<apex:outputpanel id="POForm" rendered="{!ViewPurchaseOrderForm}">
+			<apex:form id="frm">
+				<article>
+					<h3>Submit Purchase Order</h3>
+					<p>
+						All Order requests are subject to approval and will be processed within 3-5 business days. 
+						Please make sure to enter all the information below and click Save. 
+						Contact <a id="resellersupport" href="mailto:{!resellerSalesEmail}?subject=Partner Portal Access Required">Hapara Partner Support</a>
+						for questions or additional support. 
+					</p>
+					<apex:pageMessages />
+				</article>
+				<div class="signup-form">
+					<fieldset >
+			  			<article class="bottomlined">
+			  				<b>Customer Information</b>
+			  			</article>
+							
+						<apex:outputLabel value="Customer First Name:" for="resellerLeadfirstName"><sup class="required">*</sup></apex:outputLabel>
+						<apex:inputField id="resellerLeadfirstName" value="{!resellerLead.firstName}" required="true"/>  
+						
+						<apex:outputLabel value="Customer Last Name:" for="resellerLeadlastName"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeadlastName" value="{!resellerLead.lastName}" required="true"/>
+				        
+								<apex:outputLabel value="Customer Email:" for="resellerLeademail"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="resellerLeademail" value="{!resellerLead.email}" required="true"/>
+				         
+				        <apex:outputLabel value="Customer Phone:" for="resellerLeadPhone"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="resellerLeadPhone" value="{!resellerLead.Phone}" required="true"/>
+				          
+								<apex:outputLabel value="Customer Job Title:" for="resellerLeadtitle"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeadtitle" value="{!resellerLead.Job_Description__c}" required="true"/>
+				        
+						<apex:outputLabel value="School/District Name:" for="resellerLeadcompany"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeadcompany" value="{!resellerLead.company}" required="true"/>
+				        
+			         	 <apex:outputLabel value="Country:" for="resellerLeadCountry"><sup class="required">*</sup></apex:outputLabel>
+			         	 <select id="Country" onchange="CountryOnChange();" ></select>
+						 <apex:inputHidden value="{!resellerLead.Country}" id="resellerLeadCountry"/>
+						 
+				         <apex:outputLabel value="Street:" for="resellerLeadStreet"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="resellerLeadStreet" value="{!resellerLead.Street}" required="true"/>
+				         
+				         <apex:outputLabel value="City:" for="resellerLeadCity"/>
+				         <apex:inputField id="resellerLeadCity" value="{!resellerLead.City}"/>
+				         
+				         <apex:outputLabel value="Postal Code:" for="resellerLeadPostalCode"/>
+				         <apex:inputField id="resellerLeadPostalCode" value="{!resellerLead.PostalCode}" />
+				         
+			         	 <apex:outputLabel value="State/Region:" for="resellerLeadState"><sup class="required">*</sup></apex:outputLabel>
+				         <select id="State" ></select>
+				         <apex:inputHidden value="{!resellerLead.State}" id="resellerLeadState"/>
+				         
+				         <apex:outputLabel value="Google App Domain (student domain name preferred):" for="resellerLeadStudentDomain"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="resellerLeadStudentDomain" value="{!resellerLead.Website}" required="true"/>
+				         
+				         <apex:outputLabel value="Domain setup comments (any comments describing the type of domain setup the customer might have):" for="resellerLeadStudentDomainComment"/>
+				         <apex:inputField id="resellerLeadStudentDomainComment" value="{!resellerLead.Domain_Comments__c}"/>
+				        <br/>
+				        <article class="bottomlined">
+			  				<b>Order Information</b>
+			  			</article>
+
+						 <apex:outputLabel value="Rep First Name:" for="invoiceRepFirstName"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="invoiceRepFirstName" value="{!PrimaryRep.FirstName}" required="true"/>
+				         
+				         <apex:outputLabel value="Rep Last Name:" for="invoiceRepLastName"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="invoiceRepLastName" value="{!PrimaryRep.LastName}" required="true"/>
+				         
+				         <apex:outputLabel value="Rep Email:" for="invoiceRepEmail"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="invoiceRepEmail" value="{!PrimaryRep.email}" required="true"/>
+				         
+						<apex:outputLabel value="Your PO Number:" for="invoiceResellerPO"><sup class="required">*</sup></apex:outputLabel>
+				         <apex:inputField id="invoiceResellerPO" value="{!invoice.Reseller_PO__c}" required="true"/>
+				         
+				         <apex:outputLabel value="Customer PO Number:" for="invoiceCustomerPO"/>
+				         <apex:inputField id="invoiceCustomerPO" value="{!invoice.Customer_PO__c}"/>
+				         
+				         <apex:outputLabel value="PO Document:" for="InvoicePODocument"/>
+				         <apex:inputFile id="InvoicePODocument" value="{!Attachment.body}" filename="{!Attachment.name}" contentType="{!Attachment.contentType}"/>
+
+						<apex:outputpanel id="orderlinesTable">
+						<apex:pageMessages />
+						<br/>
+						<table class="DataTable">
+								<col width="30%"/>
+								<col width="25%"/>
+								<col width="5%"/>
+								<col width="5%"/>
+								<col width="10%"/>
+								<col width="15%"/>
+								<col width="10%"/>
+								<tr style="background-color:lightgrey;">
+									<th>Order Item</th>
+									<th>Description</th>
+									<th>No of Month/Year</th>
+									<th>Quantity</th>
+									<th>Unit Price</th>
+									<th>Order Start Date</th>
+									<th>Total Price</th>
+									<th></th>
+								</tr>
+								<apex:actionRegion >
+								<tr>
+									<td>
+									<sup  style="color: red;">*</sup>
+									<apex:selectlist id="PricebookEntryId"  value="{!selectedPriceEntryBook}" size="1" required="true" style="width:100%;" >				
+									 	<apex:selectOptions value="{!ActiveProductsOptions}" /> 
+									 	<apex:actionSupport event="onchange" action="{!populateProductDetails}" rerender="orderlinesTable" 
+									 	oncomplete="appendSubscriptionStartDatePicker();" />
+									</apex:selectlist>
+									</td>
+									<td>
+										<apex:outputText value="{!LineItem.Description}"  style="width:95%;" />
+									</td>
+									<td>
+										<sup  style="color: red;">*</sup>
+										<apex:inputText id="LineItemSubscriptionPeriod" value="{!LineItem.SubscriptionPeriod}" style="width:80%;" required="true" 
+											disabled="{!LineItem.DisabledSubscriptionPeriod}" />
+									</td>
+									<td>
+										<sup  style="color: red;">*</sup>
+										<apex:inputText id="LineItemQuantity" value="{!LineItem.Quantity}" style="width:80%;" required="true" />
+									</td>
+									<td  align="center" >
+										<apex:outputText value="{0} {1}"  style="width:95%;">
+											<apex:param value="{!LineItem.UnitPrice}"/>
+      										<apex:param value="{!LineItem.CurrencyCode}"/>
+										</apex:outputText>
+									</td>
+									<td>
+										<sup  style="color: red;">*</sup>
+										<apex:inputText id="LineItemSubscriptionStartDate" value="{!LineItem.SubscriptionStartDate}" style="width:100%;"  required="true"  />
+									</td>
+									<td>&nbsp;</td>
+									<td>
+										<apex:commandButton action="{!saveOrderLine}"  value="add"  rerender="orderlinesTable" style="width:95%;" oncomplete="appendSubscriptionStartDatePicker();"/>
+
+									</td>
+								</tr>
+							</apex:actionRegion>
+							<apex:repeat var="l" value="{!OrderLines}">
+								<apex:actionRegion >
+								<tr>
+									<td>
+									<apex:outputText value="{!l.ProductName}"  style="width:95%;" />
+									</td>
+									<td>
+										<apex:outputText value="{!l.Description}"  style="width:95%;" />
+									</td>
+									<td>
+										<apex:outputText value="{!l.SubscriptionPeriod}" />
+									</td>
+									<td>
+										<apex:outputText value="{!l.Quantity}" style="width:80%;"   />
+									</td>
+									<td  align="center" > 
+										<apex:outputText value="{0} {1}"  style="width:95%;">
+											<apex:param value="{!l.NewUnitPrice}"/>
+      										<apex:param value="{!l.CurrencyCode}"/>
+										</apex:outputText>
+									</td>
+									<td>
+										<apex:outputText value="{!l.SubscriptionStartDate}" style="width:100%;"  />
+									</td>
+									<td align="center" >
+										<apex:outputText value="{!l.TotalPrice}"  style="width:95%;"/>
+									</td>
+									<td>
+										<apex:commandLink action="{!deleteOrderLine}" value="delete" styleclass="btn-danger" rerender="orderlinesTable" immediate="true" >
+										   <apex:param name="deleteOrderLineNo" value="{!l.lineNo}"/>
+										</apex:commandLink>
+									</td>
+								</tr>
+								</apex:actionRegion>
+							</apex:repeat>
+						</table>
+						</apex:outputpanel>
+						<br/>
+						<div class="nav-wrapper">
+							<apex:commandButton action="{!savePurchaseOrder}" value="Save" onclick="return validateSave();"/>&nbsp;
+							<input type="text" id="resellerEmailDomain" value="{!reseller.Reseller_s_Email_Domain__c}" style="display:none;"/>
+							<input type="text" id="activityId" value="{!activityId}" style="display:none;"/>
+							<input type="text" id="rep" value="{!rep}" style="display:none;"/>
+							<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true"  styleclass="btn-danger"/>
+						</div>
+					</fieldset>
+				</div>
+			</apex:form>	
+			<apex:form >
+		        <!-- Define the JavaScript function sayHello-->
+		        <apex:actionFunction name="resetOrderLines" action="{!resetOrderLines}" rerender="orderlinesTable"  oncomplete="appendSubscriptionStartDatePicker();" >
+		        	 <apex:param name="firstParam" assignTo="{!resellerLead.Country}" value="" />
+		        </apex:actionFunction>
+		    </apex:form>
+		</apex:outputpanel>
+		<apex:outputpanel id="SucessMessage" rendered="{!!ViewPurchaseOrderForm}">
+			<article class="bottomlined" style="background-color: #e1efcc; border-color: #98b86a;">
+				<b>Successful Purchase Order</b>
+				<p>  			
+					You have successfully registered the Purchase Order. An email will be send to confirm purchase order. 
+					Click <a href="{!UpdateDealURL}">here </a> to create more registration or submit a purchase order.
+				</p>		 
+  			</article>
+		</apex:outputpanel>
+		</div>
+	</article>
+</section>
+</div>
+</div>
+ 
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"  />
+<apex:includeScript value="{!$Resource.HaparaCountryJS}"  />
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/> 
+<apex:includeScript value="{!URLFOR($Resource.jquerysimpledatetimepicker,'/jquery-simple-datetimepicker-1.10.1/jquery.simple-dtpicker.js')}"  />
+<apex:stylesheet value="{!URLFOR($Resource.jquerysimpledatetimepicker,'/jquery-simple-datetimepicker-1.10.1/jquery.simple-dtpicker.css')}"/>
+<script type="text/javascript">
+j$ = jQuery.noConflict();
+
+j$( document ).ready(function() {
+	print_country("Country");
+	CountryState("{!resellerLead.Country}","{!resellerLead.State}","Country","State");
+
+	appendSubscriptionStartDatePicker =function(){
+		j$('[id$="LineItemSubscriptionStartDate"]').appendDtpicker({
+						"closeOnSelected": true,
+						"dateOnly": true,
+						"dateFormat": "YYYY-MM-DD",
+						"futureOnly": true
+		});
+		j$('[id$="LineItemSubscriptionPeriod"]').focus();
+	}
+});
+
+function CountryOnChange(){
+	var country =  document.getElementById("Country");
+	print_state('State',country.value);
+	var leadcountry = document.getElementById("{!$Component.frm.resellerLeadCountry}");
+	if(leadcountry.value != document.getElementById("Country").value){	
+		alert('Please note that changing the Country will remove all orderlines. Make sure to reenter the orderline before submitting the PO');
+		leadcountry.value = country.value;
+		resetOrderLines(country.value);
+	}
+}
+
+function validateSave(){
+	var result = true;
+	var message = "";
+	
+	//validate customer email not same as reseller email domain
+	var resellerLeademail = document.getElementById("{!$Component.frm.resellerLeademail}");
+	var resellerEmailDomain = "{!reseller.Reseller_s_Email_Domain__c}";
+	var reselleremails = resellerEmailDomain.length>0? resellerEmailDomain.split(";"):undefined;
+	if(reselleremails){
+		
+		for(i=0;i<resellerLeademail.length; i++){
+			if(resellerLeademail.value.indexOf(reselleremails[i])>0){
+				result = false;
+				message = "- Customer contact must not be a contact of your company. "
+					+ "We require the customer's primary contact details as this will help us to establish communication with the cusotmer";
+				break;
+			}
+		}
+	}
+	//validate country and state
+	if(document.getElementById("Country").value =='Select Country' || document.getElementById("Country").value.length == 0)
+		message = message + 'Country is required';
+	if( document.getElementById("State").value =='Select State' || document.getElementById("State").value.length == 0 )
+		message = message + '\n State is required';
+		
+	if(message.length == 0){ 
+		var leadcountry = document.getElementById("{!$Component.frm.resellerLeadCountry}");
+		leadcountry.value = document.getElementById("Country").value;
+		var leadstate = document.getElementById("{!$Component.frm.resellerLeadState}");
+		leadstate.value = document.getElementById("State").value;
+		
+		result = true;
+	}
+	else{
+		result = false;
+		alert('Please select or enter a value for the following fields:\n' + message); 
+	}
+	return result;
+}
+</script>			
+</apex:page>

@@ -1,0 +1,6 @@
+<apex:page standardController="Campaign">
+   <apex:iframe frameborder="0"
+   height="1200px"   
+   src="https://aws.predictiveresponse.net/predictiveDesigner.php?dateTime={!NOW()}&sfOrgName={!$Organization.Name}&sfOrgId={!$Organization.Id}&sfCampaignId={!Campaign.Id}&requestType=xPressDesigner&sessionId={!$Api.Session_ID}&serverURL={!$Api.Partner_Server_URL_80}"
+   />
+</apex:page>

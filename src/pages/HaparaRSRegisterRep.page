@@ -1,0 +1,115 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content">
+		<apex:outputPanel id="repRegisterPanel" rendered="{!showrepRegisterPanel='Yes'}">		
+			<apex:form id="frm">
+				<article>
+					<h3>Login Registration</h3>
+					<p>
+						Looks like you have not registered before with our system. 
+						Please enter your contact details and we will proceed to verify your email address when you click on the register button.
+					</p>
+					<apex:pageMessages />
+				</article>
+				<div class="signup-form">
+					<fieldset >
+						<apex:outputLabel value="Sales Rep First Name:" for="resellerRepFirstName"><sup class="required">*</sup></apex:outputLabel>
+						<apex:inputField id="resellerRepFirstName" value="{!resellerRep.firstName}" required="true"/>
+		
+						<apex:outputLabel value="Sales Rep Last Name:" for="resellerRepLastName"><sup class="required">*</sup></apex:outputLabel>
+			        	<apex:inputField id="resellerRepLastName" value="{!resellerRep.lastName}" required="true"/>
+			        
+			        	<apex:outputLabel value="Sales Rep Email:" for="resellerRepEmail"><sup class="required">*</sup></apex:outputLabel>
+			        	<apex:inputField id="resellerRepEmail" value="{!resellerRep.email}" required="true"/>
+			         
+						<apex:outputLabel value="Sales Rep Phone No:" for="resellerRepPhone"><sup class="required">*</sup></apex:outputLabel>
+			        	<apex:inputField id="resellerRepPhone" value="{!resellerRep.phone}" required="true"/> 
+			        
+			         	<apex:outputLabel value="Country:" for="resellerRepCountry"><sup class="required">*</sup></apex:outputLabel>
+					    <select id="Country" onchange="print_state('State',value);" ></select>
+						<apex:inputHidden value="{!resellerRep.MailingCountry}" id="resellerRepCountry"/>
+						 
+						<apex:outputLabel value="State/Region:" for="resellerRepState"><sup class="required">*</sup></apex:outputLabel>
+				        <select id="State" ></select>
+				        <apex:inputHidden value="{!resellerRep.MailingState}" id="resellerRepState"/>
+				      
+			         	<br/>
+			         	 <div class="nav-wrapper">
+							<apex:commandButton action="{!createResellerRep}" value="Register" onclick="return validateSave();" />&nbsp;
+							<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" styleclass="btn-danger"/>
+							<input type="text" id="resellerEmailDomain" value="{!reseller.Reseller_s_Email_Domain__c}" style="display:none;"/> 	
+						 </div>
+						
+					 </fieldset>
+		        </div>     
+			</apex:form>	
+		</apex:outputPanel>		
+		<apex:outputPanel id="repRegisteredPanel" rendered="{!showrepRegisterPanel='No'}">
+				<apex:form id="frm2">
+				<article class="bottomlined">
+					<h3>Login Registration</h3>
+					<p>
+						Thank you for registering we have sent you an email to confirm your registration. Please click on "Continue" to proceed into our Reseller Portal.
+					</p>
+					<apex:pageMessages />
+				</article>
+				<br/>
+				<div class="signup-form">
+					<fieldset >
+						 <div class="nav-wrapper">
+							<apex:commandButton action="{!gotoWelcomePageWithRepId}" value="Continue" styleclass="btn-success"/>
+						</div>
+					</fieldset>
+				</div>	
+				
+				</apex:form>
+		</apex:outputPanel>								  							  		
+  		</div>
+  </article>
+ </section>
+ </div>
+ </div>
+  
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"  />
+<apex:includeScript value="{!$Resource.HaparaCountryJS}"  />
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/> 
+<script type="text/javascript">
+j$ = jQuery.noConflict();
+j$( document ).ready(function() {
+	print_country("Country");
+	CountryState("{!resellerRep.MailingCountry}","{!resellerRep.MailingState}","Country","State");
+});
+
+function validateSave(){
+	var result = true;
+	var message = "";
+	
+	//validate country and state
+	if(document.getElementById("Country").value =='Select Country' || document.getElementById("Country").value.length == 0)
+		message = message + 'Country is required,';
+	if( document.getElementById("State").value =='Select State' || document.getElementById("State").value.length == 0 )
+		message = message + '\n State is required';
+		
+	if(message.length == 0){ 
+		var leadcountry = document.getElementById("{!$Component.frm.resellerRepCountry}");
+		leadcountry.value = document.getElementById("Country").value;
+		var leadstate = document.getElementById("{!$Component.frm.resellerRepState}");
+		leadstate.value = document.getElementById("State").value;
+		
+		result = true;
+	}
+	else{
+		result = false;
+		alert('Please select or enter a value for the following fields:\n' + message); 
+	}
+	return result;
+}
+</script>			
+</apex:page>

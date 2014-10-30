@@ -1,0 +1,48 @@
+<apex:page standardController="Hapara_Invoice__c" recordSetvar="unused" extensions="Hapara_XeroController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+  <apex:form id="wizard">
+	  <apex:sectionHeader title="Process Invoice into Xero" />
+      <apex:pageBlock id="step1" title="Records" mode="detail" rendered="{!step='1'}">
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection >
+	            <apex:pageBlockTable var="a" value="{!ProcessInvoices}">
+					<apex:column value="{!a.Name}"/>
+					<apex:column value="{!a.Status__c}"/>
+					<apex:column value="{!a.Process__c}" headerValue="Upload to Xero"/>
+					<apex:column value="{!a.Error_Message__c}" headerValue="Message"/>
+				    <apex:column value="{!a.LastModifiedDate}"/>
+	            </apex:pageBlockTable>
+			</apex:pageBlockSection>
+			<apex:panelGrid columns="2">
+			</apex:panelGrid>
+          <apex:pageBlockButtons style="align=center;">
+              <apex:commandButton action="{!Process}" value="Process into Xero"/>
+              <apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" style="margin-left: 2em"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock> 
+    
+	<apex:outputPanel id="result" rendered="{!step='2'}">   
+	<apex:pageBlock id="field" mode="detail">
+	      <apex:pagemessages escape="false"></apex:pagemessages>	      
+	      <apex:pageBlockSection >
+		     <apex:pageBlockTable var="a" value="{!ProcessedInvoices}">
+		     	<apex:column value="{!a.Name}"/>
+				<apex:column value="{!a.Xero_Invoice_No__c}"/>
+				<apex:column value="{!a.Status__c}"/>
+				<apex:column value="{!a.Error_Message__c}" />
+				<apex:column value="{!a.LastModifiedDate}"/>
+		     </apex:pageBlockTable>
+		   </apex:pageBlockSection>
+		   <apex:panelGrid columns="2">
+		   </apex:panelGrid>
+	      <apex:pageBlockButtons style="align=center;">
+	          <apex:commandButton action="{!ProcessPDF}" value="Retrieve Invoice"/>
+	          <apex:commandButton action="{!cancel}" value="Close" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+	  </apex:outputPanel>
+   </apex:form>
+    <apex:form >
+     <apex:actionPoller action="{!reloadResult}" rerender="result" interval="5"/>
+     </apex:form>
+</apex:page>

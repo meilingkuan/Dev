@@ -1,0 +1,206 @@
+<apex:component controller="MC4SF.SubscriberController">
+
+    <apex:attribute name="subscriber"
+             description="Subscriber record id."
+                required="true"
+                    type="String"
+                assignTo="{!subscriberId}"/>
+
+<style>
+.stars {
+	background-image: url({!URLFOR($Resource.MC4SF__Assets, '/img/stars.png')});
+	background-position: 0 0px;
+	width: 94px;
+	height: 17px;
+}
+
+.rating {
+	background-position: 0 0px;
+}
+
+.rating1 {
+	background-position: 0 -44px;
+}
+
+.rating2 {
+	background-position: 0 -87px;
+}
+
+.rating3 {
+	background-position: 0 -131px;
+}
+
+.rating4 {
+	background-position: 0 -176px;
+}
+
+.rating5 {
+	background-position: 0 -220px;
+}
+</style>
+
+
+<apex:sectionHeader title="MailChimp Subscriber" subtitle="{!email}"/>
+
+<apex:outputPanel layout="none" rendered="{!subscriberType != null}">
+	<div class="ptBreadcrumb">&nbsp;«&nbsp;<a href="/{!subscriberId}">Back To {!subscriberType}</a></div><br/>
+
+	<div style="text-align: center;">
+		<apex:outputPanel layout="none" rendered="{!NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+			<input value="Manage Subscriptions" class="btn" title="Manage Subscriptions" type="button" onclick="alert('You do not have permission to perform this function.'); return false;"/>
+		</apex:outputPanel>
+		<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin || isMailChimpUser}">
+			<input value="Manage Subscriptions" class="btn" title="Manage Subscriptions" type="button" onclick="top.location.href = '/apex/Subscriptions{!subscriberType}?id={!subscriberId}';"/>
+		</apex:outputPanel>
+	</div><br/>
+</apex:outputPanel>
+
+<apex:repeat value="{!mcListWrappers}" var="wrapper">
+	<apex:pageBlock >
+		<apex:facet name="header">
+			<apex:outputPanel layout="none">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tbody>
+					<tr>
+						<td class="pbTitle" style="padding: 0 5px;">
+							<img src="/s.gif" width="12" height="1" class="minWidth" style="margin-right: 0.25em;"/>
+							<img src="{!URLFOR($Resource.Assets, '/img/freddie.png')}" class="relatedListIcon" style="width: 24px; height: 24px; position: relative; margin-left: -1px; display: inline; top: 3px;"/>
+							<h3 style="margin: 3px 0 0 27px; display: inline;">{!wrapper.mcList.Name}</h3>
+							<c:Status status="{!wrapper.mcSubscriber.MC4SF__Member_Status__c}" statusReason="{!wrapper.mcSubscriber.MC4SF__Status_Reason__c}" statusTimestamp="{!wrapper.mcSubscriber.MC4SF__Status_Timestamp__c}"/>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</apex:outputPanel>
+		</apex:facet>
+	
+		<apex:pageBlockSection columns="2">
+			<apex:outputField value="{!wrapper.mcSubscriber.MC4SF__Last_Sync_Date__c}"/>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Member Rating"/>
+				<apex:outputPanel >
+					<img src="/s.gif" class="stars rating{!wrapper.mcSubscriber.Member_Rating__c}"/>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+			
+			<apex:outputField value="{!wrapper.mcSubscriber.MC4SF__Last_Activity_Date__c}"/>
+			<apex:outputField value="{!wrapper.mcSubscriber.MC4SF__View_Subscriber_in_MC__c}"/>
+
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Interests"/>
+				<apex:outputPanel >
+					<apex:repeat value="{!wrapper.interestGroupings}" var="interestGrouping">
+						<b>{!interestGrouping.name}</b><br/>
+						<apex:repeat value="{!interestGrouping.groups}" var="group">
+							{!group}<br/>
+						</apex:repeat>
+						<br/>
+					</apex:repeat>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<apex:outputLabel value="Static Segments"/>
+				<apex:outputPanel >
+					<apex:repeat value="{!wrapper.staticSegments}" var="staticSegment">
+						{!staticSegment}<br/>
+					</apex:repeat>
+				</apex:outputPanel>
+			</apex:pageBlockSectionItem>
+
+			<apex:outputField value="{!wrapper.mcSubscriber.MC4SF__Notes__c}"/>
+		</apex:pageBlockSection>
+
+		<apex:pageBlockSection title="Member Profile" columns="2">
+			<apex:repeat value="{!wrapper.mergeVariables}" var="mergeVariable">
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="{!mergeVariable.name}"/>
+					<apex:outputText value="{!mergeVariable.value}"/>
+				</apex:pageBlockSectionItem>
+			</apex:repeat>
+		</apex:pageBlockSection>
+	
+	</apex:pageBlock>
+</apex:repeat>
+
+<apex:pageBlock >
+	<apex:facet name="header">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tbody>
+				<tr>
+					<td class="pbTitle" style="padding: 0 5px;">
+						<img src="/s.gif" width="12" height="1" class="minWidth" style="margin-right: 0.25em;"/>
+						<img src="{!URLFOR($Resource.Assets, '/img/freddie.png')}" class="relatedListIcon" style="width: 24px; height: 24px; position: relative; margin-left: -1px; display: inline; top: 3px;"/>
+						<h3 style="margin: 3px 0 0 27px;">Member Activity</h3>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</apex:facet>
+	
+	<apex:pageBlockTable value="{!activities}" var="activity" rendered="{!activities.size > 0}">
+		<apex:column value="{!activity.MC4SF__Timestamp__c}"/>
+		<apex:column value="{!activity.MC4SF__Action__c}"/>
+		<apex:column value="{!activity.MC4SF__Type__c}"/>
+		<apex:column value="{!activity.MC4SF__URL__c}"/>
+		<apex:column value="{!activity.MC4SF__MC_Campaign__c}"/>
+		<apex:column value="{!activity.MC4SF__MC_List__c}"/>
+	</apex:pageBlockTable>
+
+	<apex:outputText value="No records to display" rendered="{!activities.size < 1}"/>
+</apex:pageBlock>
+
+<apex:pageBlock >
+	<apex:facet name="header">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tbody>
+				<tr>
+					<td class="pbTitle" style="padding: 0 5px;"><img src="/s.gif" width="12" height="1" class="minWidth" style="margin-right: 0.25em;"/><img src="/s.gif" class="relatedListIcon" style="background-image: url(/img/sprites/master.png); background-position: 0 -502px; width: 24px; height: 24px; position: relative; margin-left: -1px; display: inline; top: 3px;"/><h3 style="margin: 3px 0 0 27px;">Contacts</h3></td>
+				</tr>
+			</tbody>
+		</table>
+	</apex:facet>
+
+	<apex:pageBlockTable value="{!contacts}" var="contact" rendered="{!contacts.size > 0}">
+		<apex:column headerValue="Name">
+			<a href="/{!contact.Id}">{!contact.Name}</a>
+		</apex:column>
+		<apex:column value="{!contact.AccountId}"/>
+		<apex:column value="{!contact.Phone}"/>
+		<apex:column value="{!contact.Email}"/>
+		<apex:column value="{!contact.MailingCity}"/>
+		<apex:column value="{!contact.MailingState}"/>
+	</apex:pageBlockTable>
+	
+	<apex:outputText value="No records to display" rendered="{!contacts.size < 1}"/>
+</apex:pageBlock>
+
+<apex:pageBlock >
+	<apex:facet name="header">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tbody>
+				<tr>
+					<td class="pbTitle" style="padding: 0 5px;">
+						<img src="/s.gif" width="12" height="1" class="minWidth" style="margin-right: 0.25em;"/>
+						<img src="/s.gif" class="relatedListIcon" style="background-image: url(/img/sprites/master.png); background-position: 0 -698px; width: 24px; height: 24px; position: relative; margin-left: -1px; display: inline; top: 3px;"/>
+						<h3 style="margin: 3px 0 0 27px;">Leads</h3>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</apex:facet>
+
+	<apex:pageBlockTable value="{!leads}" var="lead" rendered="{!leads.size > 0}">
+		<apex:column headerValue="Name">
+			<a href="/{!lead.Id}">{!lead.Name}</a>
+		</apex:column>
+		<apex:column value="{!lead.Company}"/>
+		<apex:column value="{!lead.Phone}"/>
+		<apex:column value="{!lead.Email}"/>
+		<apex:column value="{!lead.City}"/>
+		<apex:column value="{!lead.State}"/>
+	</apex:pageBlockTable>
+	
+	<apex:outputText value="No records to display" rendered="{!leads.size < 1}"/>
+</apex:pageBlock>
+
+</apex:component>

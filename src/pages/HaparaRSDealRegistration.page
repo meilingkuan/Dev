@@ -1,0 +1,137 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content">
+			<apex:form id="frm">
+				<article>
+					<h3>New Deal Registration</h3>
+					<p>
+						All deal registration requests will be replied to within 1-2 business days and Purchase Orders will take about 3-5 days to process. Approved deal registrations will be valid for 90 days. 
+						Please make sure to enter all the information below and click Save or if you would like to create Purchase Order click "Create PO". 
+						Contact <a id="resellersupport" href="mailto:{!resellerSalesEmail}?subject=Reseller Portal Access Required">Hapara Reseller Support</a> for questions or additional support. 
+					</p>
+					<apex:pageMessages />
+				</article>
+				<div class="signup-form">
+					<fieldset >
+			  			<article class="bottomlined">
+			  				<b>Customer Information</b>
+			  			</article>
+
+						<apex:outputLabel value="Customer First Name:" for="resellerLeadfirstName"><sup class="required">*</sup></apex:outputLabel>
+						<apex:inputField id="resellerLeadfirstName" value="{!resellerLead.firstName}" required="true"/>  
+						
+						<apex:outputLabel value="Customer Last Name:" for="resellerLeadlastName"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeadlastName" value="{!resellerLead.lastName}" required="true"/>
+				        
+						<apex:outputLabel value="Customer Email:" for="resellerLeademail"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeademail" value="{!resellerLead.email}" required="true"/>
+				        
+				        <apex:outputLabel value="Customer Job Title:" for="resellerLeadtitle"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeadtitle" value="{!resellerLead.Job_Description__c}" required="true"/>
+				        
+				        <apex:outputLabel value="School/District Name:" for="resellerLeadcompany"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerLeadcompany" value="{!resellerLead.company}" required="true"></apex:inputField>
+				        <apex:outputLabel value="" for="resellerLeadcompany"><sup class="required">*</sup></apex:outputLabel>
+				        <div class="required" width="57.35098%"><p>Please enter the District/School name fully and DO NOT use abbreviation.</p></div>
+				       	
+				        <apex:outputLabel value="Country:" for="resellerLeadCountry"><sup class="required">*</sup></apex:outputLabel>
+					    <select id="Country" onchange="print_state('State',value);" ></select>
+						<apex:inputHidden value="{!resellerLead.Country}" id="resellerLeadCountry"/>
+							 
+						<apex:outputLabel value="State/Region:" for="resellerLeadState"><sup class="required">*</sup></apex:outputLabel>
+				        <select id="State" ></select>
+				        <apex:inputHidden value="{!resellerLead.State}" id="resellerLeadState"/>
+				        
+				        <br/>
+						<article class="bottomlined">
+			  				<b>Deal Information</b>
+			  			</article>  
+			  										
+						<apex:outputLabel value="Agreement Tier:" for="opportunityResellerTier"><sup class="required">*</sup></apex:outputLabel>
+						<apex:selectlist id="opportunityResellerTier"  value="{!opportunity.Reseller_Tier__c}"  size="1" required="true">				
+							<apex:selectOptions value="{!ResellerTier}" /> 
+						</apex:selectlist>
+						
+						<apex:outputLabel value="Size of Opportunity:" for="opportunitySize_of_Opportunity__c"><sup class="required">*</sup></apex:outputLabel>
+						<apex:inputField id="opportunitySize_of_Opportunity__c" value="{!opportunity.Size_of_Opportunity__c}" required="true"/>					  								
+				        
+				        <apex:outputLabel value="Product:" for="opportunityOpportunity_Name_Template__c"><sup class="required">*</sup></apex:outputLabel>
+						<apex:inputField id="opportunityOpportunity_Name_Template__c" value="{!opportunity.Opportunity_Name_Template__c}" required="true"/>					  								
+				         
+						<apex:outputLabel value="Additional Notes:" for="opportunityDescription"/>
+				        <apex:inputField id="opportunityDescription" value="{!opportunity.Description}" label="Additional Notes:"/>
+					    
+					    <div class="nav-wrapper">
+						  	<apex:commandButton action="{!SaveNewDealRegistration}" value="Save"  onclick="return validateSave()"/>
+						  	&nbsp;
+						  	<apex:commandButton action="{!SaveNewDealRegistrationNCreatePO}" value="Save & Create PO" rendered="{!showPurchaseOrderButton}" onclick="return validateSave()" />
+						  	<input type="text" id="resellerEmailDomain" value="{!reseller.Reseller_s_Email_Domain__c}" style="display:none;"> </input>
+						  	&nbsp;		
+						  	<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" styleclass="btn-danger"/>
+						</div>
+					</fieldset>
+				</div>
+			</apex:form>	
+		</div>
+	</article>
+</section>
+</div>
+</div>
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"  />
+<apex:includeScript value="{!$Resource.HaparaCountryJS}"  />
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/> 
+<script type="text/javascript">
+j$ = jQuery.noConflict();
+j$( document ).ready(function() {
+	print_country("Country");
+	CountryState("{!resellerLead.Country}","{!resellerLead.State}","Country","State");
+});
+
+function validateSave(){
+	var result = true;
+	var message = "";
+	
+	//validate customer email not same as reseller email domain
+	var resellerLeademail = document.getElementById( "{!$Component.frm.resellerLeademail}");
+	var resellerEmailDomain = "{!reseller.Reseller_s_Email_Domain__c}";
+	var reselleremails = resellerEmailDomain.length>0? resellerEmailDomain.split(";"):undefined;
+	if(reselleremails){
+		
+		for(i=0;i<reselleremails.length; i++){
+			if(resellerLeademail.value.indexOf(reselleremails[i])>0){
+				result = false;
+				message = "- Customer contact must not be a contact of your company. "
+					+ "We require the customer's primary contact details as this will help us to establish communication with the cusotmer";
+				break;
+			}
+		}
+	}
+	//validate country and state
+	if(document.getElementById("Country").value =='Select Country' || document.getElementById("Country").value.length == 0)
+		message = message + 'Country is required,';
+	if( document.getElementById("State").value =='Select State' || document.getElementById("State").value.length == 0 )
+		message = message + '\n State is required';
+		
+	if(message.length == 0){ 
+		var leadcountry = document.getElementById("{!$Component.frm.resellerLeadCountry}");
+		leadcountry.value = document.getElementById("Country").value;
+		var leadstate = document.getElementById("{!$Component.frm.resellerLeadState}");
+		leadstate.value = document.getElementById("State").value;
+		
+		result = true;
+	}
+	else{
+		result = false;
+		alert('Please select or enter a value for the following fields:\n' + message); 
+	}
+	return result;
+}
+</script>
+</apex:page>

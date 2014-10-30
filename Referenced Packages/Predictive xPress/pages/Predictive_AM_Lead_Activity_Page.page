@@ -1,0 +1,6 @@
+<apex:page standardController="Lead">
+<iframe width="100%" 
+height="740px" 
+frameborder="0"
+src="https://aws.predictiveresponse.net/reporter.php?FirstName={!URLENCODE(Lead.FirstName)}&LastName={!URLENCODE(Lead.LastName)}&sessionId={!$Api.Session_ID}&serverURL={!$Api.Partner_Server_URL_80}&setup=N&orgId=99&LeadId={!Lead.Id}&Email={!Lead.Email}"/>
+</apex:page>

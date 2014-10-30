@@ -1,0 +1,151 @@
+<apex:component controller="Zendesk.Zendesk" access="global">
+
+  <apex:attribute access="global" name="for" assignTo="{!forEntity}" type="String" description="What's the entity type (eg account, contact)" />
+  <apex:attribute access="global" name="email" assignTo="{!email}" type="String" description="The email field used to query the tickets" />
+
+  <apex:form >
+ 
+  <apex:outputText rendered="{!resultCount > 0}">
+    <apex:commandButton disabled="{!currentPage <= 1}" value="First page" action="{!firstPage}" />&nbsp;
+    <apex:commandButton disabled="{!currentPage <= 1}" value="Previous page" action="{!previousPage}" />&nbsp;
+    Page {!currentPage} of {!pageCount}&nbsp;
+    <apex:commandButton disabled="{!currentPage >= pageCount}" value="Next page" action="{!nextPage}" />&nbsp;
+    <apex:commandButton disabled="{!currentPage >= pageCount}" value="Last page" action="{!lastPage}" />&nbsp;
+
+     <div id="jumpToPage" style="display:none;position:absolute;top:30px;left:25%;width:50%;border:1px black solid;background:white;padding:10px;white-space:normal">
+       Enter page number:
+       <apex:inputText size="2" value="{!currentPage}"/>&nbsp;
+       <apex:commandButton value="Go" action="{!jumpToPage}" />
+     </div>
+
+    <a href="#" onclick="document.getElementById('jumpToPage').style.display='block';return false;">Jump to page</a>
+  </apex:outputText>
+  
+  &nbsp;
+  <div style="float:right">
+    <apex:outputLink value="/apex/ZendeskSettings?referrer={!$CurrentPage.parameters.Id}" target="_top">Personal settings</apex:outputLink>
+    &nbsp;
+   <apex:outputText rendered="{!canCreate}"><input type="submit" class="btn" value="New ticket" onclick="top.location.href = '/apex/ZendeskTicketEdit?referrer={!URLENCODE($CurrentPage.parameters.Id)}&entity={!URLENCODE(forEntity)}';"/></apex:outputText>
+  </div>
+  <!--{!lastQuery}-->
+  
+  <apex:dataTable value="{!tickets}" var="ticket" styleClass="list" width="100%">
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header"><b>#</b></apex:facet>
+      <div id="id{!ticket.id}" style="display:none;position:absolute;top:10px;left:10%;width:80%;border:1px black solid;background:white;padding:10px;white-space:normal">
+      <strong>Ticket #{!ticket.id}:&nbsp;<apex:outputText value="{!ticket.subject}"/></strong>
+      <br/><br/>
+      <apex:repeat value="{!ticket.descriptionLines}" var="line">
+        <apex:outputText value="{!line}"/><br/>
+      </apex:repeat>  
+      </div>
+      <a href="{!zendeskUrl}/tickets/{!ticket.id}" target="_blank" onmouseout="document.getElementById('id{!ticket.id}').style.display='none';" onmouseover="document.getElementById('id{!ticket.id}').style.display='block';"><b>{!ticket.id}</b></a>
+    </apex:column>
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header">
+        <apex:commandLink action="{!sortBySubject}">
+          <b>Subject</b>
+          <apex:image rendered="{!sortField == 'subject' && sortDesc}" value="{!$Resource.Zendesk__UpArrow}" />
+          <apex:image rendered="{!sortField == 'subject' && !sortDesc}" value="{!$Resource.Zendesk__DownArrow}" />
+        </apex:commandlink>
+      </apex:facet>
+      <apex:outputText rendered="{!ticket.id != null}">
+        <a href="/apex/ZendeskTicketView?referrer={!$CurrentPage.parameters.Id}&ticketid={!ticket.id}&entity={!forEntity}" target="_top">{!ticket.shortenedSubject}</a>
+      </apex:outputText>
+      <apex:outputText rendered="{!ticket.id == null}">
+        {!ticket.subject}
+      </apex:outputText>
+    </apex:column>
+    <apex:column style="white-space: nowrap" rendered="{!ownCredentials}">
+      <apex:facet name="header">
+        <b>Edit</b>
+      </apex:facet>
+      <apex:outputText rendered="{!(ticket.id != null) && ticket.isEditable}">
+        <a href="/apex/ZendeskTicketEdit?referrer={!$CurrentPage.parameters.Id}&ticketid={!ticket.id}&entity={!forEntity}" target="_top">Edit</a>
+      </apex:outputText>
+    </apex:column>
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header">
+        <apex:outputText >
+          <apex:commandLink action="{!sortByStatus}">
+            <b>Status</b>
+            <apex:image rendered="{!sortField == 'status' && sortDesc}" value="{!$Resource.Zendesk__UpArrow}" />
+            <apex:image rendered="{!sortField == 'status' && !sortDesc}" value="{!$Resource.Zendesk__DownArrow}" />
+          </apex:commandlink>
+          &nbsp;
+          <apex:selectList value="{!statusFilter}" size="1" required="true">
+            <apex:actionSupport event="onchange" action="{!changeFilter}" />
+            <apex:selectOptions value="{!statusFilterOptions}"/>
+          </apex:selectList>
+        </apex:outputText>
+      </apex:facet>
+      {!ticket.status}
+    </apex:column>
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header">
+        <apex:outputText >
+          <apex:commandLink action="{!sortByPriority}">
+            <b>Priority</b>
+            <apex:image rendered="{!sortField == 'priority' && sortDesc}" value="{!$Resource.Zendesk__UpArrow}" />
+            <apex:image rendered="{!sortField == 'priority' && !sortDesc}" value="{!$Resource.Zendesk__DownArrow}" />
+          </apex:commandlink>
+          &nbsp;
+          <apex:selectList value="{!priorityFilter}" size="1" required="true">
+            <apex:actionSupport event="onchange" action="{!changeFilter}" />
+            <apex:selectOptions value="{!priorityFilterOptions}" />
+          </apex:selectList>
+        </apex:outputText>
+      </apex:facet>
+      {!ticket.priority}
+    </apex:column>
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header">
+        <apex:outputText >
+          <apex:commandLink action="{!sortByType}">
+            <b>Type</b>
+            <apex:image rendered="{!sortField == 'ticket_type' && sortDesc}" value="{!$Resource.Zendesk__UpArrow}" />
+            <apex:image rendered="{!sortField == 'ticket_type' && !sortDesc}" value="{!$Resource.Zendesk__DownArrow}" />
+          </apex:commandlink>
+          &nbsp;
+          <apex:selectList value="{!typeFilter}" size="1" required="true">
+            <apex:actionSupport event="onchange" action="{!changeFilter}"/>
+            <apex:selectOptions value="{!typeFilterOptions}"/>
+          </apex:selectList>
+        </apex:outputText>
+      </apex:facet>
+      {!ticket.tickettype}
+    </apex:column>
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header">
+        <apex:outputText >
+          <apex:commandLink action="{!sortByUpdatedAt}">
+            <b>Updated At</b>
+            <apex:image rendered="{!sortField == 'updated_at' && sortDesc}" value="{!$Resource.Zendesk__UpArrow}" />
+            <apex:image rendered="{!sortField == 'updated_at' && !sortDesc}" value="{!$Resource.Zendesk__DownArrow}" />
+          </apex:commandlink>
+        </apex:outputText>
+      </apex:facet>
+      {!ticket.updatedAt}
+    </apex:column>
+    <apex:column style="white-space: nowrap">
+      <apex:facet name="header">
+        <apex:outputText >
+          <apex:commandLink action="{!sortByCreatedAt}">
+            <b>Created At</b>
+            <apex:image rendered="{!sortField == 'created_at' && sortDesc}" value="{!$Resource.Zendesk__UpArrow}" />
+            <apex:image rendered="{!sortField == 'created_at' && !sortDesc}" value="{!$Resource.Zendesk__DownArrow}" />
+          </apex:commandlink>
+        </apex:outputText>
+      </apex:facet>
+      {!ticket.createdAt}
+    </apex:column>
+  </apex:dataTable>
+  </apex:form>
+  
+  <apex:outputText rendered="{!configurationError}">
+    <p>Thanks for installing the Zendesk Ticket View application. Next, your Zendesk credentials need to be configured.</p>
+    <p>Administrators: to configure settings for your entire organization, click here:&nbsp;<apex:outputLink value="/apex/ZendeskOrgSettings?referrer={!UrlEncode($CurrentPage.parameters.Id)}" target="_top">Global Ticket View Settings </apex:outputLink></p>
+    <p>To set authentication details for your user account only, click on the <b>Personal settings</b> link above.</p>
+  </apex:outputText>
+
+</apex:component>

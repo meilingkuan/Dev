@@ -1,0 +1,7 @@
+<apex:component controller="Zendesk.ZendeskWidgetConfigController">
+
+  <apex:attribute required="true" name="widgetEntityname" assignTo="{!widgetEntity}" type="Zendesk__Zendesk_Widget_Entity__c" description="The widget entity you want to edit the fields of" />
+
+  <c:MultiSelectList availableFields="{!entityFieldOptions}" activeFields="{!widgetEntity.Zendesk__Entity_Fields__c}" />
+  
+</apex:component>

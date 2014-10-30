@@ -1,0 +1,251 @@
+<apex:component allowDML="true" controller="MC4SF.MembershipController">
+
+    <apex:attribute name="subscriber"
+             description="Subscriber record id."
+                required="true"
+                    type="String"
+                assignTo="{!subscriberId}"/>
+
+<style>
+.stars {
+	background-image: url({!URLFOR($Resource.MC4SF__Assets, '/img/stars.png')});
+	background-position: 0 0px;
+	width: 94px;
+	height: 17px;
+}
+
+.rating {
+	background-position: 0 0px;
+}
+
+.rating1 {
+	background-position: 0 -44px;
+}
+
+.rating2 {
+	background-position: 0 -87px;
+}
+
+.rating3 {
+	background-position: 0 -131px;
+}
+
+.rating4 {
+	background-position: 0 -176px;
+}
+
+.rating5 {
+	background-position: 0 -220px;
+}
+</style>
+
+<apex:form >
+
+<apex:actionfunction name="refresh" action="{!refresh}" rerender="membershipDetails"/>
+
+<apex:pageBlock rendered="{!NOT(allowedToView)}">
+	<apex:facet name="header">
+		<apex:outputPanel >
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tbody>
+					<tr>
+						<td class="pbTitle" style="padding: 0 5px;">
+							<img src="/s.gif" width="12" height="1" class="minWidth" style="margin-right: 0.25em;"/>
+							<img src="{!URLFOR($Resource.Assets, '/img/freddie.png')}" class="relatedListIcon" style="width: 24px; height: 24px; position: relative; margin-left: -1px; display: inline; top: 3px;"/>
+							<h3 style="margin: 3px 0 0 27px;">MailChimp Membership</h3>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</apex:outputPanel>
+	</apex:facet>
+
+	<apex:pageBlockSection columns="1">
+		<apex:outputPanel >
+			<span style="color: red;">You do not have permission to view this information.</span>
+		</apex:outputPanel>
+	</apex:pageBlockSection>
+</apex:pageBlock>
+
+<apex:pageBlock id="membershipDetails" rendered="{!allowedToView}">
+	<apex:facet name="header">
+		<apex:outputPanel >
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tbody>
+					<tr>
+						<td class="pbTitle" style="padding: 0 5px;">
+							<img src="/s.gif" width="12" height="1" class="minWidth" style="margin-right: 0.25em;"/>
+							<img src="{!URLFOR($Resource.Assets, '/img/freddie.png')}" class="relatedListIcon" style="width: 24px; height: 24px; position: relative; margin-left: -1px; display: inline; top: 3px;"/>
+							<h3 style="margin: 3px 0 0 27px;">MailChimp Membership</h3>
+						</td>
+						<td class="pbButton">
+							<apex:outputPanel layout="none" rendered="{!NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+								<input value="Manage Subscriptions" class="btn" title="Manage Subscriptions" type="button" onclick="alert('You do not have permission to perform this function.'); return false;"/>
+							</apex:outputPanel>
+							<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin || isMailChimpUser}">
+								<input value="Manage Subscriptions" class="btn" title="Manage Subscriptions" type="button" onclick="top.location.href = '/apex/Subscriptions{!subscriberType}?id={!subscriberId}';"/>
+							</apex:outputPanel>
+							
+							<apex:outputPanel layout="none" rendered="{!mcSubscribers.size > 0}">
+								<apex:outputPanel layout="none" rendered="{!ISNULL(parentMcSubscriber.MC4SF__Last_Activity_Sync_Date__c)}">
+									Not Synced Yet 
+								</apex:outputPanel>
+								<apex:outputPanel layout="none" rendered="{!NOT(ISNULL(parentMcSubscriber.MC4SF__Last_Activity_Sync_Date__c))}">
+									Last Sync on
+									<apex:outputText value=" {!lastActivitySyncDate}"/>
+								</apex:outputPanel>
+								
+								<apex:outputPanel layout="none" rendered="{!NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+									<img src="{!URLFOR($Resource.Assets, '/img/refresh.png')}" alt="Sync With MailChimp" title="Sync With MailChimp" width="14" height="14" style="cursor: pointer;" onclick="alert('You do not have permission to perform this function.'); return false;"/>
+								</apex:outputPanel>
+								<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin || isMailChimpUser}">
+									<img src="{!URLFOR($Resource.Assets, '/img/refresh.png')}" alt="Sync With MailChimp" title="Sync With MailChimp" width="14" height="14" style="cursor: pointer;" onclick="refresh();"/>
+								</apex:outputPanel>
+								
+								&nbsp;-&nbsp;
+								
+								<apex:outputPanel layout="none" rendered="{!NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+									<apex:outputPanel styleClass="font-size: 11px; color: #666;" rendered="{!subscriberType == 'Contact'}">
+										{!otherContactsCount} other <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">Contact{!IF(otherContactsCount < 1 || otherContactsCount > 1, 's', '')}</a> and {!otherLeadsCount} <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">Lead{!IF(otherLeadsCount < 1 || otherLeadsCount > 1, 's', '')}</a> with this email address.
+									</apex:outputPanel>
+									<apex:outputPanel styleClass="font-size: 11px; color: #666;" rendered="{!subscriberType == 'Lead'}">
+										{!otherLeadsCount} other <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">Lead{!IF(otherLeadsCount < 1 || otherLeadsCount > 1, 's', '')}</a> and {!otherContactsCount} <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">Contact{!IF(otherContactsCount < 1 || otherContactsCount > 1, 's', '')}</a> with this email address.
+									</apex:outputPanel>
+								</apex:outputPanel>
+								<apex:outputPanel layout="none" rendered="{!isMailChimpAdmin || isMailChimpUser}">
+									<apex:outputPanel styleClass="font-size: 11px; color: #666;" rendered="{!subscriberType == 'Contact'}">
+										{!otherContactsCount} other <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">Contact{!IF(otherContactsCount < 1 || otherContactsCount > 1, 's', '')}</a> and {!otherLeadsCount} <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">Lead{!IF(otherLeadsCount < 1 || otherLeadsCount > 1, 's', '')}</a> with this email address.
+									</apex:outputPanel>
+									<apex:outputPanel styleClass="font-size: 11px; color: #666;" rendered="{!subscriberType == 'Lead'}">
+										{!otherLeadsCount} other <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">Lead{!IF(otherLeadsCount < 1 || otherLeadsCount > 1, 's', '')}</a> and {!otherContactsCount} <a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">Contact{!IF(otherContactsCount < 1 || otherContactsCount > 1, 's', '')}</a> with this email address.
+									</apex:outputPanel>
+								</apex:outputPanel>
+							</apex:outputPanel>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</apex:outputPanel>
+	</apex:facet>
+
+	<apex:pageBlockSection columns="2" rendered="{!mcSubscribers.size < 1}">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="List"/>
+			<apex:outputPanel />
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Rating"/>
+			<apex:outputPanel />
+		</apex:pageBlockSectionItem>
+		
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Interest"/>
+			<apex:outputPanel />
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Last Activity"/>
+			<apex:outputPanel />
+		</apex:pageBlockSectionItem>
+		
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Segment"/>
+			<apex:outputPanel />
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Status"/>
+			<apex:outputPanel />
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+	
+	<apex:pageBlockSection columns="2" rendered="{!mcSubscribers.size > 0}">
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="List"/>
+			<apex:outputPanel >
+				{!parentMcSubscriber.MC_List__r.Name}
+				<apex:outputPanel layout="none" rendered="{!mcSubscribers.size > 0 && NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">View More</a>)
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!mcSubscribers.size > 0 && (isMailChimpAdmin || isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">View More</a>)
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Rating"/>
+			<apex:outputPanel >
+				<img src="/s.gif" class="stars rating{!parentMcSubscriber.Member_Rating__c}"/>
+			</apex:outputPanel>
+		</apex:pageBlockSectionItem>
+		
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Interest"/>
+			<apex:outputPanel >
+				<apex:outputPanel layout="none" rendered="{!interests.size == 0}">
+					None selected
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!interests.size == 1}">
+					{!interests[0]}
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!interests.size > 1}">
+					{!interests[0]}, {!interests[1]} 
+				</apex:outputPanel>
+				
+				<apex:outputPanel layout="none" rendered="{!interests.size > 2 && NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">View More</a>)
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!interests.size > 2 && (isMailChimpAdmin || isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">View More</a>)
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Last Activity"/>
+			<apex:outputPanel >
+				<apex:outputPanel layout="none" rendered="{!activities.size > 0}">
+					{!actionLabels[activities[0].Action__c]}
+					on&nbsp;<apex:outputField value="{!activities[0].Timestamp__c}"/>
+				</apex:outputPanel>
+				
+				<apex:outputPanel layout="none" rendered="{!activities.size > 1 && NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">View More</a>)
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!activities.size > 1 && (isMailChimpAdmin || isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">View More</a>)
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:pageBlockSectionItem>
+		
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Segment"/>
+			<apex:outputPanel >
+				<apex:outputPanel layout="none" rendered="{!segments.size == 0}">
+					None selected
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!segments.size == 1}">
+					{!segments[0]}
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!segments.size > 1}">
+					{!segments[0]}, {!segments[1]} 
+				</apex:outputPanel>
+				
+				<apex:outputPanel layout="none" rendered="{!segments.size > 2 && NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="alert('You do not have permission to perform this function.'); return false;">View More</a>)
+				</apex:outputPanel>
+				<apex:outputPanel layout="none" rendered="{!segments.size > 2 && (isMailChimpAdmin || isMailChimpUser)}">
+					... (<a href="/apex/Subscriber{!subscriberType}?id={!subscriberId}" onclick="top.location.href=this.href;">View More</a>)
+				</apex:outputPanel>
+			</apex:outputPanel>
+		</apex:pageBlockSectionItem>
+		<apex:pageBlockSectionItem >
+			<apex:outputLabel value="Status"/>
+			<apex:outputPanel >
+				<c:Status status="{!parentMcSubscriber.MC4SF__Member_Status__c}" statusReason="{!parentMcSubscriber.MC4SF__Status_Reason__c}" statusTimestamp="{!parentMcSubscriber.MC4SF__Status_Timestamp__c}"/>
+			</apex:outputPanel>
+		</apex:pageBlockSectionItem>
+	</apex:pageBlockSection>
+
+</apex:pageBlock>
+
+</apex:form>
+
+</apex:component>

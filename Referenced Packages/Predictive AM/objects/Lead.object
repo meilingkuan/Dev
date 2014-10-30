@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Is_Test_Member__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>If checked, this lead is  automatically added to ALL campaigns as a test member and will receive all Predictive test emails.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If checked, this lead is  automatically added to ALL campaigns as a test member and will receive all Predictive test emails.</inlineHelpText>
+        <label>Test Member</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Lead_Score_Rating__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Predictive default scoring rating based on lead score</description>
+        <externalId>false</externalId>
+        <formula>IF(Lead_Score__c  &gt;  10000,   &quot;Rating 1&quot;,
+IF(Lead_Score__c  &gt;  8000,     &quot;Rating 2&quot;,
+IF(Lead_Score__c  &gt;  4000,     &quot;Rating 3&quot;,
+IF(Lead_Score__c  &gt;  1000,     &quot;Rating 4&quot;,
+IF(Lead_Score__c  &gt;  1,           &quot;Rating 5&quot;,
+&quot;None&quot;)))))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Predictive default scoring rating based on lead score</inlineHelpText>
+        <label>Lead Score Rating</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Lead_Score__c</fullName>
+        <defaultValue>0</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Accumulated score from all campaigns - lead score write off%.  Lead score is managed on the Manage window in Predictive and is based on opens, clicks and completions.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Accumulated score from all campaigns - lead score write off%.  Lead score is managed on the Manage window in Predictive and is based on opens, clicks and completions.</inlineHelpText>
+        <label>Lead Score</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Test_Group__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>Test Group</label>
+        <length>10</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <webLinks>
+        <fullName>Opt_In</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Opt In</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>//2013-06-28 10:01
+{!REQUIRESCRIPT(&quot;/soap/ajax/26.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/26.0/apex.js&quot;)} 
+
+var r = confirm(&quot;Note: CAN SPAM compliance requires that an Opt Out mechanism be in place that allows a recipient to ask you not to send future email messages to that email address, and that you must honor those requests. If you are using this opt in option without the recipient&apos;s express permission, please press Cancel now.&quot;);  
+if(r == true){ 
+try{
+var returnMsg = sforce.apex.execute(
+   &quot;PAM.ServiceCallout_AC&quot;,
+   &quot;doCallout&quot;,{endpointUrl:&quot;https://aws.predictiveresponse.net/services/optinout/optinout.php?sessionId={!$Api.Session_ID}&amp;serverURL={!$Api.Partner_Server_URL_80}&amp;email={!Lead.Email}&amp;orgId={!CASESAFEID(Organization.Id)}&amp;option=optin&amp;method=Lead.OptIn&quot;}
+); // end-apex.execute 
+alert(returnMsg);        // show returned service message from server
+window.location.reload() // refresh page to show updated optin/out check box
+} // end try
+catch(err) {
+   var errMessage = err.message;
+   if(err.message == null || err.message == &apos;undefined&apos;){
+       errMessage = &quot;No response from server&quot;;
+   }
+   alert(&quot;Oops, we encountered some kind of error.\n Error description: &quot;+errMessage+&quot;\nPlease try again later&quot;);
+  }  // end catch
+} // end outer if (Clicked OK)</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Opt_Out</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <linkType>javascript</linkType>
+        <masterLabel>Opt Out</masterLabel>
+        <openType>onClickJavaScript</openType>
+        <protected>false</protected>
+        <url>//2013-06-28 18:01
+{!REQUIRESCRIPT(&quot;/soap/ajax/26.0/connection.js&quot;)} 
+{!REQUIRESCRIPT(&quot;/soap/ajax/26.0/apex.js&quot;)} 
+
+var r = confirm(&quot;Are you sure that you want to opt out this lead?&quot;); 
+if(r == true){ 
+try{
+var returnMsg = sforce.apex.execute(
+   &quot;PAM.ServiceCallout_AC&quot;,
+   &quot;doCallout&quot;,{endpointUrl:&quot;https://aws.predictiveresponse.net/services/optinout/optinout.php?sessionId={!$Api.Session_ID}&amp;serverURL={!$Api.Partner_Server_URL_80}&amp;email={!Lead.Email}&amp;orgId={!CASESAFEID(Organization.Id)}&amp;option=optout&amp;method=Lead.OptOut&quot;}
+); // end-apex.execute 
+alert(returnMsg);        // show returned service message from server
+window.location.reload() // refresh page to show updated optin/out check box
+} // end try
+catch(err) {
+   var errMessage = err.message;
+   if(err.message == null || err.message == &apos;undefined&apos;){
+       errMessage = &quot;No response from server&quot;;
+   }
+   alert(&quot;Oops, we encountered some kind of error.\n Error description: &quot;+errMessage+&quot;\nPlease try again later&quot;);
+  }  // end catch
+} // end outer if (Clicked OK)</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Predictive_AM_Activity</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Activity</masterLabel>
+        <openType>sidebar</openType>
+        <page>Predictive_AM_Lead_Activity_Page</page>
+        <protected>false</protected>
+    </webLinks>
+    <webLinks>
+        <fullName>Subscriptions</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <hasMenubar>false</hasMenubar>
+        <hasScrollbars>true</hasScrollbars>
+        <hasToolbar>false</hasToolbar>
+        <height>600</height>
+        <isResizable>true</isResizable>
+        <linkType>url</linkType>
+        <masterLabel>Subscriptions</masterLabel>
+        <openType>newWindow</openType>
+        <position>none</position>
+        <protected>false</protected>
+        <showsLocation>false</showsLocation>
+        <showsStatus>false</showsStatus>
+        <url>https://aws.predictiveresponse.net/subscriptions/?org={!Organization.Id}&amp;email={!Lead.Email}</url>
+    </webLinks>
+</CustomObject>

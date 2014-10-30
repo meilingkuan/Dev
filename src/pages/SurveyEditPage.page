@@ -1,0 +1,59 @@
+<apex:page standardcontroller="Survey__c" extensions="SurveyEditController" cache="false" sidebar="false" showheader="false" >
+<apex:form >
+        <apex:pageBlock title="Survey Question" mode="edit" id="editQuestion">
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!addNewQuestionLink}" value="Add" rendered="{!!editQuestion}" />
+                <apex:commandButton action="{!updateQuestion}" value="Save" rendered="{!editQuestion}" />
+                 <apex:commandButton action="{!cancelEditQuestion}" value="Cancel Edit" rendered="{!editQuestion}" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection title="Question" columns="1">
+            	<apex:pageMessages />
+            	<apex:inputField value="{!NewQuestions.OrderNumber__c}" required="true" rendered="{!editQuestion}"/>
+                <apex:inputField value="{!NewQuestions.Type__c}" required="true"/>
+                <apex:inputField value="{!NewQuestions.Required__c}"/>
+                <apex:inputTextarea value="{!NewQuestions.Rich_Question__c}" required="true" richText="true" rows="5" cols="200"/>
+                <apex:inputTextarea value="{!NewQuestions.Choices_Large__c}"  rows="5" cols="200"/>
+            </apex:pageBlockSection> 
+        </apex:pageBlock>
+      <apex:outputPanel id="qListPanel">
+	  <apex:pageBlock title="Question List">	  	
+	    <apex:repeat value="{!AQuestion}" var="q" id="qRepeat">
+	      <div id ="{!q.id}" class="question" title="Drag and Drop to Reorder">
+	      <apex:outputPanel >
+		      <div class="question">
+                     <span class="questionNumber"><b>{!q.orderNumber}.</b></span>&nbsp;&nbsp;&nbsp;
+                     <apex:outputPanel rendered="{!q.required}" >
+                       <sup style="color:#f61d22;font-size:larger;"> *</sup>
+                     </apex:outputPanel>
+                     <apex:outputText value="{!q.question}" escape="false	" />
+               </div>
+	          <div>
+	            <apex:selectRadio layout="pageDirection" rendered="{!q.renderSelectRadio}">
+	             <apex:selectOptions value="{!q.singleOptions}"/>
+	            </apex:selectRadio>
+	            <apex:selectCheckboxes layout="pageDirection" rendered="{!q.renderSelectCheckboxes}">
+	             <apex:selectOptions value="{!q.multiOptions}"/>
+	            </apex:selectCheckboxes>
+	            <apex:inputTextArea cols="100" rows="3" rendered="{!q.renderFreeText}"/>  
+	            <apex:selectRadio rendered="{!q.renderSelectRow}">
+	              <apex:selectOptions value="{!q.rowOptions}"/>
+	            </apex:selectRadio>
+	          </div>
+	          <br/>
+	          <div class="question_menu">
+		            <apex:commandLink styleclass="btn" action="{!editExistingQuestion}" value="Edit" immediate="true" >
+		             	<apex:param name="q" value="{!q.id}" assignTo="{!questionReference}"/>
+		            </apex:commandLink>
+		            <apex:commandLink styleclass="btn" action="{!deleteExistingRefresh}" value="Delete" immediate="true">
+		             	<apex:param name="q" value="{!q.id}" assignTo="{!questionReference}"/>            
+		            </apex:commandLink>
+		       </div>
+		       <br/>
+	      </apex:outputPanel> 
+	      </div> 
+	     </apex:repeat>  
+	     </apex:pageBlock>
+	     </apex:outputPanel> 
+</apex:form>
+ 
+</apex:page>

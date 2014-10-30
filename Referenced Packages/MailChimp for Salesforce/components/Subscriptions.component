@@ -1,0 +1,773 @@
+<apex:component controller="MC4SF.SubscriptionsController">
+
+    <apex:attribute name="subscriberIds"
+             description="List of subscriber record ids."
+                required="true"
+                    type="String[]"
+                assignTo="{!subscriberIds}"/>
+
+	<apex:attribute name="returnUrl"
+             description="URL to return to after save or when cancelling."
+                required="true"
+                    type="String"
+                assignTo="{!returnUrl}"/>
+
+	<apex:attribute name="returnText"
+             description="Text for return URL."
+                required="true"
+                    type="String"
+                assignTo="{!returnText}"/>
+
+<style>
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+    }
+* html .clearfix             { zoom: 1; } /* IE6 */
+*:first-child+html .clearfix { zoom: 1; } /* IE7 */
+
+.list {
+	cursor: pointer;
+	font-family: 'Helvetica Neue';
+	font-size: 16px;
+	font-weight: normal;
+	font-style: normal;
+	text-decoration: initial;
+	color: #333;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	padding: 3px;
+}
+
+.list.shadow {
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	padding: 3px;
+}
+
+.list.hover, .list.selected {
+	background-image: none;
+	background-color: #F0F6FB;
+	border: 3px solid #C8E3F6;
+	padding: 0;
+}
+
+.columnHeader {
+	font-family: Helvetica Neue;
+	font-size: 28px;
+	font-weight: normal;
+	font-style: normal;
+	color: #333;
+}
+
+.shadow {
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	-webkit-box-shadow: 2px 2px 10px #ddd;
+	box-shadow: 2px 2px 10px #ddd;
+	padding: 15px 10px;
+}
+
+.gradient {
+	background-image: linear-gradient(bottom, rgb(239,239,239) 0%, rgb(255,255,255) 25%);
+	background-image: -o-linear-gradient(bottom, rgb(239,239,239) 0%, rgb(255,255,255) 25%);
+	background-image: -moz-linear-gradient(bottom, rgb(239,239,239) 0%, rgb(255,255,255) 25%);
+	background-image: -webkit-linear-gradient(bottom, rgb(239,239,239) 0%, rgb(255,255,255) 25%);
+	background-image: -ms-linear-gradient(bottom, rgb(239,239,239) 0%, rgb(255,255,255) 25%);
+	background-image: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(0.05, rgb(239,239,239)),
+		color-stop(0.51, rgb(255,255,255))
+	);
+}
+
+.list.selected .action {
+	text-decoration: underline;
+	cursor: pointer;
+	color: #006699;
+	font-size: 12px;
+}
+
+.pleaseSelect {
+	border: 1px solid #D7D7D7;
+	background-color: #F2F2F2;
+	font-family: Arial;
+	font-size: 13px;
+	color: #333;
+	text-align: center;
+	padding: 10px;
+}
+
+#interestGroupings, #staticSegments {
+	background-color: #F0F6FB;
+	border: 3px solid #C8E3F6;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+}
+
+.interestGrouping, .interestGroup, .staticSegment {
+	border-bottom: 1px solid #C8E3F6;
+	color: #333;
+	font-family: Helvetica Neue;
+	font-size: 14px;
+	font-style:normal;
+	font-weight:normal;
+	padding: 5px 10px;
+}
+
+.interestGrouping.last, .interestGroup.last, .staticSegment.last {
+	border: 0;
+}
+
+.interestGroup {
+	padding-left: 30px;
+}
+
+.checkImg {
+	background-image: URL(/img/checkbox_unchecked.gif);
+}
+
+.checkImg.selected {
+	background-image: URL(/img/checkbox_checked.gif);
+}
+</style>
+
+
+<apex:sectionHeader title="MailChimp Subscriptions" subtitle="{!subtitle}"/>
+<div class="ptBreadcrumb">&nbsp;«&nbsp;<a href="{!returnUrl}">{!returnText}</a></div><br/>
+
+<apex:pageMessages />
+
+<!--div class="message errorM3"-->
+<!--div class="message warningM3"-->
+<!--div class="message confirmM3"-->
+
+
+<div id="messages" class="message" style="display: none;">
+	<table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+		<tbody>
+			<tr valign="top">
+				<td><img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR"/></td>
+				<td class="messageCell"><div class="messageText"><span style="color:#cc0000"><h4>Errors</h4></span><br/></div></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><ul style="padding-left:10px;padding-top:0px;margin:0px"></ul></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<apex:form rendered="{!subscriberEmailsCount > 0 && (isMailChimpAdmin || isMailChimpUser) && haveAccessToken}">
+
+<table width="100%">
+	<tr>
+		<td width="33%" style="padding-right: 20px;">
+			<span class="columnHeader">Lists</span>
+			
+			<div>
+				<apex:repeat value="{!mcLists}" var="mcList">
+					<div id="{!mcList.id}" class="gradient shadow list clearfix">
+						<div style="padding: 7px; float: left;">{!mcList.name}</div>
+						<div style="padding: 3px 7px 3px 3px; float: right; text-align: right;">
+							<img src="{!URLFOR($Resource.Assets, '/img/spinner.gif')}" width="16" heigt="16" class="spinner" style="display: none;"/>
+							<span class="state">
+								<span class="status" style="font-family: Arial; font-size: 11px; font-weight: normal; font-style: normal; text-decoration: none; color: #333;">{!mcList.status}</span><br/>
+								<span style="font-family: Arial; font-size: 10px; font-weight: normal; font-style: normal; text-decoration: none; color: #999;">
+									<apex:outputPanel layout="none" rendered="{!subscriberEmailsCount == 1}">
+										<span class="action subscribe" style="{!IF(optOutsCount == 0 && (mcList.status == 'Not Subscribed' || mcList.status == 'Pending' || mcList.status == 'Unsubscribed' || mcList.status == 'Various'), '', 'display: none;')}">Subscribe</span>
+										<span style="{!IF(optOutsCount == 0 && mcList.status == 'Pending', '', 'display: none;')}">|</span>
+										<span class="action unsubscribe" style="{!IF(subscriberIds.size == 1 && (mcList.status == 'Subscribed' || mcList.status == 'Pending'), '', 'display: none;')}">Unsubscribe</span>
+									</apex:outputPanel>
+									<apex:outputPanel layout="none" rendered="{!subscriberEmailsCount > 1}">
+										<span class="action subscribe" style="{!IF(mcList.status == 'None Subscribed' || mcList.status == 'All Pending' || mcList.status == 'All Unsubscribed' || mcList.status == 'Various', '', 'display: none;')}">Subscribe All</span>
+									</apex:outputPanel>
+								</span>
+							</span>
+						</div>
+					</div>
+				</apex:repeat>
+			</div>
+		</td>
+		
+		<td width="34%" style="padding-left: 10px; padding-right: 10px;">
+			<span class="columnHeader">Interests</span><br/>
+			
+			<div id="interestGroupingsContainer">
+				<div id="interestGroupingsPleaseSelect" class="shadow">
+					<div class="pleaseSelect">
+						Please select a List to view its related Groups
+					</div>
+				</div>
+
+				<div id="interestGroupings" style="display: none;">
+				</div>
+			</div>
+		</td>
+		<td width="33%" style="padding-left: 20px;">
+			<span class="columnHeader">Segments</span><br/>
+			
+			<div id="staticSegmentsContainer">
+				<div id="staticSegmentsPleaseSelect" class="shadow">
+					<div class="pleaseSelect">
+						Please select a List to view its related Segments
+					</div>
+				</div>
+
+				<div id="newSegment" style="display: none;">
+					<input type="text" id="segmentName"/><button id="addSegmentButton">Add Segment</button>
+					<span id="newSegmentAdding" style="display: none;"><img src="{!URLFOR($Resource.Assets, '/img/spinner.gif')}" width="16" heigt="16"/> Adding Segment...</span>
+				</div>
+				<div id="staticSegments" style="display: none;">
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
+<br/><br/>
+
+<div id="confirmDialog" style="display: none; cursor: default;">
+	<center>
+		<table>
+			<tr valign="top">
+				<td align="right"><input id="confirmCheckbox" type="checkbox" value=""/></td>
+				<td align="left">
+					<span id="confirmMessage" style="font-family: Arial; font-size: 15px; font-weight: bold; font-style: normal; color: #333;"></span>&nbsp;
+					<a href="http://kb.mailchimp.com/article/can-i-use-my-list-in-mailchimp" target="_blank" style="font-family: Arial; font-size: 15px; font-weight: bold; font-style: normal; text-decoration: none; color: #CC0000;">about</a>
+				</td>
+			</tr>
+		</table>
+	</center>
+	<br/>
+
+	<a id="confirmCancelLink" href="#">Cancel</a>
+</div> 
+
+</apex:form>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{!URLFOR($Resource.Assets, '/js/jQuery_blockUI_plugin.js')}"></script>
+<script>
+	var subscriberIds = [];
+	<apex:repeat value="{!subscriberIds}" var="subscriberId">
+		subscriberIds.push('{!JSENCODE(subscriberId)}');
+	</apex:repeat>
+	
+	var subscriberEmailsCount = {!subscriberEmailsCount};
+	var optOutsCount = {!optOutsCount};
+	
+	var lists = {};
+	
+	// Whether an AJAX call is in progress.
+	var ajaxInProgress = false;
+	
+	// Whether the user has been prompted for permission to subscribe.
+	var promptedForPermission = false;
+
+	
+	jQuery(function() {
+
+		jQuery('.list').hover(function() {
+			jQuery(this).toggleClass('hover');
+		});
+
+		jQuery('.list').click(function() {
+			if (ajaxInProgress) return;
+		
+			clearMessages();
+		
+			jQuery('.list').removeClass('selected');
+		
+			var listElement = jQuery(this);
+			
+			listElement.find('.state').hide();
+			listElement.find('.spinner').show();
+
+			var id = jQuery(this).attr('id');
+			
+			if (typeof(lists[id]) == 'undefined') {
+				ajaxInProgress = true;
+
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.loadList}', subscriberIds, id, function(result, event) {
+					if (event.status) {
+						lists[id] = result;
+						displayList(listElement, id);
+					} else {
+						listElement.find('.spinner').hide();
+						listElement.find('.state').show();
+
+						alert('Error loading list.');
+					}
+					
+					ajaxInProgress = false;
+				});
+			} else {
+				displayList(listElement, id);
+			}
+		});
+
+		jQuery('.action.subscribe').click(function() {
+			var listElement = jQuery(this).closest('.list');
+			
+			// Only allow action on selected list.
+			if (!listElement.hasClass('selected')) {
+				return;
+			}
+		
+			var listId = listElement.attr('id');
+
+			if (promptedForPermission == true) {
+				subscribe(listId);
+			} else {
+				jQuery('#confirmCheckbox').val(listId);
+
+				if (subscriberIds.length > 1) {
+					jQuery('#confirmMessage').html('Every person has given me permission to<br/>add them to my MailChimp list.');
+				} else {
+					jQuery('#confirmMessage').html('This person has given me permission to<br/>add him/her to my MailChimp list.');
+				}
+
+				jQuery.blockUI({
+					message: jQuery('#confirmDialog'),
+					css: {
+						'border-radius': '8px',
+						'padding': '10px'
+					}
+				});
+			}
+		});
+		
+		jQuery('.action.unsubscribe').click(function() {
+			var listElement = jQuery(this).closest('.list');
+			
+			// Only allow action on selected list.
+			if (!listElement.hasClass('selected')) {
+				return;
+			}
+		
+			var listId = listElement.attr('id');
+
+			unsubscribe(listId);
+		});
+		
+		jQuery('#confirmCheckbox').click(function() {
+			promptedForPermission = true;
+		
+			jQuery.unblockUI();
+
+			var listId = jQuery(this).val();
+
+			subscribe(listId);
+		});
+		
+		jQuery('#confirmCancelLink').click(function() {
+			jQuery.unblockUI();
+			return false;
+		});
+		
+
+		// Record interest group subscribed state changes.
+		jQuery(document).on('click', '.interestGroup input[type="checkbox"]', function() {
+			clearMessages();
+			
+			var listId = jQuery('.list.selected').attr('id');
+			var interestGroupId = jQuery(this).closest('.interestGroup').attr('id');
+			
+			var list = lists[listId];
+			var interestGroup;
+			
+			for (var i = 0; i < list.interestGroupings.length; i++) {
+				for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+					if (list.interestGroupings[i].interestGroups[j].id == interestGroupId) {
+						interestGroup = list.interestGroupings[i].interestGroups[j];
+					}
+				}
+			}
+
+			if (interestGroup.subscribed == true) {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.removeInterestGroup}', listId, subscriberIds, interestGroupId, function(result, event) {
+					if (event.status) {
+						interestGroup.subscribed = false;
+					} else {
+						alert('Error removing Interest.');
+					}
+				});
+			} else {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.addInterestGroup}', listId, subscriberIds, interestGroupId, function(result, event) {
+					if (event.status) {
+						interestGroup.subscribed = true;
+					} else {
+						alert('Error adding Interest.');
+					}
+				});
+			}
+		});
+		
+		jQuery(document).on('click', '.interestGroup input[type="radio"]', function() {
+			clearMessages();
+
+			var listId = jQuery('.list.selected').attr('id');
+			var interestGroupingId = jQuery(this).attr('name');
+			var interestGroupId = jQuery(this).closest('.interestGroup').attr('id');
+			
+			var list = lists[listId];
+			
+			var previousInterestGroup;
+			var interestGroup;
+
+			// Find the previous and current interest groups.
+			for (var i = 0; i < list.interestGroupings.length; i++) {
+				if (list.interestGroupings[i].id == interestGroupingId) {
+					for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+						if (list.interestGroupings[i].interestGroups[j].subscribed == true) {
+							previousInterestGroup = list.interestGroupings[i].interestGroups[j];
+						} else if (list.interestGroupings[i].interestGroups[j].id == interestGroupId) {
+							interestGroup = list.interestGroupings[i].interestGroups[j];
+						}
+					}
+
+					break;
+				}
+			}
+
+			if (previousInterestGroup == undefined && interestGroupId != undefined) {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.addInterestGroup}', listId, subscriberIds, interestGroupId, function(result, event) {
+					if (event.status) {
+						interestGroup.subscribed = true;
+					} else {
+						alert('Error adding Interest.');
+					}
+				});
+			} else if (previousInterestGroup != undefined && interestGroupId == undefined) {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.removeInterestGroup}', listId, subscriberIds, previousInterestGroup.id, function(result, event) {
+					if (event.status) {
+						previousInterestGroup.subscribed = false;
+					} else {
+						alert('Error removing Interest.');
+					}
+				});
+			} else {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.changeInterestGroup}', listId, subscriberIds, previousInterestGroup.id, interestGroupId, function(result, event) {
+					if (event.status) {
+						previousInterestGroup.subscribed = false;
+						interestGroup.subscribed = true;
+					} else {
+						alert('Error changing Interest.');
+					}
+				});
+			}
+		});
+		
+		jQuery(document).on('change', '.interestGroup select', function() {
+			clearMessages();
+			
+			var listId = jQuery('.list.selected').attr('id');
+			var interestGroupingId = jQuery(this).attr('id');
+			var interestGroupId = jQuery('option:selected', this).attr('id');
+			
+			var list = lists[listId];
+			
+			var previousInterestGroup;
+			var interestGroup;
+
+			// Find the previous and current interest groups.
+			for (var i = 0; i < list.interestGroupings.length; i++) {
+				if (list.interestGroupings[i].id == interestGroupingId) {
+					for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+						if (list.interestGroupings[i].interestGroups[j].subscribed == true) {
+							previousInterestGroup = list.interestGroupings[i].interestGroups[j];
+						} else if (list.interestGroupings[i].interestGroups[j].id == interestGroupId) {
+							interestGroup = list.interestGroupings[i].interestGroups[j];
+						}
+					}
+
+					break;
+				}
+			}
+
+			if (previousInterestGroup == undefined && interestGroupId != undefined) {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.addInterestGroup}', listId, subscriberIds, interestGroupId, function(result, event) {
+					if (event.status) {
+						interestGroup.subscribed = true;
+					} else {
+						alert('Error adding Interest.');
+					}
+				});
+			} else if (previousInterestGroup != undefined && interestGroupId == undefined) {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.removeInterestGroup}', listId, subscriberIds, previousInterestGroup.id, function(result, event) {
+					if (event.status) {
+						previousInterestGroup.subscribed = false;
+					} else {
+						alert('Error removing Interest.');
+					}
+				});
+			} else {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.changeInterestGroup}', listId, subscriberIds, previousInterestGroup.id, interestGroupId, function(result, event) {
+					if (event.status) {
+						previousInterestGroup.subscribed = false;
+						interestGroup.subscribed = true;
+					} else {
+						alert('Error changing Interest.');
+					}
+				});
+			}
+		});		
+		
+		// Record static segment subscribed state changes.
+		jQuery(document).on('click', '.staticSegment input[type="checkbox"]', function() {
+			clearMessages();
+
+			var listId = jQuery('.list.selected').attr('id');
+			var staticSegmentId = jQuery(this).closest('.staticSegment').attr('id');
+
+			var list = lists[listId];
+			var staticSegment;
+
+			for (var i = 0; i < list.staticSegments.length; i++) {
+				if (list.staticSegments[i].id == staticSegmentId) {
+					staticSegment = list.staticSegments[i];
+					break;
+				}
+			}
+
+			if (staticSegment.subscribed == true) {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.removeStaticSegment}', listId, subscriberIds, staticSegmentId, function(result, event) {
+					if (event.status) {
+						staticSegment.subscribed = false;
+					} else {
+						alert('Error removing Segment.');
+					}
+				});
+			} else {
+				Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.addStaticSegment}', listId, subscriberIds, staticSegmentId, function(result, event) {
+					if (event.status) {
+						console.log('BEFORE='+staticSegment.subscribed);
+						staticSegment.subscribed = true;
+						console.log('AFTER='+staticSegment.subscribed);
+					} else {
+						alert('Error adding Segment.');
+					}
+				});
+			}
+		});
+		
+		jQuery('#addSegmentButton').click(function(e) {
+			e.preventDefault();
+			
+			clearMessages();
+		
+			var name = jQuery('#segmentName').val();
+			if (name == '') {
+				alert('Please enter a name for the Segment.');
+				return false;
+			}
+			
+			jQuery('#segmentName #addSegmentButton #newSegmentAdding').toggle();
+			
+			var listId = jQuery('.list.selected').attr('id');
+			
+			// Save the new segment.
+			Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.saveStaticSegment}', listId, subscriberIds, name, function(result, event) {
+				if (event.status) {
+					var list = lists[listId];
+
+					list.staticSegments.push({
+						id: result,
+						name: name,
+						subscribed: false
+					});
+					
+					var html = '';
+					html += '<div id="' + result + '" class="staticSegment">' + name;
+					html += 	'<div style="float: right">';
+					html += 		'<input type="checkbox" checked="checked"/>';
+					html += 		'<img src="/s.gif" width="21" height="16" class="checkImg selected" style="display: none"/>';
+					html += 	'</div>';
+					html += '</div>';
+
+					if (jQuery('#staticSegments').find('.staticSegment').length > 0) {
+						jQuery('#staticSegments').append(html);
+					} else {
+						jQuery('#staticSegments').html(html);
+					}
+					
+					jQuery('#segmentName').val('');
+				} else {
+					alert('Error saving new Segment.');
+				}
+				
+				jQuery('#segmentName #addSegmentButton #newSegmentAdding').toggle();
+			});
+
+			return false;
+		});
+
+	});
+
+	function subscribe(listId) {
+		var listElement = jQuery('#' + listId);
+		
+		listElement.find('.state').hide();
+		listElement.find('.spinner').show();
+
+		Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.addList}', listId, subscriberIds, function(result, event) {
+			if (event.status) {
+				if (result.length > 0) {
+					jQuery('#messages').addClass('errorM3');
+					jQuery('#messages').toggle();
+						
+					for (var i = 0; i < result.length; i++) {
+						jQuery('#messages ul').append('<li style="padding-top:5px">' + result[i] + '</li>');
+					}
+				} else {
+					listElement.find('.status').html((subscriberEmailsCount > 1 ? 'All ' : '') + 'Subscribed');
+					listElement.find('.action.subscribe').hide();
+				
+					if (subscriberIds.length == 1) {
+						listElement.find('.action.unsubscribe').show();
+					}
+					
+					jQuery('#interestGroupings .checkImg').hide();
+					jQuery('#interestGroupings input[type="checkbox"]').show();
+					jQuery('#interestGroupings input[type="radio"]').show();
+					jQuery('#interestGroupings select').prop('disabled', false);
+					jQuery('#newSegment').show();
+					jQuery('#staticSegments .checkImg').hide();
+					jQuery('#staticSegments input[type="checkbox"]').show();
+				}
+			} else {
+				alert('Error adding List.');
+			}
+
+			listElement.find('.spinner').hide();
+			listElement.find('.state').show();
+			
+			jQuery('#confirmCheckbox').attr('checked', false);
+		});
+	}
+
+	function unsubscribe(listId) {
+		var listElement = jQuery('#' + listId);
+		
+		listElement.find('.state').hide();
+		listElement.find('.spinner').show();
+
+		Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SubscriptionsController.removeList}', listId, subscriberIds, function(result, event) {
+			if (event.status) {
+				listElement.find('.status').html('Unsubscribed');
+				if (optOutsCount == 0) {
+					listElement.find('.action.subscribe').show();
+				}
+				listElement.find('.action.unsubscribe').hide();
+
+				jQuery('#interestGroupings select').prop('disabled', true);
+				jQuery('#interestGroupings input[type="checkbox"]').hide();
+				jQuery('#interestGroupings input[type="radio"]').hide();
+				jQuery('#interestGroupings .checkImg').show();
+				jQuery('#newSegment').hide();
+				jQuery('#staticSegments input[type="checkbox"]').hide();
+				jQuery('#staticSegments .checkImg').show();
+			} else {
+				alert('Error removing List.');
+			}
+					
+			listElement.find('.spinner').hide();
+			listElement.find('.state').show();
+		});
+	}
+
+	function displayList(listElement, id) {
+		var list = lists[id];
+		var subscribed = (listElement.find('.status').html() == 'All Subscribed' || listElement.find('.status').html() == 'Subscribed');
+
+		jQuery('#interestGroupingsPleaseSelect').hide();
+		jQuery('#interestGroupings').show();
+		jQuery('#staticSegmentsPleaseSelect').hide();
+		jQuery('#staticSegments').show();
+		
+		if (subscribed) {
+			jQuery('#newSegment').show();
+		} else {
+			jQuery('#newSegment').hide();
+		}
+
+		var html = '';
+
+		if (list.interestGroupings.length == 0) {
+			html = 'This list has no interest groups.';
+		} else {
+			for (var i = 0; i < list.interestGroupings.length; i++) {
+				var isLast = ((i + 1) == list.interestGroupings.length && list.interestGroupings[i].interestGroups.length == 0);
+							
+				html += '<div class="interestGrouping' + (isLast ? ' last' : '') + '">' + list.interestGroupings[i].name + '</div>';
+
+				if (list.interestGroupings[i].formField == 'dropdown') {
+					html += '<div class="interestGroup">';
+					html += 	'<select id="' + list.interestGroupings[i].id + '"' + (subscribed ? '' : ' disabled="disabled"') + '>';
+					html += 		'<option>--None--</option>';
+					
+					for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+						html += '<option id="' + list.interestGroupings[i].interestGroups[j].id + '">' + list.interestGroupings[i].interestGroups[j].name + '</option>';
+					}
+
+					html += 	'</select>';
+					html += '</div>';
+				} else {
+					for (var j = 0; j < list.interestGroupings[i].interestGroups.length; j++) {
+						isLast = ((i + 1) == list.interestGroupings.length && (j + 1) == list.interestGroupings[i].interestGroups.length );
+						
+						html += '<div id="' + list.interestGroupings[i].interestGroups[j].id + '" class="interestGroup' + (isLast ? ' last' : '') + '">';
+						html += 	list.interestGroupings[i].interestGroups[j].name;
+						html += 	'<div style="float: right">';
+
+						if (list.interestGroupings[i].formField == 'radio') {
+							html += '<input type="radio" name="' + list.interestGroupings[i].id + '"' + (list.interestGroupings[i].interestGroups[j].subscribed ? ' checked="checked"' : '') + (subscribed ? '' : ' style="display: none"') + '/>';
+						} else {
+							html += '<input type="checkbox"' + (list.interestGroupings[i].interestGroups[j].subscribed ? ' checked="checked"' : '') + (subscribed ? '' : ' style="display: none"') + '/>';
+						}
+						
+						html += 		'<img src="/s.gif" width="21" height="16" class="checkImg' + (list.interestGroupings[i].interestGroups[j].subscribed ? ' selected' : '') + '"' + (subscribed ? ' style="display: none"' : '') + '/>';
+						html += 	'</div>';
+						html += '</div>';
+					}
+				}
+			}
+		}
+	
+		jQuery('#interestGroupings').html(html);
+						
+		html = '';
+		
+		if (list.staticSegments.length == 0) {
+			html = 'This list has no segments.';
+		} else {
+			for (var i = 0; i < list.staticSegments.length; i++) {
+				html += '<div id="' + list.staticSegments[i].id + '" class="staticSegment">' + list.staticSegments[i].name;
+				html += 	'<div style="float: right">';
+				html += 		'<input type="checkbox"' + (list.staticSegments[i].subscribed ? ' checked="checked"' : '') + (subscribed ? '' : ' style="display: none"') + '/>';
+				html += 		'<img src="/s.gif" width="21" height="16" class="checkImg' + (list.staticSegments[i].subscribed ? ' selected' : '') + '"' + (subscribed ? ' style="display: none"' : '') + '/>';
+				html += 	'</div>';
+				html += '</div>';
+			}
+		}
+	
+		jQuery('#staticSegments').html(html);
+		
+		listElement.find('.spinner').hide();
+		listElement.find('.state').show();
+		listElement.addClass('selected');
+	}
+	
+	function clearMessages() {
+		jQuery('#messages').removeClass("errorM3 warningM3 confirmM3").hide();
+		jQuery('#messages li').remove();
+	}
+</script>
+
+</apex:component>

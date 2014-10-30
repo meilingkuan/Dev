@@ -1,0 +1,36 @@
+<apex:page standardController="Hapara_Invoice__c"  extensions="Hapara_Invoice_CancelController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+  <apex:form id="wizard">
+	  <apex:sectionHeader title="Enter Cancellation Reason" />
+      <apex:pageBlock id="step1" title="Records" mode="detail" rendered="{!step='1'}">
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection columns="1" collapsible="false">
+	           <apex:outputField id="Xero_Invoice_No__c" value="{!invoice.Xero_Invoice_No__c}" />
+	           <apex:inputField id="Opportunity_Lost_Stage__c" value="{!invoice.Opportunity_Lost_Stage__c}" required="true" rendered="{!invoice.Xero_Id__c != null}"/>
+	           <apex:inputField id="Cancelled_Reason__c" value="{!invoice.Cancelled_Reason__c}" required="true" />
+			</apex:pageBlockSection> 
+          <apex:pageBlockButtons style="align=center;">
+              <apex:commandButton action="{!Process}" value="Cancel Invoice" disabled="{!DisableCancel}"/>
+              <apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" style="margin-left: 2em"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock> 
+    
+	<apex:outputPanel id="result" rendered="{!step='2'}">   
+	<apex:pageBlock id="field" mode="detail">
+	      <apex:pagemessages escape="false"></apex:pagemessages>	      
+	      <apex:pageBlockSection columns="1" collapsible="false">
+		      	<apex:outputField id="Xero_Invoice_No__c" value="{!invoice.Xero_Invoice_No__c}" />
+		      	<apex:outputField id="Status__c" value="{!invoice.Status__c}" />
+		      	<apex:outputField id="LastModifiedDate" value="{!invoice.LastModifiedDate}" />
+		      	<apex:outputField id="Error_Message__c" value="{!invoice.Error_Message__c}" />
+		   </apex:pageBlockSection>
+	      <apex:pageBlockButtons style="align=center;">
+	          <apex:commandButton action="{!cancel}" value="Close" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+	  </apex:outputPanel> 
+   </apex:form>
+    <apex:form >
+     <apex:actionPoller action="{!reloadResult}" rerender="result" interval="5" enabled="{!TurnOnRefresh}"/> 
+     </apex:form>
+</apex:page>

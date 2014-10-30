@@ -1,0 +1,191 @@
+<apex:component controller="Hapara_PortalStyleSheet"  access="global" >
+<apex:attribute name="title" type="String" description="his is the value for the portal title" assignTo="{!pageTitle}"  />
+<style>
+.signup-form input[type="submit"] { 
+float:none; 
+margin-left:0; 
+clear:both;
+} 
+#SalesforceForm .nav-wrapper ~ input:nth-last-child(-n+3) { 
+ display: block;
+}
+
+.signup-form input[type="button"] { 
+border: 1px solid #5c1359; 
+border-radius: 3px; 
+box-shadow: inset 0 1px 0 0 #be45b8; 
+color: white; 
+display: inline-block; 
+background-color: #8f288a; 
+background-image: -webkit-linear-gradient(#8f288a, #691665); 
+background-image: linear-gradient(#8f288a, #691665); 
+text-decoration: none; 
+text-shadow: 0 1px 0 #4e0d4b; 
+background-clip: padding-box; 
+float: none;  
+text-align: center; 
+clear:both;
+font-size:11px;
+margin-left:0; 
+}
+input:not([type="submit"]), textarea, select { 
+background: #efefef; 
+border-radius: 2px; 
+border: 1px solid #bcbcbc; 
+box-shadow: inset 0 1px 2px #bcbcbc; 
+padding: 7px 10px; 
+margin: 0 0 20px; 
+width: 100%; 
+-webkit-transition: all 0.2s ease; 
+-moz-transition: all 0.2s ease; 
+transition: all 0.2s ease; 
+}
+
+
+.signup-form span.rightside
+{
+	display: block;
+	float: left;
+	margin-right: 2.35765%;
+	width: 57.35098%;
+	margin-right: 0;
+	margin-top: 5px;
+	margin-bottom: 10px;
+}
+.signup-form span.dateFormat
+{
+	display: block;
+    float: right;
+}
+label{
+margin-bottom: 10px;
+}
+
+.nav-wrapper { 
+margin-left:42%; 
+}
+table td{
+	border:0;
+	padding:0px 0px 0px 5px;
+	
+}
+tr.bottomBorder td{
+	box-shadow: inset 0px -2px 0px silver;
+}
+
+
+table.DataTable{
+	border:1px solid black;
+	border-collapse:collapse;
+	cellpadding:2px;
+	clear:both;
+	width:100%;
+}
+table.DataTable td{
+	font-size:11px;
+	border:1px solid black;
+	border-collapse:collapse;
+}
+table.DataTable th{
+	font-size:11px;
+	border:1px solid black;
+	border-collapse:collapse;
+}
+table.DataTable input[type="submit"]{
+	font-size:11px;
+}
+h3 {
+	margin: 20px 0 0;
+}
+h4{
+	margin:0;
+}
+.errorMsg{
+	display: inline-block;
+	clear:both;
+	position:absolute;
+}
+.alert-purple{
+	background-color:#8f288a;
+	border-color:#5c1359;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+.alert-lightgreen{
+	background-color:#00cd66;
+	border-color:#2e8b57;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+.alert-orange{
+	background-color:#ffa500;
+	border-color:#cd8500;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+.alert-blue{
+	background-color:#00b0cf;
+	border-color:#0ABAD9;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+
+a.white{
+ 	color:white;
+ 	text-shadow:0 1px 0 #4e0d4b;
+ 	text-decoration:none;
+}
+.salesforce article{
+	padding: 1px 2%;
+}
+article {
+	padding: 1px 2%;
+}
+article.bottomlined{
+	border-bottom: 2px solid #EFEFEF;
+	margin-bottom: 10px;
+	padding:10px 2%;
+}
+br
+{
+	clear:both;
+}
+.messageText{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background-color:#eeefef;
+	
+}
+.messageTable{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	width:100%;
+	background-color:#eeefef;
+}
+.content {
+	margin-top: 15px;
+}
+.feature {
+	margin: 10px 0;
+	padding: 10px 0 10px;
+}
+</style>
+<div class="banner">
+	<header class="">
+		<h1 class="logo"><a href="http://hapara.com" rel="home" title="Home">Hapara</a></h1>
+		<div style="text-align: center; border-bottom: 0px none; margin: 0px; padding: 0px; right: 0px; bottom: 4px; position: absolute; display: block; width: 95%;">
+			<h2 style='color:white;font-size:1.5rem;'>{!pageTitle}</h2>
+		</div>	
+	</header>
+</div>
+</apex:component>

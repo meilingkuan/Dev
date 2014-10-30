@@ -1,0 +1,7 @@
+<apex:page >
+  <p>
+  <b>Thank you</b>
+  </p>
+  <p>Someone from our team will be contacting you shortly.</p>
+  
+</apex:page>

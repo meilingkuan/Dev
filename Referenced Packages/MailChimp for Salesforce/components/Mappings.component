@@ -1,0 +1,179 @@
+<apex:component controller="MC4SF.MappingsComponentController" allowDML="true">
+
+    <apex:attribute name="listId"
+             description="MC List Id"
+                required="true"
+                    type="Id"
+                assignTo="{!mcListId}"/>
+                
+	<apex:attribute name="baseController"
+             description="Mappings base controller"
+                required="true"
+                    type="MC4SF.MappingsBaseController"
+                assignTo="{!mappingsBaseController}"/>
+
+
+	<style>
+		.shadow {
+			-webkit-border-radius: 8px;
+			border-radius: 8px;
+			-webkit-box-shadow: 2px 2px 10px #ddd;
+			box-shadow: 2px 2px 10px #ddd;
+		}
+		
+		.gray {
+			background-color: #F2F2F2;
+			border: 3px solid #D7D7D7;
+			font-family: Arial;
+			font-size: 18px;
+			font-weight: normal;
+			font-style: normal;
+			text-decoration: none;
+			color: #333;
+			-webkit-border-radius: 8px;
+			border-radius: 8px;
+			margin: 5px 30px;
+			clear: both;
+		}
+		
+		.blue {
+			background-color: #F0F6FB;
+			border: 3px solid #C8E3F6;
+			font-family: Arial;
+			font-size: 18px;
+			font-weight: normal;
+			font-style: normal;
+			text-decoration: none;
+			color: #333;
+			-webkit-border-radius: 8px;
+			border-radius: 8px;
+			margin: 5px 30px;
+			clear: both;
+		}
+		
+		td.mailChimpField {
+			vertical-align: middle;
+			width: 400px;
+		}
+		
+		td.leftArrow {
+			text-align: middle;
+			vertical-align: middle;
+			width: 50px;
+		}
+		
+		td.salesforceField {
+			vertical-align: middle;
+			width: 400px;
+		}
+		
+		.defaultValue {
+			background-color: pink;
+		}
+	</style>
+
+	<div style="padding: 10px;">
+		<table>
+			<tr>
+				<td style="vertical-align: middle;"><b>MailChimp field</b></td>
+				<td></td>
+				<td style="vertical-align: middle;"><img alt="Contact" title="Contact" class="pageTitleIcon" src="/s.gif" style="background-image: url(/img/sprites/master.png); background-position: 0 -1022px; width: 32px; height: 32px;"/> <b>Salesforce Contact field</b></td>
+				<td style="vertical-align: middle;"><img alt="Lead" title="Lead" class="pageTitleIcon" src="/s.gif" style="background-image: url(/img/sprites/master.png); background-position: 0 -1166px; width: 32px; height: 32px; vertical-align: middle;"/> <b>Salesforce Lead field</b></td>
+			</tr>
+			<apex:repeat value="{!defaultMergeVariableWrappers}" var="mergeVariableWrapper">
+				<tr>
+					<td style="padding-right: 20px; vertical-align: middle;">{!mergeVariableWrapper.mergeVariable.Name}</td>
+					<td style="padding-right: 20px; font-size: 18px;">&larr;</td>
+					<td style="padding-right: 20px; vertical-align: middle;">{!mergeVariableWrapper.contactFieldLabel} <span style="color: #999;">(default)</span></td>
+					<td style="vertical-align: middle;">{!mergeVariableWrapper.leadFieldLabel} <span style="color: #999;">(default)</span></td>
+				</tr>
+			</apex:repeat>
+			
+			<apex:repeat value="{!mergeVariableWrappers}" var="mergeVariableWrapper">
+				<tr>
+					<td style="padding-right: 20px; vertical-align: middle;">{!mergeVariableWrapper.mergeVariable.Name}</td>
+					<td style="padding-right: 20px; font-size: 18px;">&larr;</td>
+					<td style="padding-right: 20px; vertical-align: middle;">
+						<apex:outputPanel layout="block" styleClass="requiredInput" rendered="{!mergeVariableWrapper.mergeVariable.MC4SF__Required__c}">
+	                		<div class="requiredBlock"></div>
+							<apex:selectList value="{!mergeVariableWrapper.mergeVariable.MC4SF__Contact_Field_Mapping__c}" size="1" styleClass="{!IF(ISBLANK(mergeVariableWrapper.mergeVariable.MC4SF__Contact_Field_Mapping__c), 'defaultValue', '')}" onchange="requiredFieldChange(this);">
+								<apex:selectOption itemValue="" itemLabel="{!mergeVariableWrapper.requiredDefault}"/>
+								<apex:selectOptions value="{!mergeVariableWrapper.contactFieldOptions}"/>
+							</apex:selectList>
+						</apex:outputPanel>
+						<apex:outputPanel layout="none" rendered="{!NOT(mergeVariableWrapper.mergeVariable.MC4SF__Required__c)}">
+							<apex:selectList value="{!mergeVariableWrapper.mergeVariable.MC4SF__Contact_Field_Mapping__c}" size="1">
+								<apex:selectOption itemValue="" itemLabel="--None--"/>
+								<apex:selectOptions value="{!mergeVariableWrapper.contactFieldOptions}"/>
+							</apex:selectList>
+						</apex:outputPanel>
+					</td>
+					<td style="vertical-align: middle;">
+						<apex:outputPanel layout="block" styleClass="requiredInput" rendered="{!mergeVariableWrapper.mergeVariable.MC4SF__Required__c}">
+	                		<div class="requiredBlock"></div>
+							<apex:selectList value="{!mergeVariableWrapper.mergeVariable.MC4SF__Lead_Field_Mapping__c}" size="1" styleClass="{!IF(ISBLANK(mergeVariableWrapper.mergeVariable.MC4SF__Lead_Field_Mapping__c), 'defaultValue', '')}" onchange="requiredFieldChange(this);">
+								<apex:selectOption itemValue="" itemLabel="{!mergeVariableWrapper.requiredDefault}"/>
+								<apex:selectOptions value="{!mergeVariableWrapper.leadFieldOptions}"/>
+							</apex:selectList>
+						</apex:outputPanel>
+						<apex:outputPanel layout="none" rendered="{!NOT(mergeVariableWrapper.mergeVariable.MC4SF__Required__c)}">
+							<apex:selectList value="{!mergeVariableWrapper.mergeVariable.MC4SF__Lead_Field_Mapping__c}" size="1">
+								<apex:selectOption itemValue="" itemLabel="--None--"/>
+								<apex:selectOptions value="{!mergeVariableWrapper.leadFieldOptions}"/>
+							</apex:selectList>
+						</apex:outputPanel>
+					</td>
+				</tr>
+			</apex:repeat>
+		</table><br/>
+	</div>
+	
+	<div style="border-top: 1px solid #dbdbdb; border-bottom: 1px solid #fff;"/>
+	
+	<div style="padding: 10px 10px 0 10px;">
+		<table>
+			<tr>
+				<td style="vertical-align: middle"><b>Add a new list field?</b></td>
+				<td style="vertical-align: middle">
+					<apex:selectList value="{!newMergeVariable.MC4SF__Field_Type__c}" size="1">
+						<apex:selectOption itemValue="" itemLabel="--Select Field Type--"/>
+						<apex:selectOptions value="{!fieldTypeOptions}"/>
+					</apex:selectList>
+				</td>
+				<td style="vertical-align: middle"><apex:inputField value="{!newMergeVariable.Name}" style="width: 300px;"/></td>
+				<td style="vertical-align: middle"><apex:inputCheckbox value="{!newMergeVariable.MC4SF__Required__c}"/> Field is required</td>
+				<td style="vertical-align: middle">
+					<apex:commandButton value="Add Field" onclick="alert('The maximum number ({!MAX_MERGE_VARIABLES}) of field mappings has been reached.'); return false;" rendered="{!totalMergeVariables >= MAX_MERGE_VARIABLES}"/>
+					<apex:commandButton value="Add Field" onclick="alert('The maximum number ({!MAX_NEW_MERGE_VARIABLES}) of new field mappings has been reached.'); return false;" rendered="{!totalMergeVariables < MAX_MERGE_VARIABLES && newMergeVariables >= MAX_NEW_MERGE_VARIABLES}"/>
+							
+					<apex:actionStatus id="addFieldStatus" rendered="{!totalMergeVariables < MAX_MERGE_VARIABLES && newMergeVariables < MAX_NEW_MERGE_VARIABLES}">
+						<apex:facet name="start">
+							<apex:commandButton value="Adding Field..." disabled="true"/>
+						</apex:facet>
+						<apex:facet name="stop">
+							<apex:commandButton value="Add Field" action="{!addField}" rerender="form" status="addFieldStatus"/>
+						</apex:facet>
+					</apex:actionStatus>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script>
+		function requiredFieldChange(field) {
+			if (field.value == '') {
+				field.className = 'defaultValue';
+			} else {
+				field.className = '';
+			}
+			
+			if (jQuery('select.defaultValue').length > 0) {
+				jQuery('.message.warningM3').show();
+			} else {
+				jQuery('.message.warningM3').hide();
+			}
+		}
+	</script>
+
+</apex:component>

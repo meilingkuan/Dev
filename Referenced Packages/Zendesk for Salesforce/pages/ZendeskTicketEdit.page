@@ -1,0 +1,191 @@
+<apex:page controller="Zendesk.ZendeskTicketController">
+
+  <apex:sectionHeader title="Zendesk ticket" subtitle="Ticket #{!ticket.internalId}" rendered="{!isEdit && ticket.subject == null}"/>
+  <apex:sectionHeader title="Zendesk ticket" subtitle="#{!ticket.internalId} '{!ticket.subject}'" rendered="{!isEdit && ticket.subject != null}"/>
+  <apex:sectionHeader title="Zendesk ticket" subtitle="New ticket" rendered="{!isNew}"/>
+
+  <apex:outputPanel id="pageMessages">
+    <apex:pageMessages />
+  </apex:outputPanel>
+
+  <apex:outputText rendered="{!!ownCredentials}">
+    <p>In order to edit or create new Zendesk Tickets, you need to have your own Zendesk account.</p>
+    <p>Please&nbsp;<apex:outputLink value="{!URLFOR($Page.Zendesk__ZendeskSettings)}">configure your own credentials</apex:outputLink>.</p>
+  </apex:outputText>
+
+  <apex:outputText rendered="{!(!ticket.isEditable && !isNew)}">
+    <p>You cannot edit a Closed ticket.</p>
+  </apex:outputText>
+
+  <apex:form rendered="{!ownCredentials}">
+  <apex:pageBlock title="Edit Zendesk Ticket" mode="edit" rendered="{!noError}">
+
+    <apex:pageBlockButtons location="top">
+      <apex:commandButton action="{!save}" value="Save" />&nbsp;&nbsp;&nbsp;
+      <apex:selectList value="{!macroId}" size="1">
+        <apex:selectOptions value="{!macroOptions}" />
+        <apex:actionSupport event="onchange" action="{!applyMacro}" rerender="pageMessages,requesterFields,subjectFields,ticketFields,commentFields,customFields" status="status"/>
+      </apex:selectList>
+      <apex:actionStatus startText="Please wait..." id="status"/>
+    </apex:pageBlockButtons>
+
+    <apex:pageBlockSection columns="2" title="Ticket fields" id="requesterFields">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Requester" />
+        <apex:outputPanel >
+          <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!isNew}">  
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:selectList value="{!ticket.newRequester}" size="1">
+              <apex:selectOptions value="{!requesters}"/>
+              <apex:actionSupport event="onchange" rerender="newRequester" status="status"/>
+            </apex:selectList>
+          </apex:outputPanel>
+          <apex:outputText rendered="{!isEdit}" value="{!ticket.requester.name}" />
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+
+
+      <apex:pageBlockSectionItem rendered="{!ticket.collaborators != null}">
+        <apex:outputLabel value="CC" rendered="{!isEdit}" />
+        <apex:outputText value="{!ticket.collaborators}" rendered="{!isEdit}" />
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+      <apex:pageBlockSection columns="2" id="newRequester">
+        <apex:pageBlockSectionItem rendered="{!ticket.newRequester == 'new'}">
+          <apex:outputLabel >Requester Name</apex:outputLabel>
+          <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!isNew}">  
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:inputText value="{!ticket.newRequesterName}" style="border:1px solid #A8A8A8;padding:3px"/>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+        <apex:pageBlockSectionItem rendered="{!ticket.newRequester == 'new'}">
+          <apex:outputLabel >Requester Email</apex:outputLabel>
+          <apex:outputPanel styleClass="requiredInput" layout="block" rendered="{!isNew}">  
+            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+            <apex:inputText value="{!ticket.newRequesterEmail}" style="border:1px solid #A8A8A8;padding:3px"/>
+          </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+      </apex:pageBlockSection>
+
+
+    <apex:pageBlockSection columns="1" id="subjectFields" rendered="{!hasSubjectField}">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel >Subject<apex:outputText rendered="{!subjectRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:inputText value="{!ticket.subject}" disabled="{!!ticket.canUpdate}" style="width:100%;border:1px solid #A8A8A8;padding:3px"/>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+
+    <apex:pageBlockSection columns="2" id="ticketFields">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel >Status<apex:outputText rendered="{!statusRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:selectList value="{!ticket.statusId}" disabled="{!!ticket.canUpdate}" size="1" styleClass="standard">
+          <apex:selectOption itemValue="0" itemLabel="New"/>
+          <apex:selectOption itemValue="1" itemLabel="Open"/>
+          <apex:selectOption itemValue="2" itemLabel="Pending"/>
+          <apex:selectOption itemValue="3" itemLabel="Solved"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel rendered="{!hasPriorityField}">Priority<apex:outputText rendered="{!priorityRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:selectList rendered="{!hasPriorityField}" disabled="{!!ticket.canUpdate}" value="{!ticket.priorityId}" size="1" id="ticketPriority" styleClass="standard">
+          <apex:selectOption itemValue="0" itemLabel="-"/>
+          <apex:selectOption itemValue="1" itemLabel="Low"/>
+          <apex:selectOption itemValue="2" itemLabel="Normal"/>
+          <apex:selectOption itemValue="3" itemLabel="High"/>
+          <apex:selectOption itemValue="4" itemLabel="Urgent"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel rendered="{!hasTicketTypeField}">Type<apex:outputText rendered="{!ticketTypeRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:selectList rendered="{!hasTicketTypeField}" disabled="{!!ticket.canUpdate}" value="{!ticket.ticketTypeId}" size="1" styleClass="standard">
+          <apex:selectOption itemValue="0" itemLabel="-"/>
+          <apex:selectOption itemValue="1" itemLabel="Question"/>
+          <apex:selectOption itemValue="2" itemLabel="Incident"/>
+          <apex:selectOption itemValue="3" itemLabel="Problem"/>
+          <apex:selectOption itemValue="4" itemLabel="Task"/>
+          <apex:actionSupport event="onchange" rerender="taskDueDateLabel,taskDueDateField" status="status"/>
+         </apex:selectList>
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Due date" id="taskDueDateLabel" style="display: {!IF(ticket.ticketTypeId == 4, 'block', 'none')};"/>
+        <apex:outputPanel id="taskDueDateField" style="display: {!IF(ticket.ticketTypeId == 4, 'block', 'none')};">
+          <apex:outputField rendered="{!!ticket.canUpdate}" value="{!tempContact.birthDate}" />
+          <apex:inputField rendered="{!ticket.canUpdate}" value="{!tempContact.birthDate}" />
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem rendered="{!multipleGroups}">      
+        <apex:outputLabel >Group<apex:outputText rendered="{!groupRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:selectList value="{!ticket.groupId}" disabled="{!!ticket.canUpdate}" size="1">
+          <apex:selectOptions value="{!groupOptions}"/>
+          <apex:actionSupport event="onchange" rerender="groupAssignees" status="status"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem rendered="{!multipleAssignees}">
+        <apex:outputLabel >Assignee<apex:outputText rendered="{!assigneeRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:selectList value="{!ticket.assigneeId}" disabled="{!!ticket.canUpdate}" size="1" id="groupAssignees">
+          <apex:selectOptions value="{!assigneeOptions}"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection columns="1" id="commentFields">
+      <apex:pageBlockSectionItem rendered="{!isNew}">
+        <apex:outputLabel >Description<apex:outputText rendered="{!descriptionRequired}">*</apex:outputText></apex:outputLabel>
+        <apex:outputPanel styleClass="requiredInput" layout="block">  
+          <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+          <apex:inputTextarea value="{!ticket.description}" disabled="{!!ticket.canUpdate}" rows="6" style="width:100%;border:1px solid #A8A8A8;padding:3px" />
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+    
+      <apex:pageBlockSectionItem rendered="{!(isEdit && ticket.canComment)}">
+        <apex:outputLabel value="Comment" />
+        <apex:inputTextarea value="{!ticket.comment}" rows="6" style="width:100%;border:1px solid #A8A8A8;padding:3px" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem rendered="{!(isEdit && ticket.canComment && ticket.canPublicComment)}">
+        <apex:outputLabel value="Public comment" />
+        <apex:inputCheckbox value="{!ticket.publicComment}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem rendered="{!(isEdit && ticket.canComment && !ticket.canPublicComment)}">
+        <apex:outputLabel value="Public comment" />
+        <apex:outputText >This comment will not be seen by the requester</apex:outputText>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem rendered="{!ticket.canEditTags}">
+        <apex:outputLabel value="Tags" />
+        <apex:inputText value="{!ticket.tags}" style="width:100%;border:1px solid #A8A8A8;padding:3px" />
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+  
+    <div class="pbSubsection">
+      <apex:dataTable value="{!ticket.customFields}" var="field" styleClass="detailList" columnClasses="labelCol, data2Col" id="customFields">
+        <apex:column >
+          {!field.title}<apex:outputText rendered="{!field.isRequired}">*</apex:outputText>
+        </apex:column>
+        <apex:column >
+          <apex:selectList value="{!field.value}" disabled="{!!ticket.canUpdate}" size="1" rendered="{!field.fieldType == 'FieldTagger'}">
+            <apex:selectOptions value="{!field.options}"/>
+          </apex:selectList>
+          <apex:inputText value="{!field.value}" disabled="{!!ticket.canUpdate}" rendered="{!field.fieldType == 'FieldText'}" style="border:1px solid #A8A8A8;padding:3px"/>
+          <apex:inputTextarea value="{!field.value}" disabled="{!!ticket.canUpdate}" rendered="{!field.fieldType == 'FieldTextarea'}" style="border:1px solid #A8A8A8"/>
+          <apex:inputText value="{!field.value}" disabled="{!!ticket.canUpdate}" rendered="{!field.fieldType == 'FieldInteger'}" style="border:1px solid #A8A8A8;padding:3px"/>
+          <apex:inputText value="{!field.value}" disabled="{!!ticket.canUpdate}" rendered="{!field.fieldType == 'FieldDecimal'}" style="border:1px solid #A8A8A8;padding:3px"/>
+          <apex:inputCheckbox value="{!field.value}" disabled="{!!ticket.canUpdate}" rendered="{!field.fieldType == 'FieldCheckbox'}"/>
+          <apex:inputText value="{!field.value}" disabled="{!!ticket.canUpdate}" rendered="{!field.fieldType == 'FieldRegexp'}" style="border:1px solid #A8A8A8;padding:3px"/>
+        </apex:column>
+      </apex:dataTable>
+    </div>
+
+  </apex:pageBlock>
+  </apex:form>
+
+  <c:ZendeskTicketComments ticket="{!ticket}" rendered="{!isEdit && noError}"/>
+
+</apex:page>

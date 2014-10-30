@@ -1,0 +1,45 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="Hapara_CustomerProductRegController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title=""/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content"> 
+			<apex:form id="frm">
+				<article class="bottomlined"> 
+					<h3>
+						<apex:outputText value="{0}">
+		       				<apex:param value="{!TermAndConditions.Registration_Title__c}" />
+	 					</apex:outputText>
+	 				</h3>
+					<p>
+						<apex:outputText value="{0}" escape="false">
+					       <apex:param value="{!TermAndConditions.Registration_Summary_Details__c}" />
+				 		</apex:outputText>
+					</p>
+					<apex:pageMessages />
+				</article>
+				<br/>
+				<div style="height:400px;overflow-y: scroll;position:relative;padding: 0;">				   
+				        <apex:outputText value="{0}" escape="false">
+						       <apex:param value="{!TermAndConditions.Term_and_Conditions_Text__c}" />
+					 	</apex:outputText>
+				 	</div>	
+				<br/>
+				<div class="signup-form">
+					<fieldset >
+					<div class="nav-wrapper">
+						<apex:commandButton action="{!setAgreedTermAndConditions}" value="Agreed" />&nbsp;&nbsp;
+						<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true"  styleclass="btn-danger"/>
+					</div>
+					</fieldset>
+				</div>
+			</apex:form>
+		</div>
+	</article>
+</section>
+</div>
+</div>
+</apex:page>

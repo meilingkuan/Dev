@@ -1,0 +1,35 @@
+<apex:component controller="viewSurveyResultsComponentController" >
+<apex:attribute name="surveyId" description="The survey to use" 
+                  type="Id" required="required" assignTo="{!surveyId}"/>
+<apex:form >
+	<apex:outputPanel style="width:100%">
+		<apex:commandButton style="float:right" onclick="window.open('{!results}');" value="{!$Label.LABS_SF_View_Results_In_New_Window}" /> 
+		  <BR />   
+		  <BR />
+		  <BR />
+	</apex:outputPanel>
+ 
+ 	<apex:pageBlock title="Survey Responses">
+	      <apex:pageBlockTable value="{!AllSurveyResponse}" var="r" id="theTable"  >		
+			<apex:column >
+			    <apex:facet name="header">Id</apex:facet>
+				<apex:outputLink value="/{!r.Id}">{!r.name}</apex:outputLink>
+			</apex:column>
+			<apex:column >
+			    <apex:facet name="header">Date</apex:facet>
+			     	<apex:outputText value="{0,date,yyyy.MM.dd G 'at' HH:mm:ss z}">
+				       <apex:param value="{!r.LastModifiedDate}" />
+				   </apex:outputText>
+			</apex:column>
+			<apex:column >
+			    <apex:facet name="header">Contact</apex:facet>
+				<apex:outputText value="{!r.Contact__r.Name}"/>
+			</apex:column>
+			<apex:column >
+			    <apex:facet name="header">Account</apex:facet>
+				<apex:outputText value="{!r.Contact__r.Account_Name__c}"/>
+			</apex:column>
+		</apex:pageBlockTable>   
+	</apex:pageBlock> 
+ </apex:form>             
+</apex:component>

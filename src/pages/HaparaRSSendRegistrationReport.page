@@ -1,0 +1,43 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content"> 
+		<apex:form id="frm">
+			<article>
+				<h3>Request for Status Report</h3>
+				<p>
+					Please enter your Sales rep email address and we will email you a report of all your registration. 
+					Contact <a id="resellersupport" href="mailto:{!resellerSalesEmail}?subject=Reseller Portal Access Required">Hapara Reseller Support</a> 
+					for questions or additional support. 
+				</p>
+				<apex:pageMessages />
+			</article>
+			<div class="signup-form">
+					<fieldset >
+				        <apex:outputLabel value="Sales Rep Email:" for="resellerRepEmail"/>
+				        <apex:inputField id="resellerRepEmail" value="{!resellerRep.email}" required="true"/>
+						<br/>
+						<div class="nav-wrapper">
+							<apex:commandButton action="{!sendRegistrationReport }" value="Request" onclick="return validateEmail();"/>&nbsp;
+							<input type="text" id="resellerEmailDomain" value="{!reseller.Reseller_s_Email_Domain__c}" style="display:none;"> </input>
+							<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" styleclass="btn-danger"/>
+						
+						</div>
+					</fieldset>
+				</div>
+			</apex:form>
+		</div>
+	</article>
+</section>
+</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/> 	
+											
+</apex:page>

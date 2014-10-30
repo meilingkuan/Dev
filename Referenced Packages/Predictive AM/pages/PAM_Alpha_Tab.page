@@ -1,0 +1,6 @@
+<apex:page >
+<apex:iframe frameborder="0"
+   width="100%" 
+   height="740px" 
+   src="https://www.predictiveresponse.net/PredictiveWinter.php?sessionId={!$Api.Session_ID}&serverURL={!$Api.Partner_Server_URL_80}&setup=N&orgId=99&orgUnitId=NULL&campaignId=''"/>
+</apex:page>

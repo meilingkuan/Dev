@@ -1,0 +1,23 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" docType="html-5.0"  > 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<section id="SalesforceForm">
+	<section class="intro">
+		<article>
+			<div>
+				<h1>Thank you</h1>							
+			</div>
+		</article>
+	</section>
+	<section>
+		<article>
+			<div class="content">
+				<p>Someone from our team will be contacting you shortly.</p><p><em>Note: To avoid our emails from being caught 
+				in a spam/junk filter, please make sure to add hapara.com to your list of approved email domains in your email program.</em></p>
+			</div>
+		</article>
+	</section>
+</section> 
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"  />
+</apex:page>

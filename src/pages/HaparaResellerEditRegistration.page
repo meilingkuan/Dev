@@ -1,0 +1,83 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerRegistrationController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content"> 
+			<apex:form id="frm">
+				<article>
+					<h3>Update Registration</h3>
+					<p>
+						Please enter any sales notes or communications you may have with your customer.
+					</p>
+					<apex:pageMessages />
+				</article>
+				<br/>
+				<div class="signup-form">
+					<fieldset >
+			  			<article class="bottomlined">
+			  				<b>{!registration.Resellers_Account__r.Name}</b>
+			  			</article>
+
+						<apex:outputLabel value="Deal:" for="opportunityName"/>
+						<apex:inputField id="opportunityName" value="{!registration.Name}" styleclass="rightside"/>					  								
+		        
+						<apex:outputLabel value="Size of Opportunity:" for="opportunitySize_of_Opportunity__c"/>
+						<apex:inputField id="opportunitySize_of_Opportunity__c" value="{!registration.Size_of_Opportunity__c}" styleclass="rightside"/>					  								
+		        
+				        <apex:outputLabel value="Product:" for="opportunityOpportunity_Name_Template__c"/>
+						<apex:inputField id="opportunityOpportunity_Name_Template__c" value="{!registration.Opportunity_Name_Template__c}" styleclass="rightside"/>					  								
+							
+						<apex:outputLabel value="Type of Call:" for="TypeOfCall"><sup  style="color: red;">*</sup></apex:outputLabel>
+						<apex:selectlist id="TypeOfCall"  value="{!TempObject.Opportunity_Name_Template__c}"  size="1" >				
+							<apex:selectOptions value="{!CallType}" /> 
+						</apex:selectlist>	
+				
+						<apex:outputLabel value="Activity Date:" for="ActivityDate"><sup  style="color: red;">*</sup></apex:outputLabel>
+						<apex:inputField id="ActivityDate" value="{!TempObject.CloseDate}" required="true" style="width:30%;"/>					  								
+		        
+						<apex:outputLabel value="Sales Notes:" for="SalesNotes"><sup  style="color: red;">*</sup></apex:outputLabel>
+						<apex:inputField id="SalesNotes" value="{!TempObject.Description}" required="true" />					  								
+						<br/>
+						<div class="nav-wrapper">
+							<apex:commandButton action="{!saveSalesNotes}" value="Save"  />&nbsp;
+						  	<apex:commandButton action="{!cancel}" value="Back" onclick="return confirmCancel()" immediate="true" styleclass="btn-danger"/>
+						</div>
+						<article class="bottomlined">
+			  				<b>Notes History</b>
+			  			</article>
+						  								 
+				    	<table width="100%" style="border:1px solid black;border-collapse:collapse;cellpadding:2px;">
+				    		<colgroup>
+				    		 	<col style="width:20%;"/>
+							    <col style="width:30%;"/>
+							    <col style="width:50%;"/>
+							 </colgroup>
+				    		<tr style="background-color:lightgrey;">
+					            <td style="border:1px solid black;border-collapse:collapse;">Type of Call</td>
+					            <td style="border:1px solid black;border-collapse:collapse;">Activity Date</td>
+					            <td style="border:1px solid black;border-collapse:collapse;">Sales Notes</td>
+							</tr>
+				    	 <apex:repeat var="a" value="{!CallHistory}">
+					        <tr>
+					            <td style="border:1px solid black;border-collapse:collapse;">{!a.TypeOfCall}</td>
+					            <td style="border:1px solid black;border-collapse:collapse;">{!a.ActivityDateFormatted}</td>
+					            <td style="border:1px solid black;border-collapse:collapse;">{!a.Notes}</td>
+							</tr>
+						</apex:repeat> 
+						</table>
+					</fieldset>
+				</div>
+			</apex:form>
+		</div>
+	</article>
+</section>
+</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/> 
+</apex:page>

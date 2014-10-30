@@ -1,0 +1,120 @@
+<apex:component >
+<style>
+.signup-form input[type="submit"] { 
+	float:none; 
+	margin-left:0; 
+	clear:both;
+} 
+.signup-form select[multiple="multiple"] { 
+	width:205px;
+	height:100px;
+} 
+.multiSelectPicklistTable{
+	display:block;
+	float: left;
+}
+.signup-form span.rightside
+{
+	display: block;
+	float: left;
+	margin-right: 2.35765%;
+	width: 57.35098%;
+	margin-right: 0;
+}
+.signup-form span.dateFormat
+{
+	display: block;
+    float: right;
+}
+.nav-wrapper { 
+margin-left:42%; 
+clear:both;
+}
+table td{
+	border:0;
+	padding:0;
+}
+tr.bottomBorder td{
+	box-shadow: inset 0px -2px 0px silver;
+}
+
+h4{
+	margin:0;
+}
+.errorMsg{
+	display: inline-block;
+	clear:both;
+	position:absolute;
+}
+.alert-purple{
+	background-color:#8f288a;
+	border-color:#5c1359;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+.alert-lightgreen{
+	background-color:#00cd66;
+	border-color:#2e8b57;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+.alert-orange{
+	background-color:#ffa500;
+	border-color:#cd8500;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+.alert-blue{
+	background-color:#00b0cf;
+	border-color:#0ABAD9;
+	height: 60px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 60px;
+}
+
+a.white{
+ 	color:white;
+ 	text-shadow:0 1px 0 #4e0d4b;
+ 	text-decoration:none;
+}
+.salesforce ariticle{
+	padding: 5px 2%;
+}
+article.bottomlined{
+	border-bottom: 5px solid #00bfe1;
+	margin-bottom: 10px;
+}
+br
+{
+	clear:both;
+}
+.messageText{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background-color:#eeefef;
+	
+}
+.messageTable{
+	margin: 0;
+	padding: 0;
+	border: 0;
+	width:100%;
+	background-color:#eeefef;
+}
+.content {
+	margin-top: 15px;
+}
+.feature {
+	margin: 10px 0;
+	padding: 10px 0 10px;
+}
+</style>
+</apex:component>

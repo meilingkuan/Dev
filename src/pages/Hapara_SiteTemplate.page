@@ -1,0 +1,4 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" id="HaparaSiteTemplate">
+  <apex:stylesheet value="{!$Resource.hapara_style}"/>
+  <apex:insert name="body"/>
+</apex:page>

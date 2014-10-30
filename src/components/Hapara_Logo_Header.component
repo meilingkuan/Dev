@@ -1,0 +1,35 @@
+<apex:component controller="Hapara_LogoHeaderController" access="global" >
+<apex:attribute name="logoUrl" type="String" description="url for logo" assignTo="{!logoUrl}"  />
+<apex:attribute name="pageTitle" type="String" description="url for logo" assignTo="{!pageTitle}"  />
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><table width="885" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="220" height="13"></td>
+        <td width="665"></td>
+      </tr>
+      <tr>
+        <td align="center"><a href="{!logoUrl}"><img src="{!$Resource.Hapara_logo}" width="200" height="82" border="0" /></a></td>
+        <td align="center" valign="top"><table width="95%" border="0" align="left" cellpadding="0" cellspacing="0">
+          <tr>
+            <td height="41">&nbsp;</td>
+          </tr>
+          <tr>
+            <td align="Center" class="head-gray25"> {!pageTitle}</td>
+          </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="9"></td>
+        <td></td>
+      </tr>
+    </table></td>
+  </tr>
+  <tr>
+    <td ></td>
+  </tr>
+  <tr>
+    <td height="9"></td>
+  </tr>
+</table>
+</apex:component>

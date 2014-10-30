@@ -1,0 +1,41 @@
+<apex:page standardController="Hapara_Invoice__c"  extensions="Hapara_InvoiceProductController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+<apex:form id="frm">
+	  <apex:sectionHeader title="Select a Product" />
+      <apex:pageBlock id="step1" title="Please select a product and click on Continue:" mode="detail"  rendered="{!step='1'}">
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection title="Invoice Details" columns="1">
+				<apex:inputField value="{!AccountProduct.Subscription_Start_Date__c}"  required="true"/>
+				<apex:inputField value="{!AccountProduct.Account__c}"  required="true"/>
+                <apex:selectlist id="Product"  value="{!AccountProduct.Product__c}" 
+				      size="1" required="true">				
+					<apex:selectOptions value="{!ActiveProducts}" /> 
+				</apex:selectlist>
+				<apex:inputField value="{!AccountProduct.Subscription_Period__c}"  required="true"/>
+             </apex:pageBlockSection>
+			<apex:panelGrid columns="1">
+			</apex:panelGrid>
+          <apex:pageBlockButtons >
+              <apex:commandButton action="{!Process}" value="Continue"/>
+              <apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" style="margin-left: 2em"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock> 
+      <apex:outputPanel id="result" rendered="{!step='2'}">   
+	<apex:pageBlock id="field" mode="detail">
+	      <apex:pagemessages escape="false"></apex:pagemessages>	      
+	      <apex:pageBlockSection title="Product" columns="1">
+                <apex:inputField value="{!AccountProduct.Subscription_End_Date__c}"  required="true"/> 
+                <apex:inputField value="{!AccountProduct.Quantity__c}"  required="true"/>
+                <apex:inputField value="{!AccountProduct.Unit_Price__c}"  required="true"/>
+                <apex:inputField value="{!AccountProduct.Discount__c}"  required="false"/>
+             </apex:pageBlockSection>
+			<apex:panelGrid columns="2">
+			</apex:panelGrid>
+          <apex:pageBlockButtons >
+              <apex:commandButton action="{!CreateAccountProduct}" value="Save"/>
+              <apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" style="margin-left: 2em"/>
+          </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+	  </apex:outputPanel>
+</apex:form>
+</apex:page>

@@ -1,0 +1,172 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section class="intro" style="background-image: url(http://hapara.com/wp-content/uploads/2013/12/apps.png);">
+		<article style="padding:40px 2%;">
+			<div class="blurb">
+				<h2>Marketing Material</h2>
+				<p>Below are the marketing materials available for use.</p>		
+				<br/>
+				<br/>
+				<div class="cta">
+					<p>
+						<a href="{!welcomeURL}" class="button signup">Main Menu</a>
+					</p>		
+				</div>		
+				<br/>					
+			</div>
+		</article>
+</section>
+<section>
+	<article class="bottomlined" >
+		<figure id="post-341 media-341" class="align-right"><img src="{!$Resource.HelpImage}" scale="0"/></figure>
+		<h2>Help Guide</h2>
+		<div>
+		  <div class="gce-page-list"></div>
+			<table>
+				<col width="400"/>
+				<col width="400"/>
+				<col width="100"/>
+				<col width="150"/>
+				<thead>
+					<tr class="bottomBorder">
+						<td>File</td>
+						<td>Description</td>
+						<td>Type</td>
+						<td>Size</td>
+					</tr>
+				</thead>
+				<tbody>
+					<apex:repeat var="c" value="{!HaparaHelpGuides}"> 
+					<tr class="bottomBorder">
+			            <td><a href="/Reseller/sfc/servlet.shepherd/version/download/{!c.Id}" target="_blank">{!c.Title}</a></td>
+			            <td>{!c.Description}</td>
+			            <td>{!c.FileType}</td>
+			            <td>
+				            <apex:outputText value="{0} KB">
+						       <apex:param value="{!c.ContentSize * 0.000976562}"/>
+						    </apex:outputText>
+						</td>
+			        </tr>
+			        </apex:repeat> 
+				</tbody>
+			</table>
+		</div>
+	</article>
+</section>
+<section>
+	<article  class="bottomlined">
+		<figure id="post-341 media-341" class="align-right"><img src="http://hapara.com/wp-content/themes/hapara/assets/img/logo.svg" scale="0"/></figure>
+		<h2>Logo</h2>
+		<div>
+		  <div class="gce-page-list"></div>
+			<table>
+				<col width="400"/>
+				<col width="400"/>
+				<col width="100"/>
+				<col width="150"/>
+				<thead>
+					<tr class="bottomBorder">
+						<td>File</td>
+						<td>Description</td>
+						<td>Type</td>
+						<td>Size</td>
+					</tr>
+				</thead>
+				<tbody>
+					<apex:repeat var="c" value="{!HaparaLogos}"> 
+					<tr class="bottomBorder">
+			            <td><a href="/Reseller/sfc/servlet.shepherd/version/download/{!c.Id}" target="_blank">{!c.Title}</a></td>
+			            <td>{!c.Description}</td>
+			            <td>{!c.FileType}</td>
+			            <td>
+				            <apex:outputText value="{0} KB">
+						       <apex:param value="{!c.ContentSize * 0.000976562}"/>
+						    </apex:outputText>
+						</td>
+			        </tr>
+			        </apex:repeat> 
+				</tbody>
+			</table>
+		</div>
+	</article>
+</section>
+<section>
+	<article class="bottomlined">
+		<h2>Brochure</h2>
+		<div>
+		  <div class="gce-page-list"></div>
+			<table>
+				<col width="400"/>
+				<col width="400"/>
+				<col width="100"/>
+				<col width="150"/>
+				<thead>
+					<tr  class="bottomBorder">
+						<td>File</td>
+						<td>Description</td>
+						<td>Type</td>
+						<td>Size</td>
+					</tr>
+				</thead>
+				<tbody>
+					<apex:repeat var="c" value="{!HaparaBrochures}"> 
+					<tr  class="bottomBorder">
+			            <td><a href="/Reseller/sfc/servlet.shepherd/version/download/{!c.Id}" target="_blank">{!c.Title}</a></td>
+			            <td>{!c.Description}</td>
+			            <td>{!c.FileType}</td>
+			            <td>
+				            <apex:outputText value="{0} KB">
+						       <apex:param value="{!c.ContentSize * 0.000976562}"/>
+						    </apex:outputText>
+						</td>
+			        </tr>
+			        </apex:repeat> 
+				</tbody>
+			</table>
+		</div>
+
+	</article>
+</section>
+<section>
+	<article>
+		<h2>Product Copy</h2>
+		<div>
+		  <div class="gce-page-list"></div>
+			<table>
+				<col width="400"/>
+				<col width="400"/>
+				<col width="100"/>
+				<col width="150"/>
+				<thead>
+					<tr class="bottomBorder">
+						<td>File</td>
+						<td>Description</td>
+						<td>Type</td>
+						<td>Size</td>
+					</tr>
+				</thead>
+				<tbody>
+					<apex:repeat var="c" value="{!HaparaProductCopies}"> 
+					<tr class="bottomBorder">
+			            <td><a href="/Reseller/sfc/servlet.shepherd/version/download/{!c.Id}" target="_blank">{!c.Title}</a></td>
+			            <td>{!c.Description}</td>
+			            <td>{!c.FileType}</td>
+			            <td>
+				            <apex:outputText value="{0} KB">
+						       <apex:param value="{!c.ContentSize * 0.000976562}"/>
+						    </apex:outputText>
+						</td>
+			        </tr>
+			        </apex:repeat> 
+				</tbody>
+			</table>
+		</div>
+	</article>
+</section>
+</div>
+</div>
+</apex:page>

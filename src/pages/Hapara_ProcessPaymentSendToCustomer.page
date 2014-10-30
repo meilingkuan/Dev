@@ -1,0 +1,15 @@
+<apex:page standardController="HaparaInvoicePayment__c" extensions="Hapara_XeroPaymentController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+<apex:sectionHeader title="Send Payment Advice To Customer" />
+  <apex:form id="wizard">
+  <apex:outputPanel id="result" rendered="true">   
+  <apex:pageBlock id="field" mode="detail">
+	      <apex:pagemessages escape="false"></apex:pagemessages>      
+	      <apex:pageBlockButtons style="align=center;">
+	      	 <apex:commandButton action="{!processPaymentSendToCustomer}" value="Send Payment Advice" immediate="true" style="margin-left: 2em" rendered="{!canProcess='true'}"/>
+	          <apex:commandButton action="{!cancel}" value="Close" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+  </apex:outputPanel>
+  </apex:form>  
+ </apex:page>

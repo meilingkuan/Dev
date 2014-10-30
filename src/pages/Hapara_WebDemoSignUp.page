@@ -1,0 +1,156 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" docType="html-5.0"  controller="Hapara_WebController"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<c:Hapara_WebStyleSheet /> 
+<section id="SalesforceForm">
+<article>
+	<div class="content">
+		<apex:form id="theForm">
+			<article>
+				<h1>{!title}</h1>
+				<p>Looking for support please click <a href="https://support.hapara.com/hc/en-us/categories/200087186-Knowledge-base">support.hapara.com</a> 
+				or if you would like our sales team to contact you please enter your details below.</p>
+				<apex:pageMessages />
+			</article> 
+			<div class="signup-form">
+				<fieldset>
+					<apex:outputLabel value="First Name:" for="leadfirstName"><sup class="required">*</sup></apex:outputLabel>
+					<apex:inputField id="leadfirstName" value="{!lead.firstName}" required="true"/>  
+					
+					<apex:outputLabel value="Last Name:" for="leadLastName"><sup class="required">*</sup></apex:outputLabel>
+					<apex:inputField id="leadLastName" value="{!lead.lastName}" required="true"/>
+					
+					<apex:outputLabel value="Institution Email:" for="leadEmail"><sup class="required">*</sup></apex:outputLabel>
+					<apex:inputField id="leadEmail" value="{!lead.email}" required="true"/>
+					
+					<apex:outputLabel value="Job Title:" for="leadJobTitle"><sup class="required">*</sup></apex:outputLabel>
+					<apex:inputField id="leadJobTitle" value="{!lead.title}" required="true"/>
+				    
+				    <apex:outputLabel value="School/District/Organization Name:" for="leadCompany"><sup class="required">*</sup></apex:outputLabel>
+				    <apex:inputField id="leadCompany" value="{!lead.company}" required="true"></apex:inputField>
+				    
+				    <apex:outputLabel value="Your Google Apps for Education domain name:" for="leadWebsite"><sup class="required">*</sup></apex:outputLabel>
+				    <apex:inputField id="leadWebsite" value="{!lead.Website}" required="true"></apex:inputField>
+				    
+				  	<label for="Country">Country:<sup class="required">*</sup></label>
+					<select id="Country" onchange="print_state('State',value);"></select>
+				    
+				    <label for="State">State:<sup class="required">*</sup></label>
+					<select id="State" ></select>
+					
+				    <apex:outputLabel value="Organization Type:" for="leadIndustry"><sup class="required">*</sup></apex:outputLabel>
+				    <apex:inputField id="leadIndustry" value="{!lead.industry}" required="true" onchange="disableSchoolTypefield2();" ></apex:inputField>
+				    
+				    <div id="divSchoolType" style="display:block;clear:both;">
+					    <apex:outputLabel value="School Type" for="leadSchool_Type__c"><sup class="required">*</sup></apex:outputLabel>
+					    <apex:inputField id="leadSchool_Type__c" value="{!lead.School_Type__c}" ></apex:inputField>
+				    </div>
+				    
+				    <apex:outputLabel value="How did you hear about us?:" for="leadHow_did_you_hear_about_us__c"><sup class="required">*</sup></apex:outputLabel>
+				    <apex:inputField id="leadHow_did_you_hear_about_us__c" value="{!lead.How_did_you_hear_about_us__c}" required="true" onchange="displayHowdidyouhearus2();"></apex:inputField>
+				   
+				    <div id="How_did_you_hear_about_us__2c" style="display:block; clear:both;">
+						<label for="How_did_you_hear_about_us2__c">Which conference did you hear about us?:<sup class="required">*</sup></label>
+						<apex:selectList id="How_did_you_hear_about_us2__c" value="{!lead.How_did_you_hear_about_us2__c}"  multiselect="false"  size="1">
+							<apex:selectOptions value="{!CampaignEvents}"/>
+						</apex:selectList>
+					</div>	
+					<apex:outputLabel value="Tell us about you or any comments you might have:" for="leadQuestion_from_Lead__c"><sup class="required">*</sup></apex:outputLabel>
+				    <apex:inputField id="leadQuestion_from_Lead__c" value="{!lead.Question_from_Lead__c}" required="true"></apex:inputField>
+				    
+					<div class="nav-wrapper">
+						<apex:commandButton action="{!saveSignUpforDemo}" value="Submit" id="saveSignUpforDemo" onclick="return validate();" />&nbsp;
+					</div>
+					<apex:inputText value="{!selectedCountry}" id="selectedCountry" style="visibility:hidden;"/>
+					<apex:inputText value="{!selectedState}" id="selectedState" style="visibility:hidden;"/>
+					<apex:inputText value="{!lead.Prospect_Timezone__c}" id="Prospect_Timezone__c" style="visibility:hidden;"/>
+				</fieldset>
+			</div>
+		</apex:form>	
+	</div>
+</article>
+</section>
+<apex:includeScript value="{!$Resource.HaparaCountryJS}"  />
+<apex:includeScript value="{!URLFOR($Resource.TimeZoneJS, '/timezone-js-master/src/date.js')}"  />
+<apex:includeScript value="{!$Resource.Timezones}"  />
+<apex:includeScript value="{!$Resource.HaparaCustomerFormJS2}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jquerysimpledatetimepicker, '/jquery-simple-datetimepicker-1.10.1/jquery.simple-dtpicker.js')}"  />
+<script type="text/javascript">
+	j$ = jQuery.noConflict();
+	var localtimezone = determine_timezone().timezone.olson_tz;
+	timezoneJS.timezone.zoneFileBasePath = '{!URLFOR($Resource.TimeZoneJS, '/timezone-js-master/src/tz')}';
+	timezoneJS.timezone.defaultZoneFile = ['australasia', 'backward', 'northamerica','europe'];
+	timezoneJS.timezone.init( { async: false });
+	
+	j$( document ).ready(function() {
+  		print_country("Country");
+  		SetCountryNState("Country",  "State",localtimezone);
+  		disableSchoolTypefield2();
+  		displayHowdidyouhearus2();
+	});
+	
+	function disableSchoolTypefield2(){ 
+		var schooltype = document.getElementById("{!$Component.theForm.leadSchool_Type__c}");
+		var orgType =  document.getElementById("{!$Component.theForm.leadIndustry}");
+	    if (orgType.options[orgType.selectedIndex].value =="School"){     
+	        document.getElementById("divSchoolType").style.display="";
+	    }else{ 
+	        for (var loop=0; loop <schooltype.options.length; loop++) {
+				schooltype.options[loop].selected = false;
+			}
+			document.getElementById("divSchoolType").style.display="none";
+	    } 
+  	}
+  	function displayHowdidyouhearus2(){
+		var How_did_you_hear_about_us__2c = document.getElementById("How_did_you_hear_about_us__2c");
+		var How_did_you_hear_about_us = document.getElementById( "{!$Component.theForm.leadHow_did_you_hear_about_us__c}" );
+		//alert(How_did_you_hear_about_us.value);
+		if(How_did_you_hear_about_us.value=="Conference"){
+			How_did_you_hear_about_us__2c.style.display = "";
+		}else 
+			How_did_you_hear_about_us__2c.style.display = "none";
+	}
+	
+	function validate(){
+		var result = false;
+		var message = "";
+		//validate country and state
+		if(document.getElementById("Country").value.length == 0 
+			&& document.getElementById("Country").value !='Select Country')
+			message = message + 'Country is required,';
+		else if(document.getElementById("State").value.length == 0
+			&& document.getElementById("State").value !='Select State')
+			message = message + '\n State is required,';
+			
+		if(!ValidateEmail(document.getElementById("{!$Component.theForm.leadEmail}").value))
+			message = message + '\n Institution email must not be a personal email.';
+		
+		//validate conference 
+		var How_did_you_hear_about_us__2c = document.getElementById("{!$Component.theForm.How_did_you_hear_about_us2__c}");
+		var How_did_you_hear_about_us = document.getElementById( "{!$Component.theForm.leadHow_did_you_hear_about_us__c}" );
+		//alert(How_did_you_hear_about_us.value);
+		if(How_did_you_hear_about_us.value=="Conference"){
+			if(How_did_you_hear_about_us__2c.value =="None"){
+				message = message + '\n Please a conference.';
+			}
+		}
+			
+		if(message.length == 0){ 
+			var country = document.getElementById("{!$Component.theForm.selectedCountry}");
+			country.value = document.getElementById("Country").value;
+			var state = document.getElementById("{!$Component.theForm.selectedState}");
+			state.value = document.getElementById("State").value;
+			var Prospect_Timezone__c = document.getElementById( "{!$Component.theForm.Prospect_Timezone__c}" );
+  			Prospect_Timezone__c.value = localtimezone;
+			result = true;
+		}
+		else{
+			alert('Please select or enter a value for the following fields:\n' + message); 
+		}
+		
+		return result;
+	}
+</script>
+</apex:page>

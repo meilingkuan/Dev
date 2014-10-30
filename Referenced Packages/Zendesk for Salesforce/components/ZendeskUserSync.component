@@ -1,0 +1,22 @@
+<apex:component controller="Zendesk.CtrlSyncZendeskOrgsandUsers" allowDml="true" >
+          
+          <apex:pageblockSection title="Zendesk users and Salesforce Contacts/Leads" columns="1" collapsible="false">
+           Start a one-time sync between Zendesk users and Salesforce Contacts or Leads based on the fields you mapped.
+          
+           <apex:pageBlockSectionItem >
+                <apex:outputlabel escape="false" value="Create Contacts or Leads<br/>during sync"/>
+                <apex:selectlist value="{!chosenValue}" size="1" style="width: 120px;">
+                    <apex:selectoptions value="{!contactLeadOptions}"/>
+                    <apex:actionsupport event="onchange" action="{!storeContactorLead}"/>
+                </apex:selectlist>
+            </apex:pageBlockSectionItem>
+           </apex:pageblockSection> 
+           
+           <apex:pageblockSection columns="1" collapsible="false" id="section">
+              <apex:pageBlockSectionItem >
+                     <apex:outputLabel escape="false" value="Sync users and<br/>Contacts or Leads" />
+                     <apex:commandbutton value="Sync" action="{!StartSyncUsers}"/>
+                </apex:pageBlockSectionItem>
+           </apex:pageblockSection>
+          
+</apex:component>

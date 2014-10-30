@@ -1,0 +1,43 @@
+<apex:page standardController="Account_Products__c" recordSetVar="unused" sidebar="false">
+
+<!-- for this page to work with a specific custom object, change standController="entityname" to custom object api name  
+    For example, if custom object name is Warehouse__c, change first part of the first line to standardController="warehouse__c" -->
+
+    
+<apex:includeScript value="{!$Resource.UtilJS}" />
+<apex:form >
+<apex:pageBlock >
+<apex:pageMessages />
+<apex:pageBlock >
+Note: All modifications made on the page will be lost if Return button is clicked without clicking the Save button first. 
+</apex:pageBlock>
+<apex:pageBlockButtons >
+<apex:commandButton value="Save" action="{!save}"/>
+<apex:commandButton value="Return" action="{!cancel}"/>
+</apex:pageBlockButtons>
+<apex:pageBlockTable value="{!selected}" var="a" id="table">
+	<apex:column headerValue="Invoice_No__c">
+		<apex:inputField value="{!a.Invoice_No__c}"/>
+	</apex:column>
+	<apex:column headerValue="Invoice_Date__c">
+		<apex:inputField value="{!a.Invoice_Date__c}"/>
+	</apex:column>
+	<apex:column headerValue="Description">
+		<apex:inputField value="{!a.Description__c}"/>
+	</apex:column>
+	<apex:column headerValue="Subscription_Start_Date__c">
+		<apex:inputField value="{!a.Subscription_Start_Date__c}"/>
+	</apex:column>
+	<apex:column headerValue="Subscription_End_Date__c">
+		<apex:inputField value="{!a.Subscription_End_Date__c}"/>
+	</apex:column>
+	<apex:column headerValue="Unit_Price__c">
+		<apex:inputField value="{!a.Unit_Price__c}"/>
+	</apex:column>
+	<apex:column headerValue="Quantity__c">
+		<apex:inputField value="{!a.Quantity__c}"/>
+	</apex:column>
+</apex:pageBlockTable>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

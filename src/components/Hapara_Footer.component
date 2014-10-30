@@ -1,0 +1,15 @@
+<apex:component >
+<footer>
+	<article>
+	<nav role="navigation" class="navigation site-navigation footer-navigation">
+		<div class="menu-footer-container">
+		<ul id="menu-footer" class="menu">
+		<li id="menu-item-759" class="fa-shield menu-item menu-item-type-post_type menu-item-object-page menu-item-759"><a href="http://test.hapara.com/privacy-policy/">Privacy</a></li>
+		<li id="menu-item-746" class="fa-info-circle menu-item menu-item-type-post_type menu-item-object-page menu-item-746"><a href="http://test.hapara.com/about-us/">About Hapara</a></li>
+		<li id="menu-item-747" class="fa-bell menu-item menu-item-type-post_type menu-item-object-page menu-item-747"><a href="http://test.hapara.com/about-us/contact-us/">Contact</a></li>
+		</ul>
+		</div>	
+	</nav>
+	</article>
+</footer>
+</apex:component>

@@ -1,0 +1,46 @@
+<apex:component controller="Zendesk.ctrlZendeskTicketMapping" allowDml="true">
+   
+        <apex:pageblock title="Ticket Mapping" mode="edit" id="TicketMappingBlock">
+            <apex:pageblockbuttons location="top">
+            	<apex:commandbutton action="{!getTicketFields}" value="Get Custom Ticket Fields" rendered="{!!getfields}" rerender="TicketMappingBlock" status="FieldsGet"/>
+            	 <apex:actionStatus id="FieldsGet" >
+	        		<apex:facet name="start" > 
+			      		<img src="/img/loading.gif" />
+			  		</apex:facet>
+				  </apex:actionStatus>
+                <apex:commandbutton action="{!saveMapping}" value="Save" rendered="{!IF(And(listofcustomValues.size != 0, getfields),TRUE,FALSE)}" />
+             </apex:pageblockbuttons> 
+             	<apex:outputtext rendered="{!!getfields}" value="Click on Get Custom Ticket Fields to fetch the custom ticket fields from Zendesk"/>
+             	
+            <apex:pageblocksection columns="1" title="Zendesk custom ticket fields and Salesforce - Zendesk Ticket fields" collapsible="false" rendered="{!getfields}">
+            <apex:pageblocksectionItem >
+                
+                <apex:outputpanel >
+                    <div style="width:35%;float:left;margin-left:75px;font-weight:bold">Zendesk Custom Ticket Fields</div>
+                    <div style="width:50%;float:left;font-weight:bold">Salesforce - Zendesk Ticket Fields</div>
+                </apex:outputpanel>
+           </apex:pageblocksectionItem>
+            <apex:pageblocksectionItem >
+                 <apex:repeat value="{!listofcustomValues}" var="val">
+                		 <div style="width:35%;float:left;margin-left:75px">
+                            <apex:selectlist value="{!val.id}" size="1" style="width: 200px;">
+                              <apex:selectoptions value="{!val.zendeskField}"/>
+                             </apex:selectlist><br/><br/>
+                        </div>
+                        <div style="width:50%;float:left;">  
+                          <apex:selectlist value="{!val.chosenValue}" size="1" style="width: 200px;">
+                          <apex:selectoptions value="{!val.zendeskValue}"/>
+                          </apex:selectlist><br/><br/>
+                        </div>
+                </apex:repeat>
+             </apex:pageblocksectionItem>
+             
+             <apex:pageblocksectionItem rendered="{!IF(listofcustomValues.size == 0,TRUE,FALSE)}">
+                <apex:outputlabel >There are presently no custom fields for mapping!</apex:outputlabel>
+             </apex:pageblocksectionItem>
+             
+            </apex:pageblocksection>
+            
+          </apex:pageblock>
+           
+</apex:component>

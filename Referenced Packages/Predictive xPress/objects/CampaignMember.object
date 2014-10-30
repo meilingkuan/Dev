@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Inactive_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Last xPress Status update/activity date for this member</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Last  xPress Status update/activity date for this member</inlineHelpText>
+        <label>Last Status Update</label>
+        <required>false</required>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Is_Test_Member__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Indicates that this member is an internal test member.
+Test Members will automatically be added to all new campaigns and will receive Predictive test emails.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates that this member is an internal test member.
+Test Members will automatically be added to all new campaigns and will receive Predictive test emails.</inlineHelpText>
+        <label>Test Member</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Level_Code_Null__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( Level__c  = NULL,0, Level__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Level Code Null</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Level_Description__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Levels indicates the &quot;Funnel Position&quot; of the Member.
+Levels are Pending, Sent, Opened, Clicked or Completed.
+
+For Newsletters, this level refers to the current edition.</description>
+        <externalId>false</externalId>
+        <formula>CASE (Level__c,
+0,&quot;Pending&quot;,
+1,&quot;Sent&quot;,
+2,&quot;Opened&quot;,
+3,&quot;Clicked&quot;,
+4,&quot;Completed&quot;,
+&quot;&quot;
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Levels indicates the &quot;Funnel Position&quot; of the Member.
+Levels are Pending, Sent, Opened, Clicked or Completed.
+
+For Newsletters, this level refers to the current edition.</inlineHelpText>
+        <label>Level</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Level_Label__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Level label for report sorting purposes</description>
+        <externalId>false</externalId>
+        <formula>IF(Level_Code_Null__c=0, &quot;1. Pending&quot;,(IF(Level_Code_Null__c=1, &quot;2. Sent&quot;,(IF(Level_Code_Null__c=2, &quot;3. Opened&quot;,(IF(Level_Code_Null__c=3, &quot;4. Clicked&quot;,(IF(Level_Code_Null__c=4, &quot;5. Completed&quot;,null)))))))))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Level label for report sorting purposes</inlineHelpText>
+        <label>Level Label</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Level__c</fullName>
+        <defaultValue>0</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Level Codes are numerical representations of the Level:
+
+0,&quot;Pending&quot;,
+1,&quot;Sent&quot;,
+2,&quot;Opened&quot;,
+3,&quot;Clicked&quot;,
+4,&quot;Completed&quot;,</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Level Codes are numerical representations of the Level:
+
+0,&quot;Pending&quot;,
+1,&quot;Sent&quot;,
+2,&quot;Opened&quot;,
+3,&quot;Clicked&quot;,
+4,&quot;Completed&quot;,</inlineHelpText>
+        <label>Level Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Reason_Code_Null__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( Reason__c  = NULL,0, Reason__c )</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Reason Code Null</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Reason_Description__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Reason for not reaching the members inbox</description>
+        <externalId>false</externalId>
+        <formula>CASE (Reason__c,
+0,&quot;Not Synced&quot;,
+1,&quot;&quot;,
+2,&quot;In Send Queue&quot;,
+3,&quot;Opt Out - Other&quot;,
+20,&quot;Invalid&quot;,
+21,&quot;Invalid MX&quot;,
+22,&quot;Missing Email&quot;,
+23,&quot;Bounced&quot;,
+24,&quot;Duplicate&quot;,
+25,&quot;Opt Out - Direct&quot;,
+27,&quot;Deleted&quot;,
+29,&quot;Expired&quot;,
+31,&quot;Opt Out - Subscription&quot;,
+38,&quot;Opt Out - Complaint&quot;,
+39,&quot;Opt Out - Indirect&quot;,
+40,&quot;Opt Out - Previous&quot;,
+41,&quot;Bounce - Previous&quot;,
+&quot;&quot;
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Reason for not reaching the members inbox</inlineHelpText>
+        <label>Reason</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Reason__c</fullName>
+        <defaultValue>0</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Reason Codes are numerical representations of the reasons why emails can not be sent</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Reason Codes are numerical representations of the reasons why emails can not be sent</inlineHelpText>
+        <label>Reason Code</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

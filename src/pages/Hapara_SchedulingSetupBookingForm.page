@@ -1,0 +1,437 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="Hapara_SchedulingSetupController" action="{!checkContactId}"> 
+<link class="user" rel="stylesheet" href="http://test.hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://test.hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<apex:stylesheet value="{!URLFOR($Resource.EventCalendarv054, '/EventCalendarv054/css/Hapara_eventCalendar_theme.css')}"  />
+<c:Hapara_PortalStyleSheet title="Welcome to Hapara Setup Booking "/> 
+<apex:outputPanel rendered="{!step='1' || step='2'}">
+<div class="intro"> 
+		<article>
+			<h3>Schedule Your Setup</h3>
+			<p  style="font-size:15px;">
+				We encourage you to schedule your setup session through our automated portal. 
+				During your setup session, an implementation engineer will help you align your Google Apps domain, 
+				fine-tune Teacher Dashboard to fit the needs of your school, and help you load classes/students. 
+				We will use GoToMeeting in order for us to screen share and talk you through the process. 
+				{!SchduleTypeDuration}
+			</p>
+			<p style="font-size:15px;">
+				If you can't find a time that fits your schedule, please email 
+				<a href="mailto:customer.service@hapara.com?subject=Teacher Dashboard Setup Session Scheduling">Hapara Customer Service</a> 
+				and our team will schedule you into a time slot suitable for you. Please include 3 dates and times you have available in 
+				your schedule. Please give us dates that are at least 2-3 days ahead as this will allows us to timely schedule you in.
+			</p>
+			<apex:pageMessages />
+		</article>
+</div>
+</apex:outputPanel>
+<section id="SalesforceForm">
+	<apex:outputPanel id="BookSessionForm" rendered="{!step='1'}">
+	<article>
+		<div class="content">
+		<apex:form id="theForm">
+			<apex:outputPanel id="CalenderEvent">  
+				<div class="signup-form"> 
+					<fieldset>
+					<div style="display:block;float: left;padding-right: 10px;;">
+						<label for="ContactTimeZone" style="font-size:14px;">Your time zone:<sup class="required">*</sup></label>
+						<select id="ContactTimeZone" style="font-size:14px;" onchange="resetTimeZoneFields();" required="true"></select>
+					</div>	
+					<div style="width:100%;height:80%;margin: 0 auto;padding-top:0px;clear:both;">
+						<div id="eventCalendarScroll" ></div>
+					</div>
+					<br/>
+<!-- 
+					<div class="bottomlined" style="padding: 40px 2%;font-size:15px;">
+						<div style="border-bottom: 2px solid #efefef;width:100%;">
+		  				<b>Alternative Dates and Times for Setup</b>
+		  				</div>
+		  				<p>If the date and times provided doesn't suit your schedule please give us 3 alternative dates and times 
+		  			that would suit your schedule. Dates must be 2 days in the future.</p>
+		  			</div>
+		  			<label for="selectAlternativeDateTime1" style="font-size:14px;">Date and Time 1:<sup class="required" >*</sup></label>	
+					<apex:inputText id="selectAlternativeDateTime1" style="font-size:14px;" value="{!selectAlternativeDateTime1}" size="18"   required="true"  />
+					<label for="selectAlternativeDateTime2" style="font-size:14px;">Date and Time 2:<sup class="required" >*</sup></label>	
+					<apex:inputText id="selectAlternativeDateTime2" style="font-size:14px;" value="{!selectAlternativeDateTime2}" size="18"   required="true"  />
+					<label for="selectAlternativeDateTime3" style="font-size:14px;">Date and Time 3:<sup class="required">*</sup></label>	
+					<apex:inputText id="selectAlternativeDateTime3" style="font-size:14px;" value="{!selectAlternativeDateTime3}"  size="18"  required="true"  />
+					<br/>
+					<div class="nav-wrapper">
+						<apex:commandButton style="font-size:14px;" action="{!bookOtherSessionDateTime}" value="Book Other Session Times" id="bookSession2" 
+							onclick="return validateSessionSave();" />&nbsp;&nbsp;
+					</div>
+-->
+					</fieldset>
+				</div>
+				<apex:inputText value="{!selectedContactTimeZone}" id="selectedContactTimeZone" style="visibility:hidden;"/>
+				<apex:inputText value="{!strScheduledSessions}" id="strScheduledSessions" style="visibility:hidden;"/>
+				<apex:inputText value="{!scheduleType}" id="scheduleType" style="visibility:hidden;"/>
+				<apex:inputText value="{!selectedEventId}" id="selectedEventId" style="visibility:hidden;"/>
+			</apex:outputPanel>
+		</apex:form>
+		<apex:form id="theForm3">
+		    <apex:actionFunction action="{!refreshCalendarEvents}" name="refreshCalendarEvents" rerender="BookSessionForm,CalenderEvent" 
+		    oncomplete="getSessions();">
+		    	<apex:param name="firstParam" assignTo="{!selectedContactTimeZone}" value="" />
+		    </apex:actionFunction>
+		
+	    </apex:form>
+	    <apex:form id="theForm4">
+	    	<apex:actionFunction action="{!bookEventSession}" name="bookEventSession" oncomplete="alert('booked');" >
+		    	<apex:param name="Param" assignTo="{!selectedEventId}" value="" />
+		    </apex:actionFunction>
+	    </apex:form>
+	   	</div>
+	</article>
+	</apex:outputPanel>
+	<apex:outputPanel id="AccountDetailsForm" rendered="{!step='2'}">
+	<article>
+		<div class="content">
+			<apex:form id="theForm2">
+				<div class="signup-form"> 
+				<fieldset>
+				<div class="nav-wrapper">
+					<apex:commandButton action="{!cancelBookedSession}" value="Cancel Booking" id="cancelBookedSession2" immediate="true" styleclass="btn-danger" />&nbsp;
+					<apex:commandButton action="{!updateAccountDetails}" value="Confirm" id="updateAccountDetails2"
+						 onclick="return validateSessionSave();" styleclass="btn-success"/>
+				</div>
+				<br/>
+				<article class="bottomlined">
+	  			<b>Current Booked Session Details</b>
+	  			</article>	
+	  			<apex:outputLabel for="BookedSessionTime1" value="Booked Session:"/>
+	  			<apex:outputText value="{!BookedSessionTime1}" id="BookedSessionTime1" styleClass="rightside"/>
+	  			<br/>
+				<br/>
+				<article class="bottomlined">
+	  			<b>Are you ready to move forward with?</b>
+	  			</article>
+	  			<label for="Type_of_Setup__c">Moving forward with:<sup class="required">*</sup></label>
+				<apex:inputField value="{!AccountDetails.Type_of_Setup__c}" id="Type_of_Setup__c" required="true"/>
+				<br/>
+	  			<label for="No_of_Student_licenses__c">No of student licenses you will move forward with:<sup class="required">*</sup></label>
+				<apex:inputField value="{!AccountDetails.No_of_Student_licenses__c}" id="No_of_Student_licenses__c" required="true"/>
+				<br/>
+				<label for="Need_a_Quote__c">Need a Quote?<sup class="required">*</sup></label>
+				<apex:inputField value="{!AccountDetails.Need_a_Quote__c}" id="Need_a_Quote__c" required="true"/>
+				<br/>
+				<article class="bottomlined">
+	  			<b>Anyone else you would want to invite to attend the setup session?...</b>
+	  			</article>						
+				<table style="border-collapse:initial;float: left;">
+					<col width="35"/>
+					<col width="30%"/>
+					<col width="35"/>
+					<tr style="background-color:lightgrey">
+						<th>Contact Name</th>
+						<th>Email</th>
+						<th>Job Title</th>
+					</tr>
+					<tr>
+						<td><apex:inputText id="Contact1Name"  value="{!referredContact1Name}"  style="width:100%;"/></td>
+						<td><apex:inputText id="Contact1Email"  value="{!referredContact1Email}"  style="width:100%;"/></td>
+						<td><apex:inputText id="Contact1Title"  value="{!referredContact1Title}" style="width:100%;"/></td>
+					</tr>
+					<tr> 
+						<td><apex:inputText id="Contact2Name"  value="{!referredContact2Name}"  style="width:100%;"/></td>
+						<td><apex:inputText id="Contact2Email"  value="{!referredContact2Email}"  style="width:100%;"/></td>
+						<td><apex:inputText id="Contact2Title"  value="{!referredContact2Title}"  style="width:100%;;"/></td>
+					</tr>
+					<tr>
+						<td><apex:inputText id="Contact3Name"  value="{!referredContact3Name}"  style="width:100%;"/></td>
+						<td><apex:inputText id="Contact3Email"  value="{!referredContact3Email}"  style="width:100%;"/></td>
+						<td><apex:inputText id="Contact3Title"  value="{!referredContact3Title}"  style="width:100%;"/></td>
+					</tr>
+				</table>
+				<br/>
+				<article class="bottomlined">
+	  				<b>District/School Information</b>
+	  			</article>
+	  			<label for="How_did_you_hear_about_us__c">How did you hear about us?:<sup class="required">*</sup></label>
+				<apex:inputfield value="{!AccountDetails.How_did_you_hear_about_us__c}" id="How_did_you_hear_about_us__c" required="true" onchange="displayHowdidyouhearus2();"/>  
+				<div id="How_did_you_hear_about_us__2c" style="display:block;float: left;padding-right: 10px;padding-left:325px;">
+					<label for="How_did_you_hear_about_us2__c">Which conference did you hear about us?:<sup class="required">*</sup></label>
+					<apex:selectList value="{!AccountDetails.How_did_you_hear_about_us2__c}"  multiselect="false"  size="1">
+						<apex:selectOptions value="{!CampaignEvents}"/>
+					</apex:selectList>
+				</div>	
+				
+				<label for="Country">Country:<sup class="required">*</sup></label>
+				<select id="Country" onchange="print_state('State',value);"></select>
+				<br/>
+				<label for="Phone">Phone:<sup class="required">*</sup></label>
+				<apex:inputText value="{!AccountDetails.Phone}" id="Phone" required="true" />
+				<br/>
+				<label for="MailingStreet">Street Address:<sup class="required">*</sup></label>
+				<apex:inputText value="{!AccountDetails.MailingStreet}" id="MailingStreet" required="true"/>
+				<br/>
+				<label for="MailingCity">City:</label>
+				<apex:inputText value="{!AccountDetails.MailingCity}" id="MailingCity"/>
+				<br/>
+				<label for="State">State:<sup class="required">*</sup></label>
+				<select id="State" ></select>
+				<br/> 
+				<label for="MailingPostalCode">Postal Code:</label>
+				<apex:inputText value="{!AccountDetails.MailingPostalCode}" id="MailingPostalCode" />
+				<div class="nav-wrapper">
+					<apex:inputText value="{!selectedCountry}" id="selectedCountry" style="visibility:hidden;"/>
+					<apex:inputText value="{!selectedState}" id="selectedState" style="visibility:hidden;"/>
+					<apex:commandButton action="{!cancelBookedSession}" value="Cancel Booking" id="cancelBookedSession" immediate="true" styleclass="btn-danger"/>&nbsp;
+					<apex:commandButton action="{!updateAccountDetails}" value="Confirm" id="updateAccountDetails" 
+						onclick="return validateSessionSave();" styleclass="btn-success" />
+				</div>
+				</fieldset>
+				</div>
+			</apex:form>
+		</div>
+	</article>
+	</apex:outputPanel>
+	<apex:outputPanel rendered="{!step='3'}">
+		<apex:form id="theForm5"> 
+			<div class="signup-form"> 
+				<article>
+					<br/>
+					<br/>
+					<apex:outputText value="{!thankMessage}" id="thankMessage"/>
+					<br/>
+					<br/>
+					<div class="nav-wrapper">
+						<apex:commandButton action="{!backToConfirmPage}" value="Back" id="bookSession"  />&nbsp;
+					</div>
+					<br/>
+					<br/>
+				</article>
+			</div>
+		 </apex:form>
+	</apex:outputPanel>
+</section>	
+<c:Hapara_Footer /> 
+
+<apex:includeScript value="{!$Resource.HaparaCustomerFormJS2}"  />
+<apex:includeScript value="{!$Resource.HaparaCountryJS}"  />
+<apex:includeScript value="{!URLFOR($Resource.TimeZoneJS, '/timezone-js-master/src/date.js')}"  />
+<apex:includeScript value="{!$Resource.Timezones}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.EventCalendarv054, '/EventCalendarv054/js/Hapara.jquery.eventCalendar.js')}"  />
+<apex:includeScript value="{!URLFOR($Resource.jquerysimpledatetimepicker,'/jquery-simple-datetimepicker-1.10.1/jquery.simple-dtpicker.js')}"  />
+<apex:stylesheet value="{!URLFOR($Resource.jquerysimpledatetimepicker,'/jquery-simple-datetimepicker-1.10.1/jquery.simple-dtpicker.css')}"/>
+<script>
+j$ = jQuery.noConflict();
+var localtimezone = determine_timezone().timezone.olson_tz;
+timezoneJS.timezone.zoneFileBasePath = '{!URLFOR($Resource.TimeZoneJS, '/timezone-js-master/src/tz')}';
+timezoneJS.timezone.defaultZoneFile = ['australasia', 'backward', 'northamerica','europe'];
+timezoneJS.timezone.init( { async: false });
+
+var eventsInline ;
+var currentStep = {!step};
+
+j$(document).ready(function() {
+		//load the event calendar only if the current step is 1
+		if(currentStep=="1"){
+			var defaultTimeZone = "{!selectedContactTimeZone}";
+			
+			appendDatePicker =function(){
+				var tomorrow = new Date();
+				var alternativeDateTime1 = document.getElementById( "{!$Component.theForm.selectAlternativeDateTime1}");
+				var alternativeDateTime2 = document.getElementById( "{!$Component.theForm.selectAlternativeDateTime2}");
+				var alternativeDateTime3 = document.getElementById( "{!$Component.theForm.selectAlternativeDateTime3}");
+				j$(alternativeDateTime1).appendDtpicker({
+								"closeOnSelected": true,
+								"dateOnly": false,
+								"dateFormat": "YYYY-MM-DD hh:mm",
+								"futureOnly": true,
+								"minDate": tomorrow.setDate(tomorrow.getDate()+3),
+								"minTime":"07:00",
+								"maxTime":"23:00",
+								"autodateOnStart": false
+				});
+				j$(alternativeDateTime2).appendDtpicker({
+								"closeOnSelected": true,
+								"dateOnly": false,
+								"dateFormat": "YYYY-MM-DD hh:mm",
+								"futureOnly": true,
+								"minDate": tomorrow.setDate(tomorrow.getDate()+3),
+								"minTime":"07:00",
+								"maxTime":"23:00",
+								"autodateOnStart": false
+				});
+				j$(alternativeDateTime3).appendDtpicker({
+								"closeOnSelected": true,
+								"dateOnly": false,
+								"dateFormat": "YYYY-MM-DD hh:mm",
+								"futureOnly": true,
+								"minDate": tomorrow.setDate(tomorrow.getDate()+3),
+								"minTime":"07:00",
+								"maxTime":"23:00",
+								"autodateOnStart": false
+				});
+			}
+			
+			if(defaultTimeZone.length ==0){
+				defaultTimeZone = localtimezone;
+				var selectedContactTimeZone = document.getElementById( "{!$Component.theForm.selectedContactTimeZone}");
+				selectedContactTimeZone.value =  localtimezone;
+				refreshCalendarEvents(localtimezone);
+			}
+			else{
+				getSessions();
+				localtimezone = defaultTimeZone;						
+			}
+			setLocalTimeZone("ContactTimeZone",defaultTimeZone); 
+			
+		}else if(currentStep=="2"){
+			print_country("Country");
+  			displayHowdidyouhearus2();
+  			var country = document.getElementById("{!$Component.theForm2.selectedCountry}");
+			var state = document.getElementById("{!$Component.theForm2.selectedState}");
+			if(state.value.length >0){
+				var ddCountry = document.getElementById("Country");
+				ddCountry.value = country.value;
+				var ddState = document.getElementById("State");
+				print_state("State",ddCountry.value);
+				ddState.value = state.value;
+			}else
+	  			SetCountryNState("Country",  "State",localtimezone);
+		}
+
+		
+	});
+	
+	
+	function getSessions(){
+		var val = document.getElementById( "{!$Component.theForm.strScheduledSessions}").value;
+		eventsInline =j$.parseJSON( val);
+		setLocalTimeZone("ContactTimeZone",document.getElementById( "{!$Component.theForm.selectedContactTimeZone}").value); 
+		convertSessionsTimeZones();
+	}
+	
+	function resetTimeZoneFields(){
+		localtimezone = document.getElementById("ContactTimeZone").value;
+		refreshCalendarEvents(localtimezone);
+	}
+	function convertSessionsTimeZones(){
+		appendDatePicker();
+		j$("#eventCalendarScroll").html("");
+		j$("#eventCalendarScroll").eventCalendar({
+			jsonData: eventsInline,
+			eventsScrollable: true,
+			jsonDateFormat: 'human',
+			eventsLimit: 5
+		});
+		
+	}
+	
+	function displayHowdidyouhearus2(){
+		var How_did_you_hear_about_us__2c = document.getElementById("How_did_you_hear_about_us__2c");
+		var How_did_you_hear_about_us = document.getElementById( "{!$Component.theForm2.How_did_you_hear_about_us__c}" );
+		//alert(How_did_you_hear_about_us.value);
+		if(How_did_you_hear_about_us.value=="Conference"){
+			How_did_you_hear_about_us__2c.style.display = "";
+		}else
+			How_did_you_hear_about_us__2c.style.display = "none";
+	}
+	
+	function validateSessionSave(){
+		var result = false;
+		var message = "";
+		if(currentStep=="2"){
+			if(document.getElementById("Country").value.length == 0 
+				&& document.getElementById("Country").value !='Select Country')
+				message = message + 'Country is required,';
+			else if(document.getElementById("State").value.length == 0
+				&& document.getElementById("State").value !='Select State')
+				message = message + '\n State is required,';
+				
+			//validate contact email and organisation
+			if(document.getElementById("{!$Component.theForm2.Contact1Email}").value.length >0){
+				if(document.getElementById("{!$Component.theForm2.Contact1Name}").value.length== 0)
+					message = message + '\n Please enter contact 1 name';
+				if(document.getElementById("{!$Component.theForm2.Contact1Title}").value.length== 0)
+					message = message + '\n Please enter contact 1 job title';
+				
+			}
+			if(document.getElementById("{!$Component.theForm2.Contact2Email}").value.length >0){
+				if(document.getElementById("{!$Component.theForm2.Contact2Name}").value.length== 0)
+					message = message + '\n Please enter contact 2 name';
+				if(document.getElementById("{!$Component.theForm2.Contact2Title}").value.length== 0)
+					message = message + '\n Please enter contact 2 job title';
+
+			}
+			if(document.getElementById("{!$Component.theForm2.Contact3Email}").value.length >0){
+				if(document.getElementById("{!$Component.theForm2.Contact3Name}").value.length== 0)
+					message = message + '\n Please enter contact 2 name';
+				if(document.getElementById("{!$Component.theForm2.Contact3Title}").value.length== 0)
+					message = message + '\n Please enter contact 3 job title';
+			}
+			
+			if(message.length == 0){ 
+				var country = document.getElementById("{!$Component.theForm2.selectedCountry}");
+				country.value = document.getElementById("Country").value;
+				var state = document.getElementById("{!$Component.theForm2.selectedState}");
+				state.value = document.getElementById("State").value;
+				result = true;
+			}
+		}else if(currentStep=='1'){
+			var alternativeDateTime1 = document.getElementById( "{!$Component.theForm.selectAlternativeDateTime1}");
+			var tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate()+2);
+			if(alternativeDateTime1.value.length == 0)
+				message = message + '\n Please enter Date and Time 1';
+			else{
+				var datestr = alternativeDateTime1.value.split(' ');
+				if(!isDate(datestr[0])){
+					message = message + '\n Please enter a valid date in Date and Time 1';
+				}else{
+					var datevalue = Date.parse(datestr[0]);
+					if(datevalue < tomorrow){
+						message = message + '\n Please enter a date that 2 days in the future in Date and Time 1';
+					}
+				}
+			}
+				
+			var alternativeDateTime2 = document.getElementById( "{!$Component.theForm.selectAlternativeDateTime2}");
+			if(alternativeDateTime2.value.length == 0)
+				message = message + '\n Please enter Date and Time 2';
+			else{
+				var datestr = alternativeDateTime2.value.split(' ');
+				if(!isDate(datestr[0])){
+					message = message + '\n Please enter a valid date in Date and Time 2';
+				}else{
+					var datevalue = Date.parse(datestr[0]);
+					if(datevalue < tomorrow){
+						message = message + '\n Please enter a date that 2 days in the future in Date and Time 2';
+					}
+				}
+			}
+				
+			var alternativeDateTime3 = document.getElementById( "{!$Component.theForm.selectAlternativeDateTime3}");
+			if(alternativeDateTime3.value.length == 0)
+				message = message + '\n Please enter Date and Time 3';
+			else{
+				var datestr = alternativeDateTime3.value.split(' ');
+				if(!isDate(datestr[0])){
+					message = message + '\n Please enter a valid date in Date and Time 3';
+				}else{
+					var datevalue = Date.parse(datestr[0]);
+					if(datevalue < tomorrow){
+						message = message + '\n Please enter a date that 2 days in the future in Date and Time 3';
+					}
+				}
+			}
+			
+			if(message.length == 0){ 
+				result = true;
+				var selectedContactDateTimeDemo = document.getElementById( "{!$Component.theForm.selectedContactTimeZone}" );
+				selectedContactDateTimeDemo.value =  document.getElementById("ContactTimeZone").value;
+			}
+		}
+		if(message.length >0)
+			alert('Please select or enter a value for the following fields:\n' + message); 
+		return result;
+	}
+	function isDate(val) {
+	    var d = new Date(val);
+	    return !isNaN(d.valueOf());
+	}
+</script>
+</apex:page>

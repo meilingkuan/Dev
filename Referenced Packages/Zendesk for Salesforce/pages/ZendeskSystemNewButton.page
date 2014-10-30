@@ -1,0 +1,27 @@
+<apex:page standardcontroller="Zendesk__Zendesk_Ticket__c" extensions="Zendesk.ctrlZendeskSystemNewButton">
+<apex:form >
+  <apex:pagemessages />
+  <apex:pageblock title="Solved Tickets from Zendesk">
+  <br/><br/>
+  <apex:outputtext value="Click to view all solved tickets from Zendesk" />&nbsp;&nbsp;
+  <apex:commandbutton action="{!redirectpage}" value="View Tickets"/>
+  </apex:pageblock>
+ </apex:form>
+</apex:page>
+
+
+<!--   <apex:page standardcontroller="Zendesk__Zendesk_Ticket__c" extensions="Zendesk.ctrlZendeskSystemNewButton">
+<apex:form >
+  <apex:pagemessages />
+  <apex:pageblock title="Choose Zendesk Domain to create a Ticket">
+  	<apex:pageblocksection >
+  		<apex:outputlabel value="Choose a domain"/>
+  		<apex:selectList value="{!selectedDomain}" size="1" >
+  			<apex:selectoptions value="{!listofDomains}"/>
+  		</apex:selectList>
+  		
+  		<apex:commandbutton value="Next" action="{!redirectpage}"/>
+  	</apex:pageblocksection>
+  </apex:pageblock>
+ </apex:form>
+</apex:page>-->

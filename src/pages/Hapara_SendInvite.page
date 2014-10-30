@@ -1,0 +1,19 @@
+<apex:page standardController="Lead" extensions="Hapara_Invite_Controller" id="page">
+<apex:form id="frm"> 
+	  <apex:sectionHeader title="Select all the values below to send the invite out." />
+      <apex:pageBlock id="step1"  mode="detail" >
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection title="Email Template" columns="1">
+                <apex:selectlist id="emailTemplate"  value="{!selectedEmailTemplate}"  size="1" required="true">				
+					<apex:selectOptions value="{!EmailTemplates}" /> 
+				</apex:selectlist>
+             </apex:pageBlockSection>
+			<apex:panelGrid columns="1">
+			</apex:panelGrid>
+          <apex:pageBlockButtons >
+              <apex:commandButton action="{!sendInvite}" value="Send Invite"/>
+              <apex:commandButton action="{!cancel}" value="Cancel"  immediate="true" style="margin-left: 2em"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock> 
+ </apex:form>    
+</apex:page>

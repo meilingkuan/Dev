@@ -1,0 +1,167 @@
+<apex:page controller="CustomConvertController" title="Convert Lead: {!Lead.Name}" tabStyle="Lead">
+    
+    <!-- preload error: is displayed if theres problems noticed during controller construction -->
+    <apex:outputText value="{!preloadError}" escape="false" rendered="{!NOT(ISNULL(preloadError))}" />
+
+    <!-- main page: is displayed if theres no preload error -->
+    <apex:outputText value="{!preloadError}" rendered="{!ISNULL(preloadError)}">
+
+        <apex:sectionHeader title="Convert Lead" subtitle="{!Lead.Name}" />
+        <p>Leads where School/Organization is blank convert to person accounts. Leads where School/Organization has a value convert to business accounts. If you do not have access to School/Organization, contact your administrator.<br />You should only convert a lead once you have identified it as qualified.<br />After this lead has been converted, it can no longer be viewed or edited as a lead, but can be viewed in lead reports.
+        </p>
+        <apex:pageMessages />
+        <apex:form >
+            <apex:pageBlock mode="edit">
+
+                <apex:pageBlockButtons >
+                    <apex:commandButton action="{!Convert}" value="Convert" />
+                    <apex:commandButton action="{!convertScheduleDemo}" value="Convert & Schedule Demo" />
+                    <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true" />
+                </apex:pageBlockButtons>
+
+                <!-- Convert Lead Section -->
+                <apex:pageBlockSection title="Convert Lead" collapsible="false" columns="1">
+                    
+                    <!-- Record Owner -->
+                    <apex:inputField value="{!Account.OwnerId}" label="Record Owner" required="true"/>
+                    
+                    <!-- Send Email to the Owner -->
+                    <apex:inputCheckbox value="{!SendEmailToTheOwner}" label="Send Email to the Owner" />
+                    
+                    <!-- Account Name -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Account Name" for="accid" />
+                        <apex:outputText >
+                            <div class="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:selectList value="{!AccountId}" required="true" id="accid" multiselect="false" size="1" styleClass="{!IF(ISNULL(AccountNameError), '', 'error')}">
+                                    <apex:selectOptions value="{!AccountNameOptions}" />
+                                </apex:selectList>
+                                <style type="text/css">input.hideInput{display:none;}</style>
+                                <apex:inputField id="acclookup" value="{!Opportunity.AccountId}" styleClass="hideInput"/>
+                                <apex:actionFunction name="addOption" action="{!addAccountNameOption}" rerender="accid"/>
+                                <script>
+                                    var previousOnblur = window.onblur;
+                                    var previousContact;
+                                    window.onblur = function() { 
+                                        if (previousOnblur) { 
+                                            previousOnblur();
+                                        }
+                                        previousAccountId = document.getElementById("{!$Component.acclookup}_lkid").value;
+                                    }
+
+                                    var previousOnfocus = window.onfocus;        
+                                    window.onfocus = function() {
+                                        if (previousOnfocus) { 
+                                            previousOnfocus();
+                                        }
+                                        if (document.getElementById("{!$Component.acclookup}_lkid").value != previousAccountId) {
+                                            console.log('account changed');
+                                            addOption();
+                                        }
+                                    }
+                                </script>
+                                <a href="#" onClick="viewExistingAccount();">View</a>
+                                <script>
+                                    function viewExistingAccount() {
+                                        var e = document.getElementById("{!$Component.accid}");
+                                        var id = e.options[e.selectedIndex].value;
+                                        if (id.length == 18) {
+                                            window.open('/'+id);
+                                        } else {
+                                            alert('You can only view existing accounts.');
+                                        }
+                                    }
+                                </script>
+                                <apex:outputText value="<br/>{!AccountNameError}" rendered="{!NOT(ISNULL(AccountNameError))}" escape="false"/>
+                            </div>
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+
+                    <!-- Opportunity Name -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Opportunity Name" for="noopttt" />
+                        <apex:outputText >
+                            <div class="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:inputField value="{!Opportunity.Opportunity_Name_Template__c}" onChange="document.getElementById('{!$Component.noopptt}').value=this.value;"/> 
+                                <apex:inputText value="{!OpportunityName}" id="noopptt" styleClass="{!IF(ISNULL(OpportunityNameError), '', 'error')}" size="40"/><br />
+                                <apex:outputText value="{!OpportunityNameError}<br/>" rendered="{!NOT(ISNULL(OpportunityNameError))}" escape="false" />
+                                <apex:inputCheckbox value="{!DoNotCreateOpportunity}" id="nooppti" />
+                                <apex:outputLabel value="Do not create a new opportunity upon conversion" for="nooppti" />
+                            </div>
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    
+                    <!-- Opportunity Stage -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Opportunity Stage" for="oppstage"/>
+                        <apex:outputText >
+                            <div class="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:inputField value="{!Opportunity.StageName}" required="false" id="oppstage" styleClass="{!IF(ISNULL(OpportunityStageError), '', 'error')}" />
+                                <apex:outputText value="<br/>{!OpportunityStageError}" rendered="{!NOT(ISNULL(OpportunityStageError))}" escape="false" />
+                            </div>
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+
+                    <!-- Converted Status -->
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Converted Status" for="convertedstatus" />
+                        <apex:outputText >
+                            <div class="requiredInput">
+                                <div class="requiredBlock"></div>
+                                <apex:selectList value="{!ConvertedStatus}" id="convertedstatus" multiselect="false" size="1">
+                                    <apex:selectOptions value="{!ConvertedStatusOptions}" />
+                                </apex:selectList>
+                            </div>
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+
+                </apex:pageBlockSection>
+
+                <!-- Task Information Section -->
+                <apex:pageBlockSection title="Task Information" collapsible="false" columns="1">
+                    <apex:inputField value="{!Task.Subject}"/>
+                    <apex:inputField value="{!Task.ActivityDate}" />
+                    <apex:inputField value="{!Task.CurrencyIsoCode}" />
+                    <apex:inputField value="{!Task.Description}" style="width:392px;height:90px;"/>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Additional Information" collapsible="false" columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Status" for="taskstatus" />
+                        <apex:outputText >
+                            <apex:inputField value="{!Task.Status}" styleClass="{!IF(ISNULL(TaskStatusError), '', 'error')}" id="taskstatus" required="false"/>
+                            <apex:outputText value="<br/>{!TaskStatusError}" rendered="{!NOT(ISNULL(TaskStatusError))}" escape="false" />
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Priority" for="taskpriority" />
+                        <apex:outputText >
+                            <apex:inputField value="{!Task.Priority}" styleClass="{!IF(ISNULL(TaskPriorityError), '', 'error')}"  id="taskpriority" required="false"/>
+                            <apex:outputText value="<br/>{!TaskPriorityError}" rendered="{!NOT(ISNULL(TaskPriorityError))}" escape="false" />
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                    <apex:outputText >
+                        <apex:inputCheckbox value="{!TaskSendNotificationEmail}" id="email_followup" />
+                        <apex:outputLabel value="Send Notification Email" for="email_followup" />
+                    </apex:outputText>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Reminder" collapsible="false" columns="1">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Reminder" />
+                        <apex:outputText >
+                            <apex:inputCheckbox value="{!Task.IsReminderSet}" />
+                            <apex:inputField value="{!Task.ReminderDateTime}" styleClass="{!IF(ISNULL(TaskReminderError), '', 'error')}"/>
+                            <apex:outputText value="<br/>{!TaskReminderError}" rendered="{!NOT(ISNULL(TaskReminderError))}" escape="false" />
+                        </apex:outputText>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+
+            </apex:pageBlock>
+        </apex:form>
+
+        </apex:outputText>
+</apex:page>

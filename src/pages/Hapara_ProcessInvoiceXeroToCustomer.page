@@ -1,0 +1,57 @@
+<apex:page standardController="Hapara_Invoice__c" recordSetvar="unused" extensions="Hapara_XeroController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+  <apex:form id="wizard">
+	  <apex:sectionHeader title="Send invoice to Customer" />
+      <apex:pageBlock id="step1" title="Records" mode="detail" rendered="{!step='1'}">
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection >
+	            <apex:pageBlockTable var="a" value="{!SendInvoices}">
+					<apex:column value="{!a.Name}"/>
+					<apex:column value="{!a.Status__c}"/>
+					<apex:column value="{!a.Process__c}" headerValue="Send Invoice"/>
+					<apex:column value="{!a.Error_Message__c}" headerValue="Message"/>
+				    <apex:column value="{!a.LastModifiedDate}"/>
+	            </apex:pageBlockTable>
+			</apex:pageBlockSection>
+			<apex:panelGrid columns="2">
+			</apex:panelGrid>
+          <apex:pageBlockButtons style="align=center;">
+               <apex:commandButton action="{!ProcessPDF}" value="Send Invoice" />
+              <apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" style="margin-left: 2em"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock> 
+	<apex:outputPanel id="result" rendered="{!step='2'}">   
+	<apex:pageBlock id="field" mode="detail">
+	      <apex:pagemessages escape="false"></apex:pagemessages>	      
+	      <apex:pageBlockSection >
+		     <apex:pageBlockTable var="a" value="{!ProcessedInvoices}">
+		     	<apex:column value="{!a.Name}"/>
+				<apex:column value="{!a.Xero_Invoice_No__c}"/>
+				<apex:column value="{!a.Status__c}"/>
+				<apex:column value="{!a.Error_Message__c}" />
+				<apex:column value="{!a.LastModifiedDate}"/>
+		     </apex:pageBlockTable>
+		   </apex:pageBlockSection>
+		   <apex:panelGrid columns="2">
+		   </apex:panelGrid>
+	      <apex:pageBlockButtons style="align=center;">
+	          <apex:commandButton action="{!cancel}" value="Close" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+	  </apex:outputPanel>
+   </apex:form>
+    <apex:form >
+      <apex:actionPoller action="{!reloadResult}" rerender="result" interval="5"/>
+     </apex:form>
+ <!--   <script>
+		window.onload = new function(){ 
+			var reload = '{!step}';
+			var processStatus = '{!processStatus}';
+			//alert('reload: ' + reload + '; processStatus: ' + processStatus);
+			if(reload =='2' && processStatus=='processing' ){	  	
+				window.setTimeout(reloadResultJavaScript,25 );
+			}
+		}
+	</script>
+	 -->
+</apex:page>

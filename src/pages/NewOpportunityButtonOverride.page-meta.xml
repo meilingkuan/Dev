@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>27.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <description>Overrides the new opportunity button everywhere. Redirects user to the standard new opportunity prompt, but populates the opportunity name with a default value &apos;Account Name-&apos;.</description>
+    <label>NewOpportunityButtonOverride</label>
+</ApexPage>

@@ -1,0 +1,25 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+	<div class="signup-form">
+		<fieldset >
+		<br/>
+		 <article class="bottomlined" style="background-color: #e1efcc; border-color: #98b86a;">
+			<b>Registration Status Report</b>
+			<p>  			
+				Please enter your Sales rep email address and we will email you a report of all your registration. 
+				Click <a href="{!welcomeURL}">here </a> to create more registration.									
+			</p>		
+  		</article>
+  		</fieldset>
+  	</div>
+  	</article>
+ </section>
+ </div>
+ </div>
+</apex:page>

@@ -1,0 +1,285 @@
+<apex:page controller="Zendesk.ZendeskSetting" extensions="Zendesk.ZendeskOrgSyncController" title="Edit Zendesk organization settings">
+
+  <apex:sectionHeader title="Zendesk for Salesforce" subtitle="Global Ticket View Settings" />
+
+  <apex:outputPanel id="pageMessages">
+    <apex:pageMessages />
+  </apex:outputPanel>
+  
+  <apex:form >
+  <apex:pageBlock title="Defaults" mode="edit">
+  
+    <apex:pageBlockButtons location="top">
+      <apex:commandButton action="{!saveSettings}" value="Save"/>
+    </apex:pageBlockButtons>
+    
+    <apex:pageBlockSection title="Filtering" columns="1">
+    
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Status Filter" />
+        <apex:selectList value="{!statusFilter}" size="1">
+         <apex:selectOptions value="{!statusFilterOptions}"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Priority Filter" />
+        <apex:selectList value="{!priorityFilter}" size="1">
+          <apex:selectOptions value="{!priorityFilterOptions}"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Type Filter" />
+        <apex:selectList value="{!typeFilter}" size="1">
+          <apex:selectOptions value="{!typeFilterOptions}"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Sorting" columns="1">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Sort field" />
+        <apex:selectList value="{!sortField}" size="1">
+          <apex:selectOptions value="{!sortColumns}"/>
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Sort descending" />
+        <apex:inputCheckbox value="{!sortDesc}"/>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+    
+    <apex:pageBlockSection title="Account options" columns="1">
+      <apex:pageBlockSectionItem helpText="Show tickets from the Zendesk organization that matches the Account name.">
+        <apex:outputLabel value="Show tickets by Zendesk organization" />
+        <apex:inputCheckbox value="{!accountNameOverride}"/>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+
+  </apex:pageBlock>
+  </apex:form>
+
+  <apex:form >
+  <apex:pageBlock title="Authentication" mode="edit">
+    <apex:pageBlockButtons location="top">
+      <apex:commandButton action="{!saveAuth}" value="Save"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection title="Zendesk credentials" columns="1">
+      <apex:pageBlockSectionItem helpText="http://your-subdomain.zendesk.com. If you have a host-mapped Zendesk, use your host mapped URL (e.g. http://support.your-domain.com).  This URL must also be added to Remote Site Settings">
+        <apex:outputLabel value="Zendesk URL" />
+        <apex:inputtext value="{!zendeskUrl}" size="40" />
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem helpText="The email address you use to log in to Zendesk.  The user must be an administrator or agent.">
+        <apex:outputLabel value="User name" />
+        <apex:inputtext value="{!zendeskUser}" size="40" />
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Password" />
+        <apex:inputSecret value="{!zendeskPass}" size="40" />
+      </apex:pageBlockSectionItem>
+
+      <apex:outputText >
+        <p>You are editing the organization-wide Zendesk credentials. All users will be able to access tickets with these credentials and do not have to enter a password themselves.</p>
+        <p>Leave these fields blank to force users to enter their own credentials. <strong>Users must enter their own unique credentials to be able to edit tickets</strong>.</p>
+      </apex:outputText>
+    </apex:pageBlockSection>
+  </apex:pageBlock>
+  </apex:form>
+
+  <apex:form >
+  <apex:pageBlock title="Mapped record types" mode="edit">
+    <apex:pageBlockButtons location="top">
+      <apex:commandButton action="{!saveFields}" value="Save"/>
+      <apex:commandButton action="{!URLFOR($Action.Zendesk__Zendesk_Widget_Entity__c.New)}" value="New record type"/>
+      <apex:commandButton action="{!URLFOR($Action.Zendesk__Zendesk_Widget_Entity__c.List, $ObjectType.Zendesk__Zendesk_Widget_Entity__c)}" value="Manage record types"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection title="Fields from Salesforce record types displayed in Zendesk user profiles" columns="1">
+      <apex:repeat value="{!widgetEntities}" var="entity">
+        <apex:pageBlockSection columns="1">
+          <apex:pageBlockSectionItem >
+            <apex:outputLabel value="{!entity.Name}" />
+            <c:ZendeskWidgetFieldEdit widgetEntityname="{!entity}" />
+          </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+      </apex:repeat>
+    </apex:pageBlockSection>
+  </apex:pageBlock>
+  </apex:form>
+  
+  <apex:form >
+  <apex:pageBlock title="Case mapping" mode="edit">
+    <apex:pageBlockButtons location="top">
+      <apex:commandButton action="{!saveSyncSetting}" value="Save"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection title="Ticket Status" columns="1" id="statusField">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Map field to" />
+        <apex:selectList value="{!statusMapField}" size="1">
+          <apex:selectOptions value="{!caseFieldOptions}"/>
+          <apex:actionSupport event="onchange" action="{!updateStatusMap}" rerender="statusField" />
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="New" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!statusNewMap.Zendesk__Case_Value__c}" rendered="{!!statusIsPicklist}" />
+          <apex:selectList value="{!statusNewMap.Zendesk__Case_Value__c}" size="1" rendered="{!statusIsPicklist}">
+            <apex:selectOptions value="{!statusValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Open" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!statusOpenMap.Zendesk__Case_Value__c}" rendered="{!!statusIsPicklist}" />
+          <apex:selectList value="{!statusOpenMap.Zendesk__Case_Value__c}" size="1" rendered="{!statusIsPicklist}">
+            <apex:selectOptions value="{!statusValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Pending" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!statusPendingMap.Zendesk__Case_Value__c}" rendered="{!!statusIsPicklist}" />
+          <apex:selectList value="{!statusPendingMap.Zendesk__Case_Value__c}" size="1" rendered="{!statusIsPicklist}">
+            <apex:selectOptions value="{!statusValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Solved" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!statusSolvedMap.Zendesk__Case_Value__c}" rendered="{!!statusIsPicklist}" />
+          <apex:selectList value="{!statusSolvedMap.Zendesk__Case_Value__c}" size="1" rendered="{!statusIsPicklist}">
+            <apex:selectOptions value="{!statusValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Closed" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!statusClosedMap.Zendesk__Case_Value__c}" rendered="{!!statusIsPicklist}" />
+          <apex:selectList value="{!statusClosedMap.Zendesk__Case_Value__c}" size="1" rendered="{!statusIsPicklist}">
+            <apex:selectOptions value="{!statusValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+     
+    <apex:pageBlockSection title="Ticket Priority" columns="1" id="priorityField">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Map field to" />
+        <apex:selectList value="{!priorityMapField}" size="1">
+          <apex:selectOptions value="{!caseFieldOptions}"/>
+          <apex:actionSupport event="onchange" action="{!updatePriorityMap}" rerender="priorityField" />
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="No value" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!priorityNoneMap.Zendesk__Case_Value__c}" rendered="{!!priorityIsPicklist}" />
+          <apex:selectList value="{!priorityNoneMap.Zendesk__Case_Value__c}" size="1" rendered="{!priorityIsPicklist}">
+            <apex:selectOptions value="{!priorityValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Low" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!priorityLowMap.Zendesk__Case_Value__c}" rendered="{!!priorityIsPicklist}" />
+          <apex:selectList value="{!priorityLowMap.Zendesk__Case_Value__c}" size="1" rendered="{!priorityIsPicklist}">
+            <apex:selectOptions value="{!priorityValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Normal" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!priorityNormalMap.Zendesk__Case_Value__c}" rendered="{!!priorityIsPicklist}" />
+          <apex:selectList value="{!priorityNormalMap.Zendesk__Case_Value__c}" size="1" rendered="{!priorityIsPicklist}">
+            <apex:selectOptions value="{!priorityValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="High" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!priorityHighMap.Zendesk__Case_Value__c}" rendered="{!!priorityIsPicklist}" />
+          <apex:selectList value="{!priorityHighMap.Zendesk__Case_Value__c}" size="1" rendered="{!priorityIsPicklist}">
+            <apex:selectOptions value="{!priorityValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Urgent" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!priorityUrgentMap.Zendesk__Case_Value__c}" rendered="{!!priorityIsPicklist}" />
+          <apex:selectList value="{!priorityUrgentMap.Zendesk__Case_Value__c}" size="1" rendered="{!priorityIsPicklist}">
+            <apex:selectOptions value="{!priorityValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+     
+    <apex:pageBlockSection title="Ticket Type" columns="1" id="ticketTypeField">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Map field to" />
+        <apex:selectList value="{!ticketTypeMapField}" size="1">
+          <apex:selectOptions value="{!caseFieldOptions}"/>
+          <apex:actionSupport event="onchange" action="{!updateTicketTypeMap}" rerender="ticketTypeField" />
+        </apex:selectList>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="No value" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!ticketTypeNoneMap.Zendesk__Case_Value__c}" rendered="{!!ticketTypeIsPicklist}" />
+          <apex:selectList value="{!ticketTypeNoneMap.Zendesk__Case_Value__c}" size="1" rendered="{!ticketTypeIsPicklist}">
+            <apex:selectOptions value="{!ticketTypeValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Question" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!ticketTypeQuestionMap.Zendesk__Case_Value__c}" rendered="{!!ticketTypeIsPicklist}" />
+          <apex:selectList value="{!ticketTypeQuestionMap.Zendesk__Case_Value__c}" size="1" rendered="{!ticketTypeIsPicklist}">
+            <apex:selectOptions value="{!ticketTypeValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Incident" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!ticketTypeIncidentMap.Zendesk__Case_Value__c}" rendered="{!!ticketTypeIsPicklist}" />
+          <apex:selectList value="{!ticketTypeIncidentMap.Zendesk__Case_Value__c}" size="1" rendered="{!ticketTypeIsPicklist}">
+            <apex:selectOptions value="{!ticketTypeValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Problem" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!ticketTypeProblemMap.Zendesk__Case_Value__c}" rendered="{!!ticketTypeIsPicklist}" />
+          <apex:selectList value="{!ticketTypeProblemMap.Zendesk__Case_Value__c}" size="1" rendered="{!ticketTypeIsPicklist}">
+            <apex:selectOptions value="{!ticketTypeValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Task" />
+        <apex:outputPanel >
+          <apex:inputfield value="{!ticketTypeTaskMap.Zendesk__Case_Value__c}" rendered="{!!ticketTypeIsPicklist}" />
+          <apex:selectList value="{!ticketTypeTaskMap.Zendesk__Case_Value__c}" size="1" rendered="{!ticketTypeIsPicklist}">
+            <apex:selectOptions value="{!ticketTypeValueOptions}"/>
+          </apex:selectList>
+        </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+     </apex:pageBlockSection>
+  </apex:pageBlock>
+  </apex:form>
+  
+</apex:page>

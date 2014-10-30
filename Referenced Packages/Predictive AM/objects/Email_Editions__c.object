@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <enableActivities>false</enableActivities>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <fields>
+        <fullName>Bounce_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Bounced / Sent</description>
+        <externalId>false</externalId>
+        <formula>IF(Sent__c = 0,0,(Bounced__c / Sent__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Bounced / Sent</inlineHelpText>
+        <label>Bounced Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Bounced__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Emails with hard bounces or re-occurring soft bounces in this edition</description>
+        <externalId>false</externalId>
+        <formula>Hard_Bounce__c + Soft_Bounce__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Emails with hard bounces or re-occurring soft bounces in this edition</inlineHelpText>
+        <label>Bounced</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Campaign__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Campaign</label>
+        <referenceTo>Campaign</referenceTo>
+        <relationshipName>R00N30000001ilzjEAA</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Click_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Clicked / Delivered</description>
+        <externalId>false</externalId>
+        <formula>IF(Delivered__c=0,0,(Unique_Clicks__c / Delivered__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Clicked / Delivered</inlineHelpText>
+        <label>Clicked Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Complaint_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Complaints / Delivered</description>
+        <externalId>false</externalId>
+        <formula>IF( Delivered__c = 0,0,(Complaints__c /  Delivered__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Complaints / Delivered</inlineHelpText>
+        <label>Complaint Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Complaints__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Campaign members that submitted complaints via Yahoo, AOL or other feedback loop.
+Complaints are most often submitted by clicking a &quot;This is Spam&quot; type button
+
+A complaint auto-generates an opt out and will also be included in the Opt Out Direct count.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Campaign members that submitted complaints via Yahoo, AOL or other feedback loop.
+Complaints are most often submitted by clicking a &quot;This is Spam&quot; type button
+
+A complaint auto-generates an opt out and will also be included in the Opt Out Direct count.</inlineHelpText>
+        <label>Complaints</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Completion_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Completed / Delivered</description>
+        <externalId>false</externalId>
+        <formula>IF(Delivered__c = 0,0,(Unique_Completions__c /  Delivered__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Completed / Delivered</inlineHelpText>
+        <label>Completed Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Delivered__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Unique # emails that have been sent and not bounced.</description>
+        <externalId>false</externalId>
+        <formula>Sent__c - Bounced__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Unique # emails that have been sent and not bounced.</inlineHelpText>
+        <label>Delivered</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Delivery_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Delivered / Sent</description>
+        <externalId>false</externalId>
+        <formula>IF(Sent__c = 0,0,(Delivered__c / Sent__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Delivered / Sent</inlineHelpText>
+        <label>Delivered Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>External_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>External_Id</label>
+        <precision>18</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Hard_Bounce__c</fullName>
+        <deprecated>false</deprecated>
+        <description># of emails that have been returned to sender and are considered permanently undeliverable</description>
+        <externalId>false</externalId>
+        <inlineHelpText># of emails that have been returned to sender and are considered permanently undeliverable</inlineHelpText>
+        <label>Hard Bounce</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Open_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Opened / Delivered</description>
+        <externalId>false</externalId>
+        <formula>IF(Delivered__c=0,0,(Unique_Opens__c / Delivered__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Opened / Delivered</inlineHelpText>
+        <label>Opened Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Opt_Out_Indirect_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Opt Out Indirect / Delivered</description>
+        <externalId>false</externalId>
+        <formula>IF(Delivered__c = 0,0,(Opt_Out_Indirect__c / Delivered__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Opt Out Indirect / Delivered</inlineHelpText>
+        <label>Opt Out Indirect Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Opt_Out_Indirect__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Members that have opted out in another campaign, after being added to this campaign</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Members that have opted out in another campaign, after being added to this campaign</inlineHelpText>
+        <label>Opt Out Indirect</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Opt_Out_Rate__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Opt Out Direct / Delivered</description>
+        <externalId>false</externalId>
+        <formula>IF(Delivered__c = 0,0,(Opt_Out__c / Delivered__c))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Opt Out Direct / Delivered</inlineHelpText>
+        <label>Opt Out Direct Rate</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Percent</type>
+    </fields>
+    <fields>
+        <fullName>Opt_Out__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Members that have opted out in this edition</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Members that have opted out in this edition</inlineHelpText>
+        <label>Opt Out Direct</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sent_Alias__c</fullName>
+        <deprecated>false</deprecated>
+        <description># of emails that have been sent for this edition</description>
+        <externalId>false</externalId>
+        <formula>Sent__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText># of emails that have been sent for this edition</inlineHelpText>
+        <label>Total Sent</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sent__c</fullName>
+        <deprecated>false</deprecated>
+        <description># of emails that have been sent for this edition</description>
+        <externalId>false</externalId>
+        <inlineHelpText># of emails that have been sent for this edition</inlineHelpText>
+        <label>Sent</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Soft_Bounce__c</fullName>
+        <deprecated>false</deprecated>
+        <description># of emails that have been returned to sender and are considered undeliverable because member mailbox is full or some other reason. If an email bounces 3 times, it is considered permanently undeliverable and auto-converts to hard bounce.</description>
+        <externalId>false</externalId>
+        <inlineHelpText># of emails that have been returned to sender and are considered undeliverable because member mailbox is full or some other reason. If an email bounces 3 times, it is considered permanently undeliverable and auto-converts to hard bounce.</inlineHelpText>
+        <label>Soft Bounce</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Subject__c</fullName>
+        <deprecated>false</deprecated>
+        <description>subject line of this edition</description>
+        <externalId>false</externalId>
+        <inlineHelpText>subject line of this edition</inlineHelpText>
+        <label>Subject</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Clicks__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Accumulated # of emails where at least one link have been clicked in this edition.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Accumulated # of emails where at least one link have been clicked in this edition.</inlineHelpText>
+        <label>Total Clicks</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Completions__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Accumulated # of members that reached a completion page in this edition.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>#Accumulated # of members that reached a completion page in this edition.</inlineHelpText>
+        <label>Total Completions</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Total_Opens__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Accumulated # of emails that have been opened at least once in this edition.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Accumulated # of emails that have been opened at least once  in this edition.</inlineHelpText>
+        <label>Total Opens</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Unique_Clicks__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Unique # of emails where at least one link have been clicked.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Unique # of emails where at least one link have been clicked.</inlineHelpText>
+        <label>Clicked</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Unique_Completions__c</fullName>
+        <defaultValue>0</defaultValue>
+        <deprecated>false</deprecated>
+        <description>Unique # of members that reached a completion page.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Unique # of members that reached a completion page.</inlineHelpText>
+        <label>Completed</label>
+        <precision>18</precision>
+        <required>true</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Unique_Opens__c</fullName>
+        <deprecated>false</deprecated>
+        <description>Unique # of emails that have been opened at least once in this edition.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Unique # of emails that have been opened at least once in this edition.</inlineHelpText>
+        <label>Opened</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Email Edition</label>
+    <nameField>
+        <label>Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Email Editions</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+</CustomObject>

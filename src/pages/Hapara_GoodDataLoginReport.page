@@ -1,0 +1,6 @@
+<apex:page StandardController="Account" tabStyle="Account" >
+  <apex:outputPanel id="GDframe">
+  <apex:iframe scrolling="true" frameborder="0" 
+  src="https://secure.gooddata.com/dashboard.html?label.loginrecord.domain={!Account.website}#project=/gdc/projects/c55tq73zcdej508pihwx4devppoiyzxm&dashboard=/gdc/md/c55tq73zcdej508pihwx4devppoiyzxm/obj/911&tab=81aacfc3cfba"/>  
+  </apex:outputPanel>
+</apex:page>

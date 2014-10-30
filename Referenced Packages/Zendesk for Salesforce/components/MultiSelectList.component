@@ -1,0 +1,43 @@
+<apex:component >
+
+  <apex:attribute required="true" name="availableFields" assignTo="{!availableFields}" type="List" description="Which fields are available" />
+  <apex:attribute required="true" name="activeFields" assignTo="{!activeFields}" type="String" description="Which fields are currently enabled" />
+
+  <script type="text/javascript" src="{!$Resource.MultiSelectList}"></script>
+
+  <apex:inputHidden id="activeFields" value="{!activeFields}" />
+  
+  <table>
+    <tr>
+      <td>
+        <apex:selectList id="remainingList" size="5" multiselect="true" style="width:200px">
+          <apex:selectOptions value="{!availableFields}"/>
+        </apex:selectList>
+      </td>
+      <td style='vertical-align:middle'>
+        <div>
+          <a onclick="moveOptionsAcross('{!JSENCODE($Component.remainingList)}', '{!JSENCODE($Component.remainingList)}right');setActiveFields('{!JSENCODE($Component.activeFields)}', '{!JSENCODE($Component.remainingList)}right');return false"><apex:commandButton image="{!$Resource.Zendesk__RightArrow}" alt="Move Right" style="padding:4px;margin:2px" /></a>
+        </div>
+        <div>
+          <a onclick="moveOptionsAcross('{!JSENCODE($Component.remainingList)}right', '{!JSENCODE($Component.remainingList)}');setActiveFields('{!JSENCODE($Component.activeFields)}', '{!JSENCODE($Component.remainingList)}right');return false"><apex:commandButton image="{!$Resource.Zendesk__LeftArrow}" alt="Move Left" style="padding:4px;margin:2px" /></a>
+        </div>
+      </td>
+      <td>
+        <select id="{!$Component.remainingList}right" size="5" multiple="multiple" style="width:200px"></select>
+      </td>
+      <td style='vertical-align:middle'>
+        <div>
+          <a onclick="moveOptionsUp('{!JSENCODE($Component.remainingList)}right');setActiveFields('{!JSENCODE($Component.activeFields)}', '{!JSENCODE($Component.remainingList)}right');return false"><apex:commandButton image="{!$Resource.Zendesk__UpArrow}" alt="Move Up" style="padding:4px;margin:2px" /></a>
+        </div>
+        <div>
+          <a onclick="moveOptionsDown('{!JSENCODE($Component.remainingList)}right');setActiveFields('{!JSENCODE($Component.activeFields)}', '{!JSENCODE($Component.remainingList)}right');return false"><apex:commandButton image="{!$Resource.Zendesk__DownArrow}" alt="Move Down" style="padding:4px;margin:2px" /></a>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <script language="javascript" type="text/javascript">
+    initActiveValues('{!JSENCODE($Component.activeFields)}', '{!JSENCODE($Component.remainingList)}', '{!JSENCODE($Component.remainingList)}right');
+  </script>
+
+</apex:component>

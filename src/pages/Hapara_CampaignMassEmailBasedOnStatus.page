@@ -1,0 +1,42 @@
+<apex:page standardController="Campaign" extensions="Hapara_CampaignMassEmailController">
+<apex:form id="frm">
+	<apex:sectionHeader title="Send Members Email" />
+	<apex:pagemessages escape="false"></apex:pagemessages>
+	<apex:pageBlock id="step1" title="Please select the Member Status and email template that you want to send email out to members." mode="detail" rendered="{!step='1'}" >
+	  	 <apex:pageBlockSection id="memberstatussection" title="Please select a memeber status">
+		  	<apex:selectlist id="campaignMemberStatus"  value="{!campaignMemberStatus}" size="1" required="true" label="Member Status">
+		  	 		<apex:selectOptions value="{!CampaignMemberStatuses}" /> 
+		  	</apex:selectlist>	 
+	  	</apex:pageBlockSection>
+	  	
+		<apex:actionRegion immediate="true">
+			<apex:pageBlockSection id="emailTemplatesection" title="Please select an Email Template" columns="1">
+			    <apex:selectlist id="emailTemplateFolder"  value="{!emailTemplateFolder}" size="1" required="true"  label="Email Template Folder">				
+					<apex:selectOptions value="{!emailTemplateFolders}" /> 
+					<apex:actionSupport event="onchange" action="{!populateEmailTemplates}" rerender="emailTemplatesection"/>
+				</apex:selectlist>
+			    <apex:selectlist id="emailTemplateId"  value="{!emailTemplateId}" size="1" required="true"  label="Email Template">				
+					<apex:selectOptions value="{!emailTemplates}" /> 
+				</apex:selectlist>
+			</apex:pageBlockSection>
+		</apex:actionRegion>
+		
+		<apex:pageBlockButtons >
+              <apex:commandButton action="{!SendEmail}" value="Send Email"/>
+              <apex:commandButton action="{!Cancel}" value="Cancel" immediate="true"  />
+        </apex:pageBlockButtons>
+   </apex:pageBlock>       
+   <apex:pageBlock id="step2" title="Please wait until all members's are sent an email. Watch the counter." mode="detail" rendered="{!step='2'}" >
+   	 	<apex:actionPoller action="{!reloadResult}" rerender="result" interval="5"/>
+   	 	<apex:outputPanel id="result" rendered="true"> 
+	   		<apex:outputText value="{0}">
+	       		<apex:param value="{!EmailingStatus}" /> 
+	   		</apex:outputText> 
+   		</apex:outputPanel>
+   		<apex:pageBlockButtons >
+              <apex:commandButton action="{!Cancel}" value="Cancel or Close" immediate="true"  />
+        </apex:pageBlockButtons>
+   </apex:pageBlock>
+</apex:form>
+      
+</apex:page>

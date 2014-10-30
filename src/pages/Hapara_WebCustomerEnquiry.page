@@ -1,0 +1,57 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" docType="html-5.0"  controller="Hapara_WebController"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<c:Hapara_WebStyleSheet /> 
+
+<div class="content">
+	
+	<section class="intro">
+		<article>
+			<h3>Thanks for your enquiry but we have noticed you are an existing customer and to make sure you getting the right help please click one of the button below... </h3>
+		</article>
+	</section>
+	<section id='offerings'>
+		<article class="offerings">
+			<div class="offering">
+				<h3>Looking for Support...</h3>
+	
+				<p>Do you have any query on Teacher Dashboard, Remote Control or on any of our products? Please click below link.</p>
+					
+				<a class="button signup" href="https://hapara.zendesk.com/hc/en-us/categories/200087186-Knowledge-base" target="_top" > Contact Support</a>
+			</div>
+			<div class="offering">
+				<h3>Looking for pricing or new quote or renewal or new product information...</h3>
+	
+				<p>Would you like to be contacted by our sales team? Please click below link.</p>
+				<apex:form id="theForm">
+					<fieldset>
+						<apex:pageMessages />
+						<apex:outputLabel value="Comments:" for="existingCustomerQuestion_from_Lead__c"><sup class="required">*</sup></apex:outputLabel>   
+					    <apex:inputField id="existingCustomerQuestion_from_Lead__c" value="{!existingCustomer.Question_Copied_From_Lead__c}" required="true"></apex:inputField>
+					    
+						<div class="nav-wrapper">
+							<apex:commandButton action="{!saveContactComment}" value="Contact Sales" id="saveContactComment" onclick="return validate();"/>&nbsp;
+						</div>
+					</fieldset>				
+				</apex:form>
+			</div>
+			<div class="offering">
+				<h3>Looking to login to your Teacher Dashboard?</h3>
+	
+				<p>Please click below link.</p>
+	
+				<a class="button signup" href="https://teacherdashboard.appspot.com/Chrome" target="_top" >Sign In</a>
+			</div>
+			</article>
+	</section>
+</div>
+<script>
+	function validate(){
+		var result = true;
+		top.location.scrollTo(0,0)
+		
+		return result;
+	}
+</script>
+
+</apex:page>

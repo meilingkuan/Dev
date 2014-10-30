@@ -1,0 +1,161 @@
+<apex:component controller="Zendesk.MultipleZendeskDomainClass" allowDML="true" id="MultipleComp">
+	<style>
+		.leftButton{
+			float:left;
+			width:10%;
+			margin:12% 0 0 1%;
+			
+		}
+		.centerDiv{
+			float:left;
+			width:65%;
+			margin: 0 0 0 5%;
+		}
+		.rightButton{
+			float:left;
+			width:10%;
+			margin:12% 1% 0 5%;
+		}
+		.rightImage{
+			width:35px;
+			height:35px;
+			border-width:0px;
+			background-repeat:no-repeat;
+			cursor:pointer;
+			bgcolor:white;
+		}
+		.leftImage{
+			width:35px;
+			height:35px;
+			border-width:0px;
+			background-repeat:no-repeat;
+			cursor:pointer;
+			bgcolor:white;
+		}
+		
+	</style>
+	 <c:ZendeskCustomTicketFields rendered="{!NOT(isMultipleDomain)}"/>
+	
+	 	 
+	<apex:pageblock title="Ticket Mapping" mode="edit" rendered="{!isMultipleDomain}" id="ticketMap">
+		<apex:actionfunction name="getMapping" action="{!getTicketFields}" rerender="ticketMap" status="loading_symbol"/>
+		 <apex:pageblockbuttons location="top">
+         	  <apex:commandbutton action="{!getDomains}" value="Get Domains" rendered="{!!getDomains}" rerender="ticketMap" status="Domains"/>
+         	  <apex:actionStatus id="Domains" >
+        		<apex:facet name="start" >
+		      		<img src="/img/loading.gif" />
+		  		</apex:facet>
+			  </apex:actionStatus>
+             <apex:commandbutton action="{!saveMapping}" value="Save" rendered="{!IF(And(multipleDomains.size != 0, getDomains),TRUE,FALSE)}" rerender="ticketMap" status="DomainActions"/>
+              <apex:commandbutton action="{!saveAllMapping}" value="Save All" rendered="{!IF(And(multipleDomains.size != 0, getDomains),TRUE,FALSE)}" rerender="ticketMap" status="DomainActions"/>
+             <apex:commandbutton action="{!resetMappingforDomainSelected}" value="Reset" rendered="{!IF(And(multipleDomains.size != 0, getDomains),TRUE,FALSE)}" rerender="ticketMap" status="DomainActions"/>
+               <apex:actionStatus id="DomainActions" >
+        		<apex:facet name="start" >
+		      		<img src="/img/loading.gif" />
+		  		</apex:facet>
+			  </apex:actionStatus>
+         </apex:pageblockbuttons> 
+        
+        
+        
+        	<apex:outputtext rendered="{!!getDomains}" value="Click on Get Domains to fetch the custom ticket fields from Zendesk"/>
+    	       	
+        	
+            <apex:pageblocksection columns="3" title="Zendesk custom ticket fields and Salesforce ticket fields (Use the arrows to navigate between multiple Zendesk domains)" collapsible="false" rendered="{!IF(And(multipleDomains.size != 0, getDomains),TRUE,FALSE)}">
+           </apex:pageblocksection>
+           
+           <apex:outputPanel layout="block" rendered="{!IF(And(multipleDomains.size != 0, getDomains),TRUE,FALSE)}">
+            		<apex:outputpanel layout="block" styleclass="leftButton">
+            			<apex:actionStatus id="loading_symbol1" >
+            					<apex:facet name="start" >
+						      		<img src="/img/loading.gif" style="float:left;margin: 9px 0 0 58%"/>
+						  		</apex:facet>
+					  	</apex:actionStatus>
+            			<apex:outputpanel layout="block" style="padding-left:75%;*padding-left:5%;">
+            				<apex:commandlink action="{!fetchTicketFieldsforpreviousDomain}" rerender="ticketMap" status="loading_symbol1"  >
+            					<apex:image value="{!URLFOR($Resource.Zendesk__ZendeskStaticResource, '/images/left.png')}" styleclass="leftImage"/>
+            				</apex:commandlink>
+            			</apex:outputpanel>
+					</apex:outputpanel>
+					
+				  	<apex:outputpanel layout="block" styleclass="centerDiv">	
+            	 	<apex:outputpanel layout="block" rendered="{!isError}">
+			  	   		<div class="errorMessage">
+			  	   			<center><apex:outputtext value="{!errorMessage}" rendered="{!IF(errorMessage != null, TRUE, FALSE)}"/></center>
+			  	   		</div>
+			  	   </apex:outputpanel>
+			  	   <apex:outputpanel layout="block" rendered="{!!isError}">
+			  	   		<div class="successMessage">
+			  	   			<center><apex:outputtext value="{!successMessage}" rendered="{!IF(successMessage != null, TRUE, FALSE)}"/></center>
+			  	   		</div>
+			  	   </apex:outputpanel> 
+            	 
+	            
+	            	<apex:outputpanel layout="block" style=" margin-left: 15%;*margin-left: 10%; margin-bottom: 2%;">
+		            	 Choose a Zendesk Domain to configure a Ticket mapping
+		            	<apex:selectlist value="{!multipleDomain}" size="1" style="width:200px;margin-left:20px;" onchange="getMapping();">
+		            		<apex:selectoptions Value="{!multipleDomains}" />
+		            	</apex:selectlist>
+		            	 <apex:actionStatus id="loading_symbol">
+				    		<apex:facet name="start">
+				        		<img src="/img/loading.gif" />
+				    		</apex:facet>
+						</apex:actionStatus>
+	            	</apex:outputpanel>
+	            
+	           
+	            
+	                <apex:outputpanel layout="block" style="margin-left:5%;">
+	                    <div style="width:30%;float:left;margin-left:110px;font-weight:bold;margin-bottom: 2%;">Zendesk Custom Ticket Fields</div>
+	                    <div style="width:30%;float:left;font-weight:bold;margin-bottom: 2%;margin-left:30px">Salesforce - Zendesk Ticket Fields</div>
+	                </apex:outputpanel>
+	          
+	           
+	           
+	        
+	            
+	            		<apex:outputpanel layout="block" style="margin-left:5%;" rendered="{!IF(AND(multipleDomain != '', mapSize != 0) ,TRUE,FALSE)}">
+	            			<!--  Get the middle element -->
+							<apex:variable value="{!0}" var="rowNo"/>
+	          				<apex:repeat value="{!MapofDomainTicketMapping[VALUE(multipleDomain)]}" var="val">
+	          					<apex:variable var="rowNo" value="{!rowNo + 1}"/>
+	          					 <div style="width:30%;float:left;margin-left:100px">
+		                            <apex:selectlist value="{!val.id}" size="1" style="width: 200px;">
+		                              <apex:selectoptions value="{!val.zendeskField}"/>
+		                             </apex:selectlist>
+		                            <br/><br/>
+		                        </div>
+		                        <div style="width:30%;float:left;margin-left:40px;">  
+		                          <apex:selectlist value="{!val.chosenValue}" size="1" style="width: 200px;">
+		                          <apex:selectoptions value="{!val.zendeskValue}"/>
+		                          </apex:selectlist><br/><br/>
+		                        </div>
+		                 </apex:repeat>
+		                 
+	                 </apex:outputpanel>
+	             
+	             
+	                <apex:outputlabel rendered="{!IF(multipleDomains.size == 0,TRUE,FALSE)}">There are presently no Domains for mapping!</apex:outputlabel>
+	         
+            	</apex:outputpanel>
+            	
+            	<apex:outputpanel layout="block" styleclass="rightButton">
+            		<apex:outputpanel layout="block">
+						<apex:commandlink action="{!fetchTicketFieldsfornextDomain}" rerender="ticketMap" status="loading_symbol2" >
+							<apex:image value="{!URLFOR($Resource.Zendesk__ZendeskStaticResource, '/images/right.png')}" styleclass="rightImage"/>
+						</apex:commandlink>	
+		              	<apex:actionStatus id="loading_symbol2">
+				    		<apex:facet name="start">
+				        		<img src="/img/loading.gif" />
+				    		</apex:facet>
+					   </apex:actionStatus>
+					   
+				  	</apex:outputpanel>
+           
+            </apex:outputpanel>
+             
+             </apex:outputPanel> 
+           <div style="clear:both;">
+  		   </div>
+          </apex:pageblock>
+</apex:component>

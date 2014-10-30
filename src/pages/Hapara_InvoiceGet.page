@@ -1,0 +1,28 @@
+<apex:page standardController="Hapara_Invoice__c" extensions="Hapara_XeroInvoiceGetController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+<apex:sectionHeader title="Retrieve Invoice from Xero" />
+  <apex:form id="wizard">
+  <apex:outputPanel id="result" rendered="true">   
+  <apex:pageBlock id="field" mode="detail">
+	      <apex:pagemessages escape="false"></apex:pagemessages>      
+	      <apex:pageBlockButtons style="align=center;">
+	      	 <apex:commandButton action="{!retrieveInvoice}" value="Retrieve" immediate="true" style="margin-left: 2em" rendered="{!canProcess='true'}"/>
+	          <apex:commandButton action="{!cancel}" value="Close" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+  </apex:outputPanel>
+  </apex:form>
+   <apex:form >
+      <apex:actionPoller action="{!reloadResult}" rerender="result" interval="5"/>
+     </apex:form>
+<!-- <script>
+		window.onload = new function(){ 
+			var processStatus = {!processStatus};
+			
+			if(processStatus=='processing' ){	  	
+				window.setTimeout(reloadResultJavaScript,25 );
+			}
+		}
+	  
+	</script> -->   
+ </apex:page>

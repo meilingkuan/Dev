@@ -1,0 +1,239 @@
+<apex:page title="Setup" tabStyle="MC_Setup__tab" controller="MC4SF.SetupController" action="{!initPage}">
+
+<apex:sectionHeader title="MailChimp for Salesforce" subtitle="Setup"/>
+
+<apex:form id="form">
+<apex:actionFunction name="toggleHourlyJob" action="{!toggleHourlyJob}" rerender="settings"/>
+
+<apex:outputPanel layout="none" rendered="{!haveUnsyncedLists}">
+    <div class="message warningM3">
+        <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding: 0; margin: 0;">
+            <tr valign="top">
+                <td><img alt="WARNING" class="msgIcon" src="/s.gif" title="WARNING"/></td>
+                <td class="messageCell">
+                    <div class="messageText">
+                        <h4>The MailChimp for Salesforce application has been set up and is ready to start synchronizing data. Click the "Turn On Hourly Sync" button below to start the magic.<br/>A few reminders:</h4>
+                        <ul>
+                            <li>This app works best when field mappings are complete. We recommend mapping fields BEFORE syncing data.</li>
+                            <li>The initial hourly sync will upload all MailChimp subscribers into Salesforce and link them to existing Contacts and Leads.</li>
+                            <li>An initial upload usually takes a few minutes, but can take several hours for large lists.</li>
+                            <li>If the Create Leads from MC? option is chosen, the sync process will create a new Lead whenever a Subscriber's email address cannot be found on an existing Salesforce Contact or Lead. Please be sure your org's Lead configuration is ready for an initial upload!</li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</apex:outputPanel>
+
+<apex:pageMessages id="messages"/>
+<div align="right">
+    <apex:commandButton value="Need Help?" onclick="showHelp(); return false;"/>
+</div>
+<apex:pageBlock id="settings" title="MailChimp Settings">
+    <apex:pageBlockButtons location="top">
+        <apex:commandButton value="Edit" action="{!edit}" rerender="settings, lists" rendered="{!NOT(editMode) && isMailChimpAdmin}"/>
+        <apex:actionStatus id="saveStatus" rendered="{!editMode}">
+            <apex:facet name="start">
+                <apex:commandButton value="Saving..." disabled="true"/>
+            </apex:facet>
+            <apex:facet name="stop">
+                <apex:commandButton value="Save" action="{!save}" rerender="settings, lists" status="saveStatus"/>
+            </apex:facet>
+        </apex:actionStatus>
+        <apex:commandButton value="Cancel" action="{!cancel}" rerender="settings, lists" rendered="{!editMode}"/>
+        
+        <apex:commandButton value="Turn On Hourly Sync" action="{!toggleHourlyJob}" rerender="settings" rendered="{!NOT(editMode) && NOT(hourlyJobScheduled) && NOT(haveUnmappedFields) && isMailChimpAdmin}"/>
+        <apex:commandButton value="Turn On Hourly Sync" action="{!toggleHourlyJob}" rerender="settings" rendered="{!NOT(editMode) && NOT(hourlyJobScheduled) && haveUnmappedFields && isMailChimpAdmin}" onclick="showDialog(); return false;"/>
+        <apex:commandButton value="Turn Off Hourly Sync" action="{!toggleHourlyJob}" rerender="settings" rendered="{!NOT(editMode) && hourlyJobScheduled && isMailChimpAdmin}"/>
+    </apex:pageBlockButtons>
+    <apex:pageBlockSection columns="2">
+        <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Allow MailChimp to create Leads in Salesforce?" for="createLeads"/>
+            <apex:outputPanel >
+                <apex:inputCheckbox id="createLeads" value="{!createLeads}" disabled="{!NOT(editMode)}" >
+                    <!-- <apex:actionSupport event="onchange" rerender="lists"/>-->
+                </apex:inputCheckbox>
+            </apex:outputPanel>
+        </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+</apex:pageBlock>
+
+<apex:pageBlock id="lists" title="MailChimp Lists">
+    <apex:pageBlockButtons location="top">
+        <apex:actionStatus id="refreshListsStatus" rendered="{!NOT(editMode)}">
+            <apex:facet name="start">
+                <apex:commandButton value="Refreshing..." disabled="true"/>
+            </apex:facet>
+            <apex:facet name="stop">
+                <apex:commandButton value="Refresh All" action="{!refreshLists}" rerender="lists, messages" status="refreshListsStatus" rendered="{!isMailChimpAdmin}"/>
+            </apex:facet>
+        </apex:actionStatus>
+    </apex:pageBlockButtons>
+
+    <apex:pageBlockTable value="{!mcLists}" var="mcList">
+        <apex:column headerValue="Action" rendered="{!NOT(editMode)}">
+            <apex:outputLink value="{!$Page.MC4SF__Mappings}?id={!mcList.Id}&retURL={!$Page.MC4SF__Setup}" rendered="{!isMailChimpAdmin}">Map Fields</apex:outputLink>
+            &nbsp;|&nbsp;&nbsp;
+            <apex:commandLink value="Sync Now" action="{!syncListNow}" rerender="lists, messages" rendered="{!isMailChimpAdmin}">
+                <apex:param name="mcListId" assignTo="{!mcListId}" value="{!mcList.Id}"/>
+            </apex:commandLink>
+        </apex:column>
+        <apex:column headerValue="List Name">
+            <a href="/{!mcList.Id}">{!mcList.Name}</a>
+        </apex:column>
+        <apex:column headerValue="Create Leads from MC?">
+            <apex:inputField value="{!mcList.MC4SF__Create_New_Leads_From_MailChimp__c}" rendered="{!editMode}"/>
+            <apex:outputField value="{!mcList.MC4SF__Create_New_Leads_From_MailChimp__c}" rendered="{!NOT(editMode)}"/>
+        </apex:column>
+        <apex:column headerValue="Unmapped Fields" value="{!mcList.MC4SF__Unmapped_Fields__c}"/>
+        <apex:column headerValue="Last Sync" value="{!mcList.MC4SF__Last_Sync_Date__c}"/>
+        <apex:column headerValue="Sync Status" value="{!mcList.MC4SF__Last_Sync_Status__c}"/>
+        <apex:column headerValue="# Subscribers" value="{!mcList.MC4SF__Member_Count__c}"/>
+        <apex:column headerValue="# Unsubscribers" value="{!mcList.MC4SF__Unsubscribe_Count__c}"/>
+    </apex:pageBlockTable>
+</apex:pageBlock>
+
+<apex:pageBlock id="queries" title="MailChimp Member Queries">
+    <apex:pageBlockButtons location="top">
+        <apex:commandButton value="New Query" action="{!newQuery}"/>
+    </apex:pageBlockButtons>
+
+    <apex:pageBlockTable value="{!queryWrappers}" var="wrapper">
+        <apex:column headerValue="Action" rendered="{!NOT(editMode)}">
+            <apex:outputPanel layout="none" rendered="{!isMailChimpAdmin || wrapper.mcQuery.MC4SF__Last_Run_As__c == $User.Id}">
+                <apex:outputLink value="{!$Page.MC4SF__QueryFilter}?id={!wrapper.mcQuery.Id}">Edit</apex:outputLink>
+                |&nbsp;
+                <apex:commandLink value="Delete" action="{!deleteQuery}" rerender="queries, messages" onclick="if (!confirm('Are you sure you want to delete this query?')) {return false;}">
+                    <apex:param name="mcQueryId" assignTo="{!mcQueryId}" value="{!wrapper.mcQuery.Id}"/>
+                </apex:commandLink>
+                <apex:outputPanel layout="none" rendered="{!isMailChimpAdmin && wrapper.objectNames != null}">
+                    |&nbsp;
+                    <apex:outputLink value="{!$Page.MC4SF__QueryName}?id={!wrapper.mcQuery.Id}">Schedule</apex:outputLink>
+                </apex:outputPanel>
+                <apex:outputPanel layout="none" rendered="{!wrapper.objectNames != null}">
+                    |&nbsp;
+                    <apex:commandLink value="Run Now" action="{!runQuery}" rerender="queries, messages">
+                        <apex:param name="mcQueryId" assignTo="{!mcQueryId}" value="{!wrapper.mcQuery.Id}"/>
+                    </apex:commandLink>
+                </apex:outputPanel>
+            </apex:outputPanel>
+        </apex:column>
+        <apex:column headerValue="Query Name">
+            <a href="/{!wrapper.mcQuery.Id}">{!wrapper.mcQuery.Name}</a>
+        </apex:column>
+        <apex:column headerValue="List" value="{!wrapper.mcQuery.MC4SF__MC_List__c}"/>
+        <apex:column headerValue="Last Run As" value="{!wrapper.mcQuery.MC4SF__Last_Run_As__c}"/>
+        <apex:column headerValue="Queried Objects" value="{!wrapper.objectNames}"/>
+        <apex:column headerValue="Schedule" value="{!wrapper.mcQuery.MC4SF__Run_Daily_At__c}"/>
+        <apex:column headerValue="Last Run" value="{!wrapper.mcQuery.MC4SF__Last_Run__c}"/>
+        <apex:column headerValue="Last Status">
+            <apex:outputPanel rendered="{!wrapper.mcQuery.MC4SF__Status__c == 'Error'}"><span title="{!wrapper.mcQuery.Error_Message__c}" style="color: red;">{!wrapper.mcQuery.MC4SF__Status__c}</span></apex:outputPanel>
+            <apex:outputPanel rendered="{!wrapper.mcQuery.MC4SF__Status__c != 'Error'}">{!wrapper.mcQuery.MC4SF__Status__c}</apex:outputPanel>
+        </apex:column>
+        <apex:column headerValue="Subscribers Added" value="{!wrapper.mcQuery.MC4SF__Subscribers_Added_last_run__c}"/>
+    </apex:pageBlockTable>
+</apex:pageBlock>
+
+<apex:pageBlock id="campaigns" title="MailChimp Campaigns">
+    <apex:pageBlockButtons location="top">
+        <apex:actionStatus id="refreshCamapignsStatus" rendered="{!NOT(editMode)}">
+            <apex:facet name="start">
+                <apex:commandButton value="Refreshing..." disabled="true"/>
+            </apex:facet>
+            <apex:facet name="stop">
+                <apex:commandButton value="Refresh" action="{!refreshCampaigns}" rerender="campaigns, messages" status="refreshCamapignsStatus" rendered="{!isMailChimpAdmin || isMailChimpUser}"/>
+            </apex:facet>
+        </apex:actionStatus>
+    </apex:pageBlockButtons>
+
+    <apex:pageBlockTable value="{!mcCampaigns}" var="mcCampaign">
+        <apex:column headerValue="Action" rendered="{!NOT(editMode)}">
+            <apex:commandLink value="Update Stats" rendered="{!NOT(isMailChimpAdmin) && NOT(isMailChimpUser)}" onclick="alert('You do not have permission to perform this function.'); return false;">
+                <apex:param name="mcCampaignId" assignTo="{!mcCampaignId}" value="{!mcCampaign.Id}"/>
+            </apex:commandLink>
+            <apex:commandLink value="Update Stats" action="{!syncCampaignNow}" rerender="campaigns, messages" rendered="{!isMailChimpAdmin || isMailChimpUser}">
+                <apex:param name="mcCampaignId" assignTo="{!mcCampaignId}" value="{!mcCampaign.Id}"/>
+            </apex:commandLink>
+        </apex:column>
+        <apex:column headerValue="Campaign Name">
+            <a href="/{!mcCampaign.Id}">{!mcCampaign.Name}</a>
+        </apex:column>
+        <apex:column headerValue="List">
+            <a href="/{!mcCampaign.MC4SF__MC_List__c}">{!mcCampaign.MC_List__r.Name}</a>
+        </apex:column>
+        <apex:column headerValue="View in MailChimp">
+            <apex:outputField value="{!mcCampaign.MC4SF__Link_to_MC_Campaign__c}"/>
+        </apex:column>
+        <apex:column value="{!mcCampaign.MC4SF__Status__c}"/>
+        <apex:column value="{!mcCampaign.MC4SF__Send_Time__c}"/>
+        <apex:column value="{!mcCampaign.MC4SF__Emails_Sent__c}"/>
+        <apex:column value="{!mcCampaign.MC4SF__Clicks__c}"/>
+        <apex:column value="{!mcCampaign.MC4SF__Opens__c}"/>
+        <apex:column value="{!mcCampaign.MC4SF__Forwards__c}"/>
+        <apex:column value="{!mcCampaign.MC4SF__Unsubscribes__c}"/>
+    </apex:pageBlockTable>
+</apex:pageBlock>
+
+</apex:form>
+
+<div id="syncDialog" style="display: none; cursor: default;">
+    We noticed that some MailChimp fields have not been mapped to Salesforce fields.
+    We would love for Salesforce to populate as many fields in MailChimp as possible.
+    We recommend mapping fields BEFORE turning on the hourly sync.<br/><br/>
+
+    <button id="syncAnywayButton">Sync Anyway</button>
+    <button id="goBackButton">Go Back</button>
+</div>
+
+<div id="helpDialog" style="display: none; cursor: default;">
+    <h2>Help With MailChimp for Salesforce</h2><br/><br/>
+    <a href="http://kb.mailchimp.com/article/what-is-mailchimp-for-salesforce">What is MailChimp for Salesforce?</a><br/>
+    <a href="https://www.youtube.com/watch?v=eI6aJRtlQUY">Query Builder Tutorial</a><br/><br/>
+    <button id="helpCloseButton">Close</button>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{!URLFOR($Resource.Assets, '/js/jQuery_blockUI_plugin.js')}"></script>
+<script>
+
+    jQuery(function() {
+
+        jQuery('#syncAnywayButton').click(function() {
+            jQuery.unblockUI();
+            toggleHourlyJob();
+        });
+        
+        jQuery('#goBackButton').click(function() {
+            jQuery.unblockUI();
+        });
+        
+        jQuery('#helpCloseButton').click(function() {
+            jQuery.unblockUI();
+        });
+    });
+    
+
+    function showDialog() {
+        jQuery.blockUI({
+            message: jQuery('#syncDialog'),
+            css: {
+                'border-radius': '8px',
+                'padding': '10px'
+            }
+        });
+    }
+    
+    function showHelp() {
+        jQuery.blockUI({
+            message: jQuery('#helpDialog'),
+            css: {
+                'border-radius': '8px',
+                'padding': '10px'
+            }
+        });
+    }
+    
+</script>
+
+</apex:page>

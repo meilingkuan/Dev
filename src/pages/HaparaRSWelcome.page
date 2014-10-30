@@ -1,0 +1,103 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}">  
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content">
+			<apex:outputPanel id="repPanel" rendered="{!showWelcomePanel='No'}">
+					<div class="formLayout">
+					<apex:form >	
+					<h3>
+						Please enter your email address to login into our Reseller Portal.
+					</h3>
+					<br/>
+	  				<apex:pageMessages />
+	  				<div class="signup-form">
+					<fieldset >
+				        <apex:outputLabel value="Sales Rep Email:" for="resellerRepEmail"><sup class="required">*</sup></apex:outputLabel>
+				        <apex:inputField id="resellerRepEmail" value="{!resellerRep.email}" required="true"/>
+				        <div class="nav-wrapper">
+							<apex:commandButton action="{!login }" value="Login" onclick="return validateEmail();" />&nbsp;
+							<apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" styleclass="btn-danger"/>	
+						</div>
+					</fieldset>	
+					</div>			
+			</apex:form>	
+			</div>	 
+			</apex:outputPanel>
+			<apex:outputPanel id="welcomePanel" rendered="{!showWelcomePanel='Yes'}"> 
+			<div class="formLayout">
+			<apex:form >
+			<div class="formLayout">
+			   <table align="center" border="0" cellpadding="0" cellspacing="0" width="80%">
+						<colgroup>
+	    		 	<col style="width:300px;"/>
+				    <col style="width:25px;"/>
+				    <col style="width:375px;"/>
+				 </colgroup>
+				<tbody>
+					<tr>
+					<td>
+						<div class="alert-purple">
+							<a class="white" title="Register Deal/PO" href="{!registerDealURL}">Register Deal/PO</a>
+						</div>
+					</td>
+					<td>&nbsp;</td>
+					<td>
+						<p>Click here to register a new deal or create a Purchase Order with Hapara Inc.</p>
+					</td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+					<td>
+						<div class="alert-lightgreen">
+						<a class="white" title="Update Pending Registration" href="{!UpdateRegistrationURL}">Update Deals</a>
+						</div>
+					</td>
+					<td>&nbsp;</td>
+					<td >
+						<p>Click here to update your existing pending deals <b>(or any deals registered by your Company)</b> 
+						with Sales Notes or to enter a Purchase Order.</p>
+					</td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+					<td>
+						<div class="alert-orange">
+						<a class="white" title="Registration Report" href="{!SendRegistrationReportURL}">Status Report</a>
+						</div>	
+					</td>
+					<td>&nbsp;</td>
+					<td>
+						<p>Click here to request a status report on your deals.</p>
+					</td>
+					</tr>
+					<tr><td>&nbsp;</td></tr>
+					<tr>
+					<td>
+						<div class="alert-blue">
+						<a class="white" title="Marketing Materials" href="{!MarketinglURL}">Marketing Materials/Help</a>
+						</div>
+					</td>
+					<td>&nbsp;</td>
+					<td >
+						<p>Click here see the available HAPARA marketing materials and help guide.</p>
+					</td>
+					</tr>
+				</tbody>
+				</table>			  								 
+			</div>
+	</apex:form>	
+	</div>	 
+</apex:outputPanel>		
+		</div>
+	</article>
+</section>
+</div>
+</div>
+<footer></footer>
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/>
+</apex:page>

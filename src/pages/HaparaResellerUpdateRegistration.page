@@ -1,0 +1,93 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="HaparaResellerController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!PageTitle}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+		<div class="content"> 
+		<apex:form id="frm">
+				<article>
+					<h3>Update Registration</h3>
+					<p>
+						Select the registration you would like to update with Sales Notes or Submit a Purchase Order.
+					</p>
+					<apex:pageMessages />
+				</article>
+				<div class="signup-form">
+					<fieldset >
+				        <apex:outputLabel value="Sales Rep Email:" for="resellerRepEmail"/>
+				        <apex:inputText id="resellerRepEmail" value="{!resellerRep.email}" disabled="true" />
+				     	<apex:outputPanel id="registration">
+				     		<apex:actionRegion immediate="true">
+								<apex:outputLabel value="View Registrations:" for="filterRegistration"/>
+								<apex:selectlist id="filterRegistration"  value="{!filterRegistration}"  size="1" >	
+									<apex:selectOptions value="{!filterRegistrations}" /> 
+									<apex:actionSupport event="onchange" action="{!populateRegistration}" rerender="registration" ></apex:actionSupport>
+								</apex:selectlist>
+								<apex:outputLabel value="Search by Name:" for="filterRegistrationName"/>
+								<apex:inputText value="{!filterRegistrationName}" id="filterRegistrationName"/>
+								<apex:commandButton action="{!populateRegistration}" value="Search" style="margin-left: 42.649%;"/>
+								<br/>
+								<br/>
+								<table class="DataTable">
+									<col width="30%"/>
+									<col width="20%"/>
+									<col width="15%"/>
+									<col width="15%"/>
+									<col width="10%"/>
+									<col width="10%"/>
+									<tr style="background-color:lightgrey;">
+										<th>School</th>
+										<th>Deal Type</th>
+										<th>Expiry Date</th>
+										<th>Status</th>
+										<th>Update Notes</th>
+										<th>Submit PO</th>
+									</tr>
+								<apex:repeat value="{!Registrations}" var="o">
+									<tr>
+										<td>
+											<apex:outputText value="{!o.Name}"  />	
+										</td>
+										<td>
+											<apex:outputText value="{!o.Opportunity_Name_Template__c}"   />	
+										</td>
+										<td>
+											<apex:outputText value="{0,date,' 'MMMM d','  yyyy}">	
+		      									 <apex:param value="{!o.CloseDate}" /> 
+		       								</apex:outputText>
+										</td>
+										<td>
+											<apex:outputText value="{!o.StageName}"   />	
+										</td>
+										<td>
+											<a href="{!EditRegistrationURL}{!o.Id}">Update </a>
+										</td>
+										<td>
+											<a href="{!CreatePurchaseOrderUrl}{!o.Id}">Submit </a>
+										</td>
+									</tr>
+								</apex:repeat>
+								</table>
+							</apex:actionRegion>
+						</apex:outputPanel>
+						<br/>
+						<div class="nav-wrapper">
+							<a class="button signup" href="{!registerDealURL}">Register New Deal</a> &nbsp;
+							<apex:commandButton action="{!cancel}" value="Back" immediate="true" styleClass="btn-success"/>
+						</div>
+						<input type="text" id="resellerEmailDomain" value="{!reseller.Reseller_s_Email_Domain__c}" style="display:none;"> </input>	
+					</fieldset>
+				</div>
+			</apex:form>	
+		</div>
+	</article>
+</section>
+</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+<apex:includeScript value="{!$Resource.ResellerJavaScript}"/> 
+</apex:page>

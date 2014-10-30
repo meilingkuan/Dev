@@ -1,0 +1,5 @@
+<apex:page standardController="Opportunity">
+
+  <c:ZendeskList for="opportunity" />
+
+</apex:page>

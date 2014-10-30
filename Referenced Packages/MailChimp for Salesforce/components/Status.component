@@ -1,0 +1,73 @@
+<apex:component >
+
+    <apex:attribute name="status"
+             description="Member status."
+                required="true"
+                    type="String"/>
+
+    <apex:attribute name="statusReason"
+             description="Member status reason."
+                required="true"
+                    type="String"/>
+
+	<apex:attribute name="statusTimestamp"
+             description="Status timestamp."
+                required="true"
+                    type="DateTime"/>
+
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Pending'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/warn.png')}"/>
+		<span style="color: #BEB73C;">Awaiting confirmation</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> since <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+							
+	<apex:outputPanel layout="none" rendered="{!status == 'Subscribed'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/success.png')}"/>
+		<span style="color: #090;">Subscribed</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Unsubscribed' && statusReason == 'NORMAL'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/warn.png')}"/>
+		<span style="color: #BEB73C;">Unsubscribed</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Unsubscribed' && statusReason == 'NOSIGNUP'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/error.png')}"/>
+		<span style="color: #89000C;">Unsubscribed(no sign up)</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Unsubscribed' && statusReason == 'INAPPROPRIATE'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/error.png')}"/>
+		<span style="color: #89000C;">Unsubscribed(inappropriate)</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Unsubscribed' && statusReason == 'SPAM'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/error.png')}"/>
+		<span style="color: #89000C;">Unsubscribed(spam)</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Unsubscribed' && statusReason == 'OTHER'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/warn.png')}"/>
+		<span style="color: #BEB73C;">Unsubscribed(other)</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+	<apex:outputPanel layout="none" rendered="{!status == 'Cleaned'}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/warn.png')}"/>
+		<span style="color: #BEB73C;">Bounced email address was cleaned</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+	
+	<apex:outputPanel layout="none" rendered="{!(status != 'Pending' && status != 'Subscribed' && status != 'Cleaned' && status != 'Unsubscribed') || (status == 'Unsubscribed' && statusReason != 'NORMAL' && statusReason != 'NOSIGNUP' && statusReason != 'INAPPROPRIATE' && statusReason != 'SPAM' && statusReason != 'NORMAL' && statusReason != 'OTHER')}">
+		<img src="{!URLFOR($Resource.MC4SF__Assets, '/img/warn.png')}"/>
+		<span style="color: #BEB73C;">{!status}</span>
+		<apex:outputPanel style="color: #666;" rendered="{!statusTimestamp != null}"> on <apex:outputText value="{0, date, M/d/yy h:mma}"><apex:param value="{!statusTimestamp}"/></apex:outputText></apex:outputPanel>
+	</apex:outputPanel>
+
+</apex:component>

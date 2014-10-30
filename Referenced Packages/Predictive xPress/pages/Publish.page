@@ -1,0 +1,7 @@
+<apex:page standardController="PAM__Subscription_Page__c">
+   <apex:iframe frameborder="0"
+      height="1800px"
+      width="1200px"
+      src="https://aws.predictiveresponse.net/http/subs/processing_anim.php?oid={!$Api.Partner_Server_URL_80}&page_id={!id}"
+   />
+</apex:page>

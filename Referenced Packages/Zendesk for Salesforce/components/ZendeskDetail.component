@@ -1,0 +1,62 @@
+<apex:component controller="Zendesk.Zendesk">
+
+  <apex:attribute name="ZendeskUrl" assignTo="{!zendeskUrl}" type="String" required="true" description="Your helpdesk URL" />
+  <apex:attribute name="ZendeskUser" assignTo="{!zendeskUser}" type="String" required="true" description="Login/email" />
+  <apex:attribute name="ZendeskPass" assignTo="{!zendeskPass}" type="String" required="true" description="Matching password" />
+
+  <apex:pageBlock title="Zendesk Ticket Details">
+    <apex:pageBlockSection title="Ticket #{!ticket.id}">
+      <apex:panelGrid columns="4">
+         <apex:outputLabel value="Subject" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.subject}" />
+         <apex:outputLabel value="Type" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.tickettype}" />
+
+         <apex:outputLabel value="Requester" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.requester.name}" />
+         <apex:outputLabel value="Organization" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.organization}" />
+
+         <apex:outputLabel value="Priority" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.priority}" />
+         <apex:outputLabel value="Status" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.status}" />
+
+         <apex:outputLabel value="Created at" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.createdAt}" />
+         <apex:outputLabel value="Solved at" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.solvedAt}" />
+
+         <apex:outputLabel value="Assignee" styleClass="labelCol" />
+         <apex:outputText value="{!ticket.assignee.name}" />
+      </apex:panelGrid>
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="Description">
+      <apex:repeat value="{!ticket.descriptionLines}" var="line">
+        <apex:outputText value="{!line}"/><br/>
+      </apex:repeat>
+    </apex:pageBlockSection>
+  </apex:pageBlock>
+
+  <apex:pageBlock title="Comments">
+    <apex:dataTable value="{!ticket.comments}" var="comment" styleClass="list" width="100%">
+      <apex:column >
+        <apex:facet name="header"><b>Date</b></apex:facet>
+        {!comment.createdAt}
+      </apex:column>
+      <apex:column >
+        <apex:facet name="header"><b>By</b></apex:facet>
+        {!comment.author.name}
+      </apex:column>
+      <apex:column >
+        <apex:facet name="header"><b>Message</b></apex:facet>
+        
+       <apex:repeat value="{!comment.messageLines}" var="line">
+         <apex:outputText value="{!line}"/><br/>
+       </apex:repeat>
+        
+      </apex:column>
+    </apex:dataTable>
+  </apex:pageBlock>
+  
+</apex:component>

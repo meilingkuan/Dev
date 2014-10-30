@@ -1,0 +1,118 @@
+<apex:page sidebar="false" showHeader="false">
+<script type="text/javascript">
+function fillDemoSessionDateDropDown(){
+    var day = 3; //wednesday
+    var date = new Date();
+    //Demo Session Date:
+    var ddl = document.getElementById( '00N90000003MZdQ' );     
+    for(i = 0; i < 6; i++){
+        var newDate = getNextWeekDay(date,day);
+        var s = FormatToLongDateString(newDate);
+        var theOption = new Option;
+        theOption.text = s;
+        theOption.value = s;
+        ddl.options[i] = theOption;
+        date = new Date(newDate);
+    }
+}
+function getNextWeekDay(date,d) {
+    if (d) {
+        var next = new Date( date);
+        next.setDate( date.getDate() - date.getDay() + 7 + d );
+        return next;
+    }
+}
+function FormatToLongDateString(date){
+    var month=new Array();
+        month[0]="January";
+        month[1]="February";
+        month[2]="March";
+        month[3]="April";
+        month[4]="May";
+        month[5]="June";
+        month[6]="July";
+        month[7]="August";
+        month[8]="September";
+        month[9]="October";
+        month[10]="November";
+        month[11]="December";
+    var day =date.getDate();
+    var dd = day <10?"0" + day: day;
+    var dth = date.getDate() >3 ? day + "th": day == 1? "1st": day == 2? "2nd": day ==3 ? "3rd": "0th";
+    var s = "4pm Wednesday, " + month[date.getMonth()] + " "+dth +", "+ date.getFullYear();
+    return s;
+}
+</script>
+<div class="wpcf7" id="wpcf7-f5-p1761-o1">
+<form action="http://www.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8" method="POST" class="wpcf7-form">
+<div style="display: none;">
+<input type="hidden" name="oid" value="00D90000000dtSU"></input>
+<input type="hidden" name="retURL" value="http://jackwes7.wix.com/haparaconcept#!thank-you/cm1w"></input>
+        <!--  ----------------------------------------------------------------------  -->
+        <!--  NOTE: These fields are optional debugging elements. Please uncomment    -->
+        <!--  these lines if you wish to test in debug mode.                          -->
+        <!--
+<input type="hidden" name="debug" value=1>                              &#8211;>
+        <!--
+<input type="hidden" name="debugEmail" value="info@hapara.com">         &#8211;>
+        <!--  ----------------------------------------------------------------------  -->
+ </div>
+<p><label for="first_name">First Name:</label><span class="wpcf7-form-control-wrap your-name">
+<input  id="first_name" maxlength="40" name="first_name" size="20" type="text" required="required"></input></span></p>
+<p><label for="last_name">Last Name:</label><span class="wpcf7-form-control-wrap your-name">
+<input  id="last_name" maxlength="80" name="last_name" size="20" type="text" required="required"></input></span></p>
+<p><label for="email">Email:</label><span class="wpcf7-form-control-wrap your-email">
+<input  id="email" maxlength="80" name="email" size="30" type="email" required="required"></input></span></p>
+<p><label for="company">School/Organization:</label><span class="wpcf7-form-control-wrap your-company">
+<input  id="company" maxlength="40" name="company" size="20" type="text" required="required"></input></span></p>
+<p><label for="00N90000003MZFW">How many students do you have? (number only):</label><span class="wpcf7-form-control-wrap your-students">
+<input  id="00N90000003MZFW" name="00N90000003MZFW" size="20" type="text" pattern="\-?\d+(\.\d{0,})?" required="required"></input></span></p>
+<p><label for="00N90000003MZdQ">Demo Session Date:</label><span class="wpcf7-form-control-wrap your-session_date">
+<select  id="00N90000003MZdQ" name="00N90000003MZdQ" required="required"></select>
+</span></p>
+<p><label for="00N90000003MZit">Session Demo Timezone:</label><span class="wpcf7-form-control-wrap your-demo_timezone">
+<select  id="00N90000003MZit" name="00N90000003MZit" title="Session Demo Timezone" required="required">
+<option value="US Pacific">US Pacific</option>
+<option value="US Eastern">US Eastern</option>
+<option value="UK GMT">UK GMT</option>
+<option value="Australia - Sydney">Australia &#8211; Sydney</option>
+<option value="New Zealand">New Zealand</option>
+</select>
+</span></p>
+<p><label for="00N90000003MZFg">Your experience with Google Apps:</label><span class="wpcf7-form-control-wrap your-experience">
+<select  id="00N90000003MZFg" name="00N90000003MZFg" title="Google App Experience">
+<option value="Actively using Google Apps across the school">Actively using Google Apps across the school</option>
+<option value="Individual teachers experimenting with Google Apps">Individual teachers experimenting with Google Apps</option>
+<option value="Interested in Google Apps but haven&#39;t done anything yet">Interested in Google Apps but haven&#39;t done anything yet</option>
+<option value="Testing Google Apps with Some classrooms">Testing Google Apps with Some classrooms</option>
+</select>
+</span></p>
+<p><label for="URL">Your Google Apps for Education domain name:</label><span class="wpcf7-form-control-wrap your-domain_name">
+<input  id="URL" maxlength="80" name="URL" size="20" type="text" ></input></span></p>
+<p><label for="00N90000003MZiF">Is there anything specific you&#8217;d like to make sure we cover?</label><span class="wpcf7-form-control-wrap your-requirement"><textarea  id="00N90000003MZiF" name="00N90000003MZiF" rows="5" type="text" wrap="soft" cols="40"></textarea></span></p>
+<input type="submit" value=" Register " class="wpcf7-submit" ></input>
+<select  id="Campaign_ID" name="Campaign_ID" style="visibility:hidden;">
+<option value="">&#8211;None&#8211;</option>
+<option value="70190000000MMwr" selected="selected">Direct Teacher Dashboard Sales</option>
+<option value="70190000000MMws" >Direct General Sales</option>
+</select>
+<select  id="lead_source" name="lead_source" style="visibility:hidden;" >
+<option value="">&#8211;None&#8211;</option>
+<option value="Advertisement">Advertisement</option>
+<option value="Employee Referral">Employee Referral</option>
+<option value="External Referral">External Referral</option>
+<option value="Partner">Partner</option>
+<option value="Public Relations">Public Relations</option>
+<option value="Seminar - Internal">Seminar &#8211; Internal</option>
+<option value="Seminar - Partner">Seminar &#8211; Partner</option>
+<option value="Trade Show">Trade Show</option>
+<option value="Web" selected="selected">Web</option>
+<option value="Word of mouth">Word of mouth</option>
+<option value="Other">Other</option></select>
+
+</form>
+</div>
+<script type="text/javascript">
+    fillDemoSessionDateDropDown();
+</script>
+</apex:page>

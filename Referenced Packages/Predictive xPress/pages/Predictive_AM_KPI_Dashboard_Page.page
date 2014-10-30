@@ -1,0 +1,10 @@
+<apex:page standardController="Campaign">
+<div style="text-align:center;">
+<apex:image value="http://chart.apis.google.com/chart?chxt=y&chs=150x100&chxs=0,000000,11,0,l,676767&chts=000000,11&chtt=Pending+Rate:+{!Campaign.PAM__Outbox_Rate__c}%    &cht=gm&chco=000000,009900|ffd175|990000&chds=0,100&chd=t:{!Campaign.PAM__Outbox_Rate__c}"/>
+<apex:image value="http://chart.apis.google.com/chart?chxt=y&chs=150x100&chxs=0,000000,11,0,l,676767&chts=000000,11&chtt=Sent+Rate:+{!Campaign.PAM__Sent_Rate__c}%         &cht=gm&chco=000000,990000|ffd175|009900&chds=0,100&chd=t:{!Campaign.PAM__Sent_Rate__c}"/>
+<apex:image value="http://chart.apis.google.com/chart?chxt=y&chs=150x100&chxs=0,000000,11,0,l,676767&chts=000000,11&chtt=Open+Rate:+{!Campaign.PAM__Open_Rate__c}%         &cht=gm&chco=000000,990000|ffd175|009900&chxr=0,0,30&chds=0,30&chd=t:&chd=t:{!Campaign.PAM__Open_Rate__c}"/>
+<apex:image value="http://chart.apis.google.com/chart?chxt=y&chs=150x100&chxs=0,000000,11,0,l,676767&chts=000000,11&chtt=Click+Rate:+{!Campaign.PAM__Click_Rate__c}%       &cht=gm&chco=000000,990000|ffd175|009900&chxr=0,0,15&chds=0,15&chd=t:&chd=t:{!Campaign.PAM__Click_Rate__c}"/>
+<apex:image value="http://chart.apis.google.com/chart?chxt=y&chs=150x100&chxs=0,000000,11,0,l,676767&chts=000000,11&chtt=Bounce+Rate:+{!Campaign.PAM__Bounce_Rate__c}%     &cht=gm&chco=000000,009900|ffd175|990000&chxr=0,0,5&chds=0,5&chd=t:{!Campaign.PAM__Bounce_Rate__c}"/>
+<apex:image value="http://chart.apis.google.com/chart?chxt=y&chs=150x100&chxs=0,000000,11,0,l,676767&chts=000000,11&chtt=Opt+Out+Direct+Rate:+{!Campaign.PAM__Opt_Out_Rate__c}%   &cht=gm&chco=000000,009900|ffd175|990000&chxr=0,0,5&chds=0,5&chd=t:{!Campaign.PAM__Opt_Out_Rate__c}"/>
+</div>
+</apex:page>

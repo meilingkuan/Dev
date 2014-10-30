@@ -1,0 +1,3 @@
+<apex:page controller="Zendesk.ZendeskDashboardController">
+ <!-- <apex:outputText value="{!dashboardHtml}" escape="false" /> -->
+</apex:page>

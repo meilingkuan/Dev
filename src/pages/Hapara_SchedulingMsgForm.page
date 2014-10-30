@@ -1,0 +1,27 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="Hapara_SchedulingController" docType="html-5.0"  action="{!checkContactId}">
+<apex:stylesheet value="{!URLFOR($Resource.jQuery, '/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}"  />
+<apex:stylesheet value="{!URLFOR($Resource.jquerysimpledatetimepicker, '/jquery-simple-datetimepicker-1.10.1/jquery.simple-dtpicker.css')}"  />
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="Welcome to Hapara Booking"/> 
+<div id="main" role="main" class="salesforce" > 
+<section id="SalesforceForm">
+	<article>
+		<div class="content"> 
+			<apex:form id="theForm">
+				<article>
+					<apex:pageMessages />
+					<br/>
+					<br/>
+					<div class="nav-wrapper">
+						<apex:commandButton action="{!backToConfirmPage}" value="Back" id="bookSession"  />&nbsp;
+					</div>
+				</article>
+		 </apex:form>
+		</div>
+	</article>
+</section>
+</div>
+</div>
+</apex:page>

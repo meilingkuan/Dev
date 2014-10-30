@@ -1,0 +1,2 @@
+<apex:page standardController="Opportunity" extensions="Hapara_NewButon" action="{!onloadOpportunity}">
+</apex:page>

@@ -1,0 +1,56 @@
+<apex:page standardController="Case" recordSetvar="unused" extensions="Hapara_ProcessCDWPOController" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+  <apex:form id="wizard">
+	  <apex:sectionHeader title="Process CDW PO" />
+      <apex:pageBlock id="step1" title="Confirm records to be processed for CDW PO - those that are flagged as Process" mode="detail" rendered="{!step='1'}">
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection >
+	            <apex:pageBlockTable var="a" value="{!Selected}">
+					<apex:column value="{!a.Subject}"/>
+					<apex:column value="{!a.Status}"/>
+					<apex:column value="{!a.Process__c}"/>
+					<apex:column value="{!a.Error_Message__c}"/>
+				    <apex:column value="{!a.CreatedDate}"/>
+	            </apex:pageBlockTable>
+			</apex:pageBlockSection>
+			<apex:panelGrid columns="2">
+			</apex:panelGrid>
+          <apex:pageBlockButtons >
+              <apex:commandButton action="{!cancel}" value="Cancel" onclick="return confirmCancel()" immediate="true" style="margin-left: 2em"/>
+              <apex:commandButton action="{!Process}" value="Process"/>
+          </apex:pageBlockButtons>
+      </apex:pageBlock> 
+    
+	<apex:outputPanel id="result">   
+	<apex:pageBlock id="field" mode="detail" rendered="{!step='2'}">
+	      <apex:pagemessages escape="false"></apex:pagemessages>
+	      
+	      <apex:pageBlockSection >
+		     <apex:pageBlockTable var="a" value="{!Cases}">
+		     	<apex:column value="{!a.CaseNumber}"/>
+				<apex:column value="{!a.Subject}"/>
+				<apex:column value="{!a.Status}"/>
+				<apex:column value="{!a.Error_Message__c}" />
+		     </apex:pageBlockTable>
+		   </apex:pageBlockSection>
+		   <apex:panelGrid columns="2">
+		   </apex:panelGrid>
+	      <apex:pageBlockButtons >
+	          <apex:commandButton action="{!cancel}" value="Close" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+	  </apex:outputPanel>
+   </apex:form>
+    <apex:form >
+     <apex:actionFunction action="{!reloadResult}" name="reloadResultJavaScript" rerender="result"/>
+     </apex:form>
+   <script>
+	  window.onload = new function(){ 
+	  	var reload = {!step};
+	  	
+	  	if(reload =='2'){	  	
+	  		window.setTimeout(reloadResultJavaScript,10 );
+	  	}
+	  }
+	</script>
+</apex:page>

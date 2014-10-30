@@ -1,0 +1,33 @@
+<apex:page standardController="Lead" recordSetvar="unused" extensions="Hapara_LeadDuplicateCheckerController" id="page" >
+  <apex:includeScript value="{!$Resource.UtilJS}" />
+  <apex:form id="wizard">
+  	  <apex:sectionHeader title="Mass Dedup Check Leads"/>
+  	  
+      <apex:pageBlock id="step1"  mode="edit" rendered="{!step='1'}">
+      	<apex:pageBlockButtons >
+		<apex:commandButton value="Check Lead" action="{!processDuplicateCheckLead}"/>
+		<apex:commandButton value="Check Contact" action="{!processDuplicateCheckContact}"/>
+		<apex:commandButton value="Check Account" action="{!processDuplicateCheckAccount}"/>
+		<apex:commandButton value="Next Page" action="{!nextPage}"/>
+		<apex:commandButton value="Previous Page" action="{!previousPage}"/>
+		<apex:commandButton value="Return" action="{!cancel}"/>
+	 </apex:pageBlockButtons>
+            <apex:pagemessages escape="false"></apex:pagemessages>
+			<apex:pageBlockSection >
+			<label></label>
+            <apex:pageBlockTable var="a" value="{!DeDupLeads}">
+				<apex:column value="{!a.Name}"/>
+				<apex:column value="{!a.Email}"/>
+				<apex:column value="{!a.Company}"/>
+				<apex:column value="{!a.DeDup_Status__c}"/>
+				<apex:column value="{!a.Duplicated_Lead__c}"/>		
+				<apex:column value="{!a.Duplicated_Contact__c}"/>		
+				<apex:column value="{!a.Existed_Customer_Account__c}"/>	
+				<apex:column value="{!a.Existed_Customer_Account_Type__c}"/>		
+            </apex:pageBlockTable>
+			</apex:pageBlockSection>
+			<apex:panelGrid columns="2">
+			</apex:panelGrid>
+      </apex:pageBlock> 
+   </apex:form>
+</apex:page>

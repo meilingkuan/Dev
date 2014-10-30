@@ -1,0 +1,119 @@
+<apex:page controller="Zendesk.ZendeskTicketController">
+
+  <apex:sectionHeader title="Zendesk Ticket" subtitle="#{!ticket.internalId} '{!ticket.subject}'" />
+  <apex:pageMessages />
+
+  <apex:pageBlock title="View Zendesk Ticket">
+    <apex:pageBlockButtons location="top">
+    <apex:form >
+    <apex:commandButton rendered="{!editAllowed}" value="Edit" action="{!URLFOR($Page.ZendeskTicketEdit)}?referrer={!$CurrentPage.parameters.referrer}&ticketid={!$CurrentPage.parameters.ticketid}&entity={!$CurrentPage.parameters.entity}&fromticket={!$CurrentPage.parameters.fromTicket}&domainId={!$CurrentPage.parameters.domainId}"/>
+    <apex:commandButton rendered="{!newAllowed}" value="New" action="{!URLFOR($Page.ZendeskTicketEdit)}?referrer={!$CurrentPage.parameters.referrer}&entity={!$CurrentPage.parameters.entity}&fromticket={!$CurrentPage.parameters.fromTicket}&domainId={!$CurrentPage.parameters.domainId}"/>
+    </apex:form>
+    </apex:pageBlockButtons>
+
+    <apex:pageBlockSection columns="2">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Requester" />
+        <apex:outputText >{!ticket.requester.name} <img src="{!ticket.requester.photoUrl}" style="height:14px;vertical-align:text-top"/></apex:outputText>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="CC" />
+        <apex:outputText value="{!ticket.collaborators}" />
+      </apex:pageBlockSectionItem>
+       
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Status" />
+        <apex:outputText value="{!ticket.status}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Priority" />
+        <apex:outputText value="{!ticket.priority}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Type" />
+        <apex:outputText value="{!ticket.ticketType}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Due date" />
+        <apex:outputText value="{!ticket.dueDate}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Group" />
+        <apex:outputText value="{!ticket.supportGroup.name}" />
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Assignee" />
+        <apex:outputText >{!ticket.assignee.name} <img src="{!ticket.assignee.photoUrl}" style="height:14px;vertical-align:text-top" /></apex:outputText>
+      </apex:pageBlockSectionItem>
+
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Organization" />
+        <apex:outputText value="{!ticket.organization}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Created at" />
+        <apex:outputText value="{!ticket.created}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Updated at" />
+        <apex:outputText value="{!ticket.updated}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Assigned at" />
+        <apex:outputText value="{!ticket.assigned}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Solved at" />
+        <apex:outputText value="{!ticket.solved}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >  
+        <apex:outputLabel value="Tags" />
+        <apex:outputText value="{!ticket.tags}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Score" />
+        <apex:outputText value="{!ticket.score}" />
+      </apex:pageBlockSectionItem>
+      
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Via" />
+        <apex:outputText value="{!ticket.via}" />
+      </apex:pageBlockSectionItem>
+      
+    </apex:pageBlockSection>
+        
+    <div class="pbSubsection">
+      <apex:dataTable value="{!ticket.customFields}" var="field" styleClass="detailList" columnClasses="labelCol, dataCol">
+        <apex:column >{!field.title}</apex:column>
+        <apex:column >{!field.valueForDisplay}</apex:column>
+        <apex:column />
+        <apex:column />
+      </apex:dataTable>
+    </div>
+
+    <apex:pageBlockSection columns="1">
+      <apex:pageBlockSectionItem >
+        <apex:outputLabel value="Description" />
+        <apex:repeat value="{!ticket.descriptionLines}" var="line">
+          <apex:outputText value="{!line}"/><br/>
+        </apex:repeat>
+      </apex:pageBlockSectionItem>
+    </apex:pageBlockSection>
+
+  </apex:pageBlock>
+
+  <c:ZendeskTicketComments ticket="{!ticket}"/>
+  
+</apex:page>

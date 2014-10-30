@@ -1,0 +1,36 @@
+<apex:component controller="Zendesk.CtrlSyncZendeskOrgsandUsers" allowDml="true" id="orgSync">
+<c:ZendeskOrganizationMapping id="orgMapping"/>
+<c:ZendeskUserMapping id="userMapping"/>
+<apex:pageblock mode="edit" title="Organization and User Synchronization" id="block">
+<apex:pageblockSection title="Zendesk Organizations and Salesforce Accounts" columns="1" id="section">
+            Start a one-time sync between Zendesk Organizations and Salesforce Accounts based on the fields you mapped.
+            <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="Sync Organizations and Accounts" />
+                 <apex:commandbutton value="Sync" action="{!StartSync}" />  
+           </apex:pageBlockSectionItem>
+  </apex:pageblockSection>
+   <apex:pageblockSection title="Zendesk users and Salesforce Contacts/Leads" columns="1" collapsible="false">
+           
+           <apex:pageBlockSectionItem >
+                <apex:outputlabel escape="false" value="Start a one-time sync between Zendesk users and Salesforce Contacts 
+                or Leads based on the fields you mapped.<br/>Please ensure that the one-time sync between Zendesk organizations 
+                and Salesforce Accounts has completed before continuing.<br/><br/><b>Caution!</b> Before you begin the synchronization process, deselect the option in Zendesk to send a welcome email to new users. 
+                <br/>To do so, click the Manage icon in the sidebar, then select Customers in the Settings section. <br/>&nbsp; "/>
+          </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+                <apex:outputlabel escape="false" value="Create Contacts or Leads<br/>during sync"/>
+                <apex:selectlist value="{!chosenValue}" size="1" style="width: 120px;">
+                    <apex:selectoptions value="{!contactLeadOptions}"/>
+                    <apex:actionsupport event="onchange" action="{!storeContactorLead}" />
+                </apex:selectlist>
+            </apex:pageBlockSectionItem>
+           </apex:pageblockSection> 
+           
+           <apex:pageblockSection columns="1" collapsible="false" id="section2">
+              <apex:pageBlockSectionItem >
+                     <apex:outputLabel escape="false" value="Sync users and<br/>Contacts or Leads" />
+                     <apex:commandbutton value="Sync" action="{!StartSyncUsers}" />
+                </apex:pageBlockSectionItem>
+           </apex:pageblockSection>
+    </apex:pageblock>
+</apex:component>

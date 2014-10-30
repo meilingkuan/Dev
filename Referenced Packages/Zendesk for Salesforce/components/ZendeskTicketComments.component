@@ -1,0 +1,28 @@
+<apex:component >
+
+  <apex:attribute required="true" name="ticket" assignTo="{!ticket}" type="Zendesk.ZendeskTicket" description="Ticket whose comments to display" />
+ 
+  <apex:pageBlock title="Comments"> 
+    <apex:pageBlockTable value="{!ticket.comments}" var="comment">
+      <apex:column style="text-align:center;vertical-align:top">
+        <apex:facet name="header"><b>By</b></apex:facet>
+        <img src="{!comment.author.photoUrl}" style="border:1px solid #dddddd;padding:2px;margin:3px;vertical-align:top" />
+        <div style="text-align:center;white-space:nowrap;font-size:11px;color:#333333;margin:3px">
+          {!comment.author.name}
+        </div>
+      </apex:column>
+      <apex:column >
+        <apex:facet name="header"><b>Message</b></apex:facet>
+        <apex:image value="{!URLFOR($Resource.Zendesk__Comment,'speak_public_small.png')}" style="float:left;margin-top:6px" rendered="{!comment.isPublic}" />
+        <apex:image value="{!URLFOR($Resource.Zendesk__Comment,'speak_private_small.png')}" style="float:left;margin-top:6px" rendered="{!!comment.isPublic}" />
+        <p style="margin:6px 0px 0px 24px;line-height:1.3em;padding:0px;">
+          <apex:repeat value="{!comment.messageLines}" var="line">
+            <apex:outputText value="{!line}"/><br/>
+          </apex:repeat>
+        </p>
+        <div style="color:#888888;margin-top:16px;">{!comment.created}</div>
+      </apex:column>
+    </apex:pageBlockTable>
+   </apex:pageBlock>
+    
+</apex:component>

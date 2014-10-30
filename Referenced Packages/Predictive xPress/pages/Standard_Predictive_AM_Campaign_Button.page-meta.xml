@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>18.0</apiVersion>
+    <description>Standard Visual Force Page for the Predictive AM Campaign Button</description>
+    <label>Standard_Predictive_AM_Campaign_Button</label>
+</ApexPage>

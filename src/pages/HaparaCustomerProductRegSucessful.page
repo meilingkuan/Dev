@@ -1,0 +1,30 @@
+<apex:page cache="false" expires="1" standardStylesheets="false" showHeader="false" sidebar="false" controller="Hapara_CustomerProductRegController" action="{!checkId}"> 
+<link class="user" rel="stylesheet" href="http://hapara.com/wp-content/themes/hapara/assets/css/normalize.min.css"/>
+<link class="user" href="http://hapara.com/wp-content/themes/hapara/assets/css/main.css?v=" rel="stylesheet" />
+<div class="wrap">
+<c:Hapara_PortalStyleSheet title="{!TermAndConditions.Registration_Title__c}"/> 
+<div id="main" role="main" class="salesforce" > 
+<section>
+	<article>
+	<div class="signup-form">
+		<fieldset >
+		<br/>
+		 <article class="bottomlined" style="background-color: #e1efcc; border-color: #98b86a;">
+			<b>
+				<apex:outputText value="{0}">
+		       		<apex:param value="{!TermAndConditions.Registration_Title__c}" />
+	 			</apex:outputText>
+			</b>
+			<p>  			
+				<apex:outputText value="{0}" escape="false">
+			       <apex:param value="{!TermAndConditions.Successful_Registration_Message__c}" />
+		 		</apex:outputText>
+			</p>		
+  		</article>
+  		</fieldset>
+  	</div>
+  	</article>
+ </section>
+ </div>
+ </div>
+</apex:page>

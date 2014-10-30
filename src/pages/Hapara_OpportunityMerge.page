@@ -1,0 +1,22 @@
+<apex:page standardController="Opportunity" extensions="Hapara_NewButon" id="page">
+<apex:includeScript value="{!$Resource.UtilJS}" />
+<apex:sectionHeader title="Merge Opportunity" />
+  <apex:form id="wizard">
+  <apex:outputPanel id="result" rendered="true">   
+  <apex:pageBlock id="field" mode="detail">
+  		<apex:pagemessages escape="false"></apex:pagemessages>   
+  		<apex:pageBlockSection title="Opportunity to Merge into" columns="2">
+  			<apex:inputText id="oppSearch" value="{!OpportunityMergeTo.Name}" required="true" label="Enter Opportunity Name to Search by:"/>
+  			<apex:commandButton action="{!searchOpportunity}" value="Search"/>
+  			<apex:selectlist id="oppId"  value="{!opportunitySearchId}" size="1" label="Select an opportunity to merge into:">				
+					<apex:selectOptions value="{!oppSearchResults}" /> 
+				</apex:selectlist>
+  		</apex:pageBlockSection>	         
+	      <apex:pageBlockButtons style="align=center;">	      	
+	      	 <apex:commandButton action="{!mergeOpportunity}" value="Merge" style="margin-left: 2em" rendered="{!canProcess='true'}"/>	      	
+	         <apex:commandButton action="{!cancel}" value="Cancel" immediate="true" style="margin-left: 2em"/>
+	      </apex:pageBlockButtons>
+	  </apex:pageBlock> 
+  </apex:outputPanel> 
+  </apex:form>
+ </apex:page>

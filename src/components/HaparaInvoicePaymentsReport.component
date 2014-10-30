@@ -1,0 +1,169 @@
+<apex:component controller="Hapara_InvoicePaymentsReport" access="global">
+	<apex:attribute name="invoiceId" type="String" description="invoice id" assignTo="{!invoiceId}"  />
+	<table width="700" border="0" cellspacing="0" cellpadding="10" align="center" >
+		<colgroup>
+		    <col style="width:10;"> </col>
+		    <col style="width:680;"> </col>
+		    <col style="width:10;"> </col>
+		 </colgroup>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td colspan="2" align="right">
+			<img src="{!$Resource.Hapara_logo}" width="200" height="82" border="0" />
+        	<br/>
+        	</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td align="Center" class="head-gray25">Payments Advice Statement</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td align="left">
+				<table width="600" border="0" cellspacing="0" cellpadding="10" >
+					<colgroup>
+						<col style="width:5;"> </col>
+					    <col style="width:590;"> </col>
+					    <col style="width:5;"> </col> 
+					 </colgroup>
+					<tr>
+						<td>&nbsp;</td>
+						<td align="left">
+							<table width="580" >
+								<colgroup>
+									<col style="width:290;"> </col>
+								    <col style="width:590;"> </col>
+								</colgroup>
+								<tr>
+									<td align="left" valign="top">
+										<apex:outputLabel value="Date of Report:" for="ReportDate" />
+										&nbsp;&nbsp;
+										<apex:outputText value="{0}" id="ReportDate">
+										      <apex:param value="{!ReportDate}" />
+										</apex:outputText>
+										<br/>
+										<apex:outputLabel value="Payee:" for="Payee" />
+										&nbsp;&nbsp;
+										<apex:outputField value="{!Account.Name}" id="Payee"/>
+										<br/>
+										<apex:outputText value="{!AccountBillingAddress}" id="AccountBillingAddress" escape="false" style="align:right;">
+										</apex:outputText>
+										<br/>
+										<apex:outputLabel value="Invoice No:" for="InvoiceNo" />
+									 	&nbsp;&nbsp;
+									 	<apex:outputField value="{!Invoice.Xero_Invoice_No__c}" id="InvoiceNo"/>
+									 	<br/>
+									 	<apex:outputLabel value="Invoice Date:" for="InvoiceDate" />
+									 	&nbsp;&nbsp;
+									 	<apex:outputText value="{0,date,dd MMMMM yyyy}" id="InvoiceDate">
+									      <apex:param value="{!Invoice.Invoice_Date__c}" />
+										</apex:outputText>
+									 	<br/>
+									 	<apex:outputLabel value="Invoice Due Date:" for="InvoiceDueDate" />
+									 	&nbsp;&nbsp;
+									 	<apex:outputText value="{0,date,dd MMMMM yyyy}" id="InvoiceDueDate">
+									      <apex:param value="{!Invoice.Due_Date__c}" />
+										</apex:outputText>
+									 	<br/>
+									 	<apex:outputLabel value="Invoice Total Amount:" for="InvoiceTotalAmount" />
+									 	&nbsp;&nbsp;
+									 	<apex:outputText value="{0,number,#,###.00}" id="InvoiceTotalAmount">
+									      <apex:param value="{!Invoice.Total_Amount__c}" />
+										</apex:outputText> 
+									 	<br/>
+									 	<apex:outputLabel value="Amount Still Owing:" for="OutstandingAmount" />
+									 	&nbsp;&nbsp;
+									 	<apex:outputText value="{0}" id="OutstandingAmount">
+									      <apex:param value="{!OutstandingAmount}" />
+										</apex:outputText> 
+									</td>
+									<td  align="right"  valign="top">
+										<apex:outputText value="{!HaparaAddress}" id="Address" escape="false">
+										</apex:outputText>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>				
+				</table>
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td valign="top" class="head-gray25">Payments History</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+				<table width="600" style="border:1px solid black;border-collapse:collapse;" cellspacing="0" cellpadding="10">
+					<colgroup>
+						<col style="width:5;"> </col>
+					    <col style="width:590;"> </col>
+					    <col style="width:5;"> </col>
+					 </colgroup>
+					<thead>
+						<tr>
+							<th>Payment Date</th>
+							<th>Amount</th>
+							<th>Reference</th>
+						</tr>
+					</thead>
+					<tbody>
+						 <apex:repeat value="{!Payments}" var="o" >
+		                    <tr>
+		                      <td style="border:1px solid black;border-collapse:collapse;">
+			                    <apex:outputText value="{0,date,dd MMMMM yyyy}">
+							      <apex:param value="{!o.Date_Of_Payment__c}" />
+								</apex:outputText>
+								</td>
+		                      <td style="border:1px solid black;border-collapse:collapse;">
+		                      	<apex:outputText value="{0,number,#,###.00}">
+							      <apex:param value="{!o.Amount_Paid__c}" />
+								</apex:outputText>   
+		                      </td>
+		                      <td style="border:1px solid black;border-collapse:collapse;"> 
+		                      {!o.Payment_Check_No_Ref__c}
+		                      </td>
+
+		                  </tr>
+		                 </apex:repeat>
+					</tbody>
+				</table>
+			</td>
+		</tr> 
+		<tr>
+			<td>&nbsp;</td>
+			<td ></td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>
+				<p>
+		        Please visit our support site for useful information about Teacher Dashboard or 
+		        to log a query with our friendly support team. 
+		        Here is a link to our support site 
+		        <a href="https://hapara.zendesk.com/home">hapara.zendesk.com</a>.&nbsp;</p>
+		        <p><br/></p>
+		        <p>
+		        We have also developed a Customer Success website that has video tutorials 
+		        on the various features of Teacher Dashboard. 
+		        To access it, please goto this <a href="https://sites.google.com/a/hapara.com/customer-success/">Site</a>. 
+		        Please share this with your teachers to help to deepen their learning with Teacher Dashboard.</p>
+		        <p><br/></p>
+		        <p>
+		        Again, the entire team at Hapara truly appreciates your business.
+		        </p>
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>		
+</apex:component>

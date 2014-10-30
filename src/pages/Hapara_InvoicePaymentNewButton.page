@@ -1,0 +1,2 @@
+<apex:page standardController="HaparaInvoicePayment__c" extensions="Hapara_NewButon" action="{!onloadHaparaPayment}">
+</apex:page>

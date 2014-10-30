@@ -1,0 +1,71 @@
+<apex:component controller="Zendesk.CtrlZendeskOrgSFAccountMapping" allowDml="true" id="mappingOrgComp">
+    <script>
+        function changeCSS(chosen){
+        	chosen = escape(chosen);
+            if(chosen == 'No')
+                {
+                    r = document.getElementById('pageId:orgMapForm:orgMapComponent:orgSync:orgMapping:mappingOrgComp:block:mappingOrgPanel');
+                    r.style.opacity = 0.20;
+                }
+            else
+                {
+                    r = document.getElementById('pageId:orgMapForm:orgMapComponent:orgSync:orgMapping:mappingOrgComp:block:mappingOrgPanel');
+                    r.style.opacity = 1; 
+                }
+        }
+        
+        window.onload = function(){
+            var triggerVal = document.getElementById('pageId:orgMapForm:orgMapComponent:orgSync:orgMapping:mappingOrgComp:block:sect:item:selectId').value;
+            changeCSS(triggerVal);
+            triggerVal = document.getElementById('pageId:orgMapForm:orgMapComponent:orgSync:userMapping:userMapComp:Userblock:userSect:item:select').value;
+            changeCSSUSer(triggerVal);
+        }
+    </script>
+   <apex:pageblock mode="edit" title="Organization and Account mapping" id="block">
+   
+        <apex:pageblockbuttons location="top">
+               <apex:commandbutton action="{!saveOrgMapping}" value="Save" />
+        </apex:pageblockbuttons>
+        <apex:pageblockSection title="Enable automatic updates" columns="1" id="sect">
+        Enable Zendesk to create or update organizations automatically when changes are made to Salesforce Accounts. If you enable updates, map the fields below.
+        <apex:pageblockSectionItem id="item" >
+            <apex:outputlabel escape="false" value="Enable updates to<br/>organizations"/>
+            <apex:selectlist value="{!chosenTriggerValue}" size="1" style="width: 100px;" onChange="changeCSS(this.value);" id="selectId">
+                <apex:selectoptions value="{!triggerOptions}"/>
+            </apex:selectlist>
+            </apex:pageblockSectionItem>
+        </apex:pageblockSection>
+        <apex:outputpanel layout="block" id="mappingOrgPanel">
+        <apex:pageblockSection title="Map Zendesk organizations and Salesforce Accounts" columns="1" >
+        Select the Salesforce fields you want to map to Zendesk organization fields for new or updated Accounts.<br/>
+
+
+        <apex:pageblockSectionItem >
+                <apex:repeat value="{!listofzendeskSFAccountMapping}" var="val">
+                    <apex:pageblockSection columns="1">
+                            <apex:pageblockSectionItem >
+                                <apex:outputpanel layout="block" style="margin-left:47px;float:left;">
+                                <apex:outputpanel layout="block" style="width:120px;float:left;">
+                                <apex:outputlabel escape="false" value="Zendesk domain<br/>names" styleclass="labelCol" rendered="{!IF(val.zendeskOrgField == 'domain_names',TRUE,FALSE)}"/>
+                                <apex:outputlabel value="Zendesk tags" styleclass="labelCol" rendered="{!IF(val.zendeskOrgField == 'tags',TRUE,FALSE)}"/>
+                                <apex:outputlabel value="Zendesk notes" styleclass="labelCol" rendered="{!IF(val.zendeskOrgField == 'notes',TRUE,FALSE)}"/>
+                                </apex:outputpanel>
+                             <apex:outputpanel layout="block" style="width:500px;float:left;">
+                                  <apex:outputpanel rendered="{!IF(val.zendeskOrgField == 'tags',TRUE,FALSE)}">
+                                    <c:MultiSelectList availableFields="{!val.listOfsfAccountFields}" activeFields="{!activeTags}" />
+                                  </apex:outputpanel>
+                                    <apex:selectlist value="{!val.sfAccountField}" size="1" style="width: 300px;" rendered="{!IF(val.zendeskOrgField == 'tags',FALSE,TRUE)}">
+                                          <apex:selectoptions value="{!val.listOfsfAccountFields}"/>
+                                    </apex:selectlist>
+                              </apex:outputpanel>
+                              </apex:outputpanel>
+                             </apex:pageblockSectionItem>
+                             
+                     </apex:pageblockSection>
+                </apex:repeat>
+            </apex:pageblockSectionItem>
+        </apex:pageblockSection>
+        </apex:outputpanel>
+       
+    </apex:pageblock>
+</apex:component>
