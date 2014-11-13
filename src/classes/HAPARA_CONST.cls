@@ -120,11 +120,23 @@ global class HAPARA_CONST {
 		
 		public static string   RESELLER_SETUP_EMAIL_TEMPLATE = 'Contact_Setup_Information_No_Templates';
 		
+	//AUDIT INFO
+		public static string   AUDIT_INFO_CONTACTSTATUS_INVALIDEMAIL = 'Invalid Email';
+		public static string   AUDIT_INFO_CONTACTSTATUS_BOUNCED = 'Bounced Contact';
+		public static string   AUDIT_INFO_CONTACTSTATUS_UNSUBSCRIBED = 'Unsubscribed Contact';
+		public static string   AUDIT_INFO_CONTACTSTATUS_CREATED = 'Created Contact';
+		public static string   AUDIT_INFO_CONTACTSTATUS_PENDING = 'Pending';
+		
+		public static string   AUDIT_INFO_STATUS_MISSINGCONTACT = 'Missing Primary Contact';
+		public static string   AUDIT_INFO_STATUS_PROCESSED ='Processed';
+		
+		
 	//Custom settings
 		public static HaparaSchedulerSettings__c SETTING_SCHEDULE = HaparaSchedulerSettings__c.getInstance();
 		public static HaparaXeroConfig__c SETTING_INVOICE = HaparaXeroConfig__c.getInstance('Hapara');
 		public static HaparaResellerSetting__c SETTING_RESELLER = HaparaResellerSetting__c.getInstance('Hapara'); 
 		public static Hapara_Opportunity_Config__c SETTING_OPPORTUNITY_CONFIG = Hapara_Opportunity_Config__c.getInstance(); 
+		public static Hapara_Admin_Setting__c SETTING_ADMIN_CONFIG = Hapara_Admin_Setting__c.getInstance(); 
 		
 		//extract settins
 		private static map<string,string> countriesCurrencyMapping ;

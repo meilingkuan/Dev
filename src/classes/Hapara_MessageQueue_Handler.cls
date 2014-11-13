@@ -228,8 +228,9 @@ public class Hapara_MessageQueue_Handler {
 		}
 	//	list<Account> tobeUpdateAcc = new list<Account>();	
 		list<TD_Domain__c> tobeInsertedTDDomain = new list<TD_Domain__c>();
-		list<Contact> insertContact = new list<Contact>();
+		string extID = Date.today().year() + ''+Date.today().month()+''+ date.today().day();
 		map<id,Account> tobeUpdatedCheck = new map<id,Account>();
+		
 		for(AuditInfoMessage aInfo : auditInfos ){
 			Account a=null;
 			string auditdomain = aInfo.domain.trim().toLowerCase();
@@ -244,12 +245,6 @@ public class Hapara_MessageQueue_Handler {
 				msgContent = aInfo;
 				system.debug('***auditInfo: msgContent is not null:' + msgContent.domain);
 				msgContent.IsAttachedToAccount = true;
-			//	for(Contact c : a.Contacts){
-			//		string conemail = c.Email.trim().toLowerCase()+a.Id;
-			//		c.Is_TD_Admin_Contact__c = false;
-			//		if(!cons.containsKey(conemail))
-			//			cons.put(conemail, c);
-			//	}
 				
 				string TDDomainInactive = string.IsBlank( a.TD_Domain_Inactive__c )? '': a.TD_Domain_Inactive__c;
 				
@@ -263,34 +258,9 @@ public class Hapara_MessageQueue_Handler {
 				if(createDomainRecord){
 					system.debug('***auditInfo: create domain record');
 					TD_Domain__c domain =  createAuditInfoMessage( msgContent, accId);
+					domain.MessageQueue__c = msg.Id;
 					tobeInsertedTDDomain.add(domain);
-									
-				//	string emails = msgContent.primary_contact;
-				//	if(!string.isBlank( emails)){
-				//		list<string> conEmails =emails.Contains(';') ? emails.split(';'):emails.split(',');
-						
-				//		Contact c;
-				//		for(string s : conEmails){
-				//			string sId = s.trim().toLowerCase()+a.Id;
-				//			system.debug('***auditInfo: finding contact ' + s);
-				//			if(cons.containsKey(sId)){
-				//				c = cons.get(sId);
-				//				c.Is_TD_Admin_Contact__c = true;
-				//			}else{
-				//				list<string> conemail = s.split('@');
-									
-				//				if(conemail.size()>1){
-				//					c = new Contact();
-				//					c.LastName =conemail[0];
-				//					c.Is_TD_Admin_Contact__c = true;
-				//					c.AccountId = accId;
-				//					c.Email = s;
-				//					insertContact.add(c);
-				//				}					
-				//			}		
-				//		}
-				//	}
-					
+					checkPrimaryContact(domain);
 					a.No_Students_Sign_Up__c = double.valueOf( (string.isBlank( msgContent.number_students)?'0': msgContent.number_students));
 					if(a.Account_Product__r.size()>0){
 						system.debug('***auditInfo: calcultate the Total_Seats_Invoiced_YTD__c');
@@ -321,29 +291,18 @@ public class Hapara_MessageQueue_Handler {
 		for(AuditInfoMessage a2 : justCreateDomain){
 			system.debug('***auditInfo: creating domain with no accounts:' + a2.domain);
 			TD_Domain__c domain =  createAuditInfoMessage( a2, null);
+			domain.MessageQueue__c = msg.Id;			
 			tobeInsertedTDDomain.add(domain);
+			checkPrimaryContact(domain);
 		}
 		
-		if(tobeInsertedTDDomain.size()>0)
-			 insert tobeInsertedTDDomain;
-		//if(cons.size()>0){
-		//	list<Contact> updateContact =	cons.values();
-		//	update updateContact;			
-		//}	
-		//if(insertContact.size()>0)
-		//	insert insertContact;
-		if(tobeUpdatedCheck.size()>0)
-			update tobeUpdatedCheck.values();
+		if(tobeInsertedTDDomain.size()>0){
+			insert tobeInsertedTDDomain;
+			
+			if(tobeUpdatedCheck.size()>0)
+				update tobeUpdatedCheck.values();
+		}
 		
-		//list<CampaignMember> nonTDAdmins = [Select c.Contact.Is_TD_Admin_Contact__c, c.ContactId, c.Campaign.Type, c.CampaignId ,c.status
-		//				From CampaignMember c where c.Campaign.Type = 'TD Admin Email' and c.Contact.Is_TD_Admin_Contact__c=false ];
-	//	if(nonTDAdmins.size()>0){
-	//		system.debug('***auditInfo: updating campaign member status');
-	//		for(CampaignMember m : nonTDAdmins){
-	//			m.Status = 'No Longer Admin';
-	//		}
-	//		update nonTDAdmins;
-	//	}
 			
 		// Mark the message as completed
 		msg.Status__c = MESSAGE_STATUS_COMPLETED;
@@ -351,6 +310,18 @@ public class Hapara_MessageQueue_Handler {
 		msg.ErrorMessage__c = null;
 		update msg;
 		
+	}
+	
+	private static void checkPrimaryContact(TD_Domain__c domain){
+		//check if the primary contact field is populate with valid emails
+		if(string.isEmpty(domain.Primary_Contact__c))
+			domain.Status__c = HAPARA_CONST.AUDIT_INFO_STATUS_MISSINGCONTACT;
+		else{
+			string emails = domain.Primary_Contact__c;
+			list<string> conEmails =emails.Contains(';') ? emails.split(';'):emails.split(',');
+			if(conemails.size()==0)
+				domain.Status__c = HAPARA_CONST.AUDIT_INFO_STATUS_MISSINGCONTACT;
+		}
 	}
 	
 	public static list<AuditInfoMessage> getAuditInfosPerDomain(string content){
