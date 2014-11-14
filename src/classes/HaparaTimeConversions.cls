@@ -59,12 +59,12 @@ global class HaparaTimeConversions {
 		      		'2019'=> new Date[]{ Date.newInstance(2019, 3, 10),Date.newInstance(2019,11, 3)}
 		      		});
 		      tzSIDDSTKeys.put('Europe/London',  new Map<string,Date[]>{
-		      		'2014'=> new Date[]{ Date.newInstance(2014, 3, 30),Date.newInstance(2014, 11, 26)},
-		      		'2015'=> new Date[]{ Date.newInstance(2015, 3, 29),Date.newInstance(2015, 11, 25)},
-		      		'2016'=> new Date[]{ Date.newInstance(2016, 3, 27),Date.newInstance(2016,11, 30)},
-		      		'2017'=> new Date[]{ Date.newInstance(2017, 3, 26),Date.newInstance(2017,11, 29)},
-		      		'2018'=> new Date[]{ Date.newInstance(2018, 3, 25),Date.newInstance(2018,11, 28)},
-		      		'2019'=> new Date[]{ Date.newInstance(2019, 3, 31),Date.newInstance(2019,11, 27)}
+		      		'2014'=> new Date[]{ Date.newInstance(2014, 3, 30),Date.newInstance(2014, 10, 26)},
+		      		'2015'=> new Date[]{ Date.newInstance(2015, 3, 29),Date.newInstance(2015, 10, 25)},
+		      		'2016'=> new Date[]{ Date.newInstance(2016, 3, 27),Date.newInstance(2016,10, 30)},
+		      		'2017'=> new Date[]{ Date.newInstance(2017, 3, 26),Date.newInstance(2017,10, 29)},
+		      		'2018'=> new Date[]{ Date.newInstance(2018, 3, 25),Date.newInstance(2018,10, 28)},
+		      		'2019'=> new Date[]{ Date.newInstance(2019, 3, 31),Date.newInstance(2019,10, 27)}
 		      		});
 		      tzSIDDSTKeys.put('Pacific/Auckland',new Map<string,Date[]>{
 		      		'2014'=> new Date[]{ Date.newInstance(2014, 4, 5),Date.newInstance(2014, 9, 27)},
