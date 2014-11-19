@@ -8,7 +8,7 @@ trigger Hapara_TD_Domain_After_Insert on TD_Domain__c (after insert) {
 			
 			TD_History_Contacts__c c;
 			for(string s : conEmails){
-				list<string> conemail = s.split('@');		
+				list<string> conemail = s.trim().split('@');		
 				c = new TD_History_Contacts__c();
 				c.Contact_Email__c =s;
 				c.TD_Domain_History__c = auditInfo.Id;
@@ -26,7 +26,7 @@ trigger Hapara_TD_Domain_After_Insert on TD_Domain__c (after insert) {
 	}
 	//check if there are existing Contact and if they are bounced
 	list<Contact> contacts = [Select c.Is_TD_Admin_Contact__c, c.IsEmailBounced, c.HasOptedOutOfEmail, c.EmailBouncedReason, 
-								c.EmailBouncedDate, c.Email, c.AccountId ,
+								c.EmailBouncedDate, c.Email, c.AccountId ,c.Primary_Contact__c,
 								(Select CampaignId From CampaignMembers 
 									WHERE CampaignId=:HAPARA_CONST.SETTING_ADMIN_CONFIG.TD_Admin_Campaign_Id__c 
 									OR CampaignId=:HAPARA_CONST.SETTING_ADMIN_CONFIG.TD_Admin_Northern_Campaign__c
@@ -34,14 +34,17 @@ trigger Hapara_TD_Domain_After_Insert on TD_Domain__c (after insert) {
 								From Contact c
 								where email in : contactEmails];
 	list<Contact> updateContacts = new list<Contact>();
+	
 	for(Contact cn : contacts){
-		if(tddomaincontacts.containsKey(cn.AccountId+'-'+cn.email)){
-			TD_History_Contacts__c td = tddomaincontacts.get(cn.AccountId+'-'+cn.email);
+		string unique =cn.AccountId+'-'+cn.email;
+		if(tddomaincontacts.containsKey(unique)){
+			TD_History_Contacts__c td = tddomaincontacts.get(unique);
 			td.Contact__c = cn.Id;
 			td.ValidityStatus__c = HAPARA_CONST.AUDIT_INFO_CONTACTSTATUS_CREATED;
 			if(!cn.Is_TD_Admin_Contact__c ){
 				//flag the current contact to be td admin
 				cn.Is_TD_Admin_Contact__c = true;
+				cn.Primary_Contact__c = true;
 				updateContacts.add(cn);
 			}
 			if(cn.CampaignMembers.size()>0)
@@ -53,12 +56,15 @@ trigger Hapara_TD_Domain_After_Insert on TD_Domain__c (after insert) {
 			}
 		}
 	}
-
+	map<string,string>uniqueContacts = new map<string,string>();
 	if( tddomaincontacts.size() > 0){
 		//create contact if it is not already existing in our system
 		list<Contact> insertContact = new list<Contact>();
 		for(TD_History_Contacts__c td :tddomaincontacts.values() ){
-			if(td.ValidityStatus__c == HAPARA_CONST.AUDIT_INFO_CONTACTSTATUS_PENDING){
+			string unique =td.Contact_Email__c.trim()+td.Account__c;
+			if(td.ValidityStatus__c == HAPARA_CONST.AUDIT_INFO_CONTACTSTATUS_PENDING && td.Account__c !=null 
+				&& !uniqueContacts.containsKey(unique)){
+				uniqueContacts.put(unique,td.Contact_Email__c);
 				insertContact.add(new Contact(lastName=td.Contact_Email__c, email=td.Contact_Email__c, accountId = td.Account__c,
 									Is_TD_Admin_Contact__c = true));
 				td.ValidityStatus__c = HAPARA_CONST.AUDIT_INFO_CONTACTSTATUS_CREATED;
