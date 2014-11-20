@@ -30,22 +30,22 @@ public with sharing class InlineAcountHerachy_TestUtilities{
   	public Boolean checkObjectCrud( String objName, Set<String> fieldsToCheck, String crudType ){  		
   		
   		// Get the global describe
-        Schema.DescribeSObjectResult objectResult = Schema.getGlobalDescribe().get( objName ).getDescribe();
+        //Schema.DescribeSObjectResult objectResult = Schema.getGlobalDescribe().get( objName ).getDescribe();
 
-  		for( String fieldToCheck : objectResult.fields.getMap().keySet() ){	
+  		//for( String fieldToCheck : objectResult.fields.getMap().keySet() ){	
   			
-  			Schema.DescribeFieldResult current_field = objectResult.fields.getMap().get( fieldToCheck ).getDescribe();
+  		//	Schema.DescribeFieldResult current_field = objectResult.fields.getMap().get( fieldToCheck ).getDescribe();
   			
-  			if( fieldsToCheck.contains( current_field.getName() ) ) {
+  		//	if( fieldsToCheck.contains( current_field.getName() ) ) {
   			
-	  			if( 'create'.equalsIgnoreCase( crudType ) && !current_field.isCreateable()){
-		  			return false;
-		  		}
-		  		else if( 'update'.equalsIgnoreCase( crudType ) && !current_field.isUpdateable() ){
-		  			return false;
-		  		}
-  			}
-  		}
+	  	//		if( 'create'.equalsIgnoreCase( crudType ) && !current_field.isCreateable()){
+		  //			return false;
+		//  		}
+		//  		else if( 'update'.equalsIgnoreCase( crudType ) && !current_field.isUpdateable() ){
+		//  			return false;
+		 // 		}
+  		//	}
+  		//}
   		
   		return true;
   	}
