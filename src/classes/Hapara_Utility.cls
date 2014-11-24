@@ -1,8 +1,8 @@
 public class Hapara_Utility {
 	public static Boolean isRunningInSandbox() {
-	    String s  =  System.URL.getSalesforceBaseUrl().getHost();
-	    return (Pattern.matches('(.*\\.)?cs[0-9]*(-api)?\\..*force.com',s));
-	}   
+	    Organization org = [select Id, IsSandbox from Organization limit 1];
+	    return org.IsSandbox;
+	}    
 	
 	public static String GetSandboxURL(){
 		return 'https://hapara--dev.cs6.my.salesforce.com';

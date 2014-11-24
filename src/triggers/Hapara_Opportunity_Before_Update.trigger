@@ -138,11 +138,11 @@ trigger Hapara_Opportunity_Before_Update on Opportunity (before update,before in
 				}else{
 					acc = searchAcc.get(opp.accountid);
 				}
-				
-				if(opp.Customer_PO_Reference__c != null){
-					acc.Purchase_Order_No__c = opp.Customer_PO_Reference__c;
-					acc.Received_Date_of_PO__c = opp.Customer_PO_Received_Date__c;
-				}
+				if(acc != null)
+					if(!string.IsEmpty(opp.Customer_PO_Reference__c ) && opp.Customer_PO_Received_Date__c !=null){
+						acc.Purchase_Order_No__c = opp.Customer_PO_Reference__c;
+						acc.Received_Date_of_PO__c = opp.Customer_PO_Received_Date__c;
+					}
 		    }
 
 	    	update acctoUpdate;
