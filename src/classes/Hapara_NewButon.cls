@@ -299,7 +299,7 @@ public  class Hapara_NewButon {
             inv.Account__c = opp.AccountId;
             inv.Invoice_To_Contact__c = opp.SyncedQuoteId != null? opp.SyncedQuote.ContactId
             				: opp.Primary_Contact__c ==null? acc.Invoice_Contact__c :opp.Primary_Contact__c;
-            inv.CurrencyIsoCode = opp.Account.CurrencyIsoCode;
+            inv.CurrencyIsoCode = opp.CurrencyIsoCode;
             inv.Invoice_Billing_Emails__c = opp.Account.Invoice_Billing_Emails__c;
             inv.Opportunity__c = opp.id;
             inv.Customer_PO__c = opp.Customer_PO_Reference__c;
@@ -342,7 +342,7 @@ public  class Hapara_NewButon {
             for(OpportunityLineItem line: opp.OpportunityLineItems){
                 invl = new Account_Products__c();
                 invl.Account__c = line.Account__c;
-                invl.CurrencyIsoCode= opp.Account.CurrencyIsoCode;
+                invl.CurrencyIsoCode= inv.CurrencyIsoCode;
                 invl.Description__c = line.Description2__c;
                 invl.Discount__c = line.Discount;
                 invl.Hapara_Invoice__c = inv.Id;
